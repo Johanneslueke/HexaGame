@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.input.KeyListener;
 
+
 public class Main extends Game {
 
     private static Main instance; //You Shall not PASS

@@ -3,6 +3,7 @@ package com.hexagon.game.graphics.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.hexagon.game.Main;
+import com.hexagon.game.graphics.screens.myscreens.DemoScreen;
 import com.hexagon.game.graphics.screens.myscreens.ScreenGame;
 import com.hexagon.game.graphics.screens.myscreens.ScreenLoading;
 import com.hexagon.game.graphics.screens.myscreens.ScreenMainMenu;
@@ -29,6 +30,7 @@ public class ScreenManager {
         screenList.add(new ScreenLoading());
         screenList.add(new ScreenMainMenu());
         screenList.add(new ScreenGame());
+        screenList.add(new DemoScreen());
 
         this.currentScreen = screenList.get(0); // loading screen
     }
