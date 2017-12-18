@@ -24,12 +24,6 @@ public class ScreenGame extends HexagonScreen {
         batch = new SpriteBatch();
         font = new BitmapFont();
 
-        int abc = 0;
-        for (int i=0; i<0xFFFFFFF; i++) {
-            abc += 10;
-            abc *= 0.25;
-            ScreenLoading.loadedIndividual = ((float) i) / 0xFFFFFFF;
-        }
     }
 
     @Override

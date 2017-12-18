@@ -20,7 +20,7 @@ public class ScreenLoading extends HexagonScreen {
     private float loaded = 0;
     private String currentlyLoading = "";
 
-    private float brightness = 0;
+    private float brightness = -1;
 
 
     public ScreenLoading() {
@@ -42,10 +42,13 @@ public class ScreenLoading extends HexagonScreen {
                 loadedIndividual = 0;
                 currentlyLoading = screen.getScreenType().name();
                 Gdx.app.postRunnable(screen::create); // run the creation on the libgdx thread
+                loadedIndividual = 1;
                 loaded = ((float) i) / ScreenManager.getInstance().getScreenList().size();
             }
         }).start();
 
+
+        ScreenManager.getInstance().setCurrentScreen(ScreenType.LOADING);
     }
 
     @Override
@@ -56,7 +59,11 @@ public class ScreenLoading extends HexagonScreen {
     @Override
     public void render(float delta) {
         if (brightness <= 1) {
-            brightness += 0.5 * delta;
+            if (brightness < 0) {
+                brightness = 0;
+            } else {
+                brightness += 0.45 * delta;
+            }
         }
 
         ScreenManager.getInstance().clearScreen(0.05f * brightness, 0.15f * brightness, 0.2f * brightness);
