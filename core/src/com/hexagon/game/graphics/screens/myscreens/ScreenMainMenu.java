@@ -2,9 +2,12 @@ package com.hexagon.game.graphics.screens.myscreens;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.graphics.ui.HexButton;
 
 /**
  * Created by Sven on 14.12.2017.
@@ -15,6 +18,7 @@ public class ScreenMainMenu extends HexagonScreen {
     private SpriteBatch batch;
     private BitmapFont font;
 
+
     public ScreenMainMenu() {
         super(ScreenType.MAIN_MENU);
     }
@@ -23,11 +27,15 @@ public class ScreenMainMenu extends HexagonScreen {
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-    }
 
-    @Override
-    public void show() {
-
+        HexButton button = new HexButton("Hello World", 50, 100);
+        button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                System.out.println("Hello World!");
+            }
+        });
+        button.addToStage(stage);
     }
 
     @Override
@@ -36,6 +44,7 @@ public class ScreenMainMenu extends HexagonScreen {
         batch.begin();
         font.draw(batch, "Main menu", 20, 20);
         batch.end();
+        stage.draw();
     }
 
     @Override
@@ -50,11 +59,6 @@ public class ScreenMainMenu extends HexagonScreen {
 
     @Override
     public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
 
     }
 

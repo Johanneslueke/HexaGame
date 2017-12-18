@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.input.HexMultiplexer;
 
 /**
  * Created by Sven on 14.12.2017.
@@ -44,6 +45,10 @@ public class ScreenLoading extends HexagonScreen {
                 Gdx.app.postRunnable(screen::create); // run the creation on the libgdx thread
                 loadedIndividual = 1;
                 loaded = ((float) i) / ScreenManager.getInstance().getScreenList().size();
+                if (i == ScreenManager.getInstance().getScreenList().size() - 1) {
+                    // done loading
+                    doneLoading();
+                }
             }
         }).start();
 
@@ -51,9 +56,9 @@ public class ScreenLoading extends HexagonScreen {
         ScreenManager.getInstance().setCurrentScreen(ScreenType.LOADING);
     }
 
-    @Override
-    public void show() {
-
+    public void doneLoading() {
+        HexMultiplexer.getInstance().add(this.getStage());
+        HexMultiplexer.getInstance().multiplex();
     }
 
     @Override
@@ -84,11 +89,6 @@ public class ScreenLoading extends HexagonScreen {
 
     @Override
     public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
 
     }
 

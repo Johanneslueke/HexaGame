@@ -23,12 +23,6 @@ public class ScreenGame extends HexagonScreen {
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-
-    }
-
-    @Override
-    public void show() {
-
     }
 
     @Override
@@ -53,12 +47,6 @@ public class ScreenGame extends HexagonScreen {
     public void resume() {
 
     }
-
-    @Override
-    public void hide() {
-
-    }
-
     @Override
     public void dispose() {
 
