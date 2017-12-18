@@ -17,13 +17,14 @@ import java.util.List;
 public class ScreenManager {
 
     private static ScreenManager instance;
-    private static Main main;
 
     private List<HexagonScreen> screenList;
 
     private HexagonScreen currentScreen;
 
     public ScreenManager() {
+        instance = this;
+
         screenList = new ArrayList<>();
         screenList.add(new ScreenLoading());
         screenList.add(new ScreenMainMenu());
@@ -54,16 +55,12 @@ public class ScreenManager {
         return currentScreen;
     }
 
-    public void clearScreen() {
-        Gdx.gl.glClearColor(0.1f, 0.15f, 0.25f, 1);
+    public void clearScreen(float red, float green, float blue) {
+        Gdx.gl.glClearColor(red, green, blue, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 
     public static ScreenManager getInstance() {
         return instance;
-    }
-
-    public static Main getMain() {
-        return main;
     }
 }

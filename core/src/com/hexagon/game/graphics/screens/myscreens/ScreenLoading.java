@@ -1,6 +1,6 @@
 package com.hexagon.game.graphics.screens.myscreens;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.hexagon.game.graphics.screens.HexagonScreen;
@@ -16,10 +16,11 @@ public class ScreenLoading extends HexagonScreen {
     public static float loadedIndividual = 0;
 
     private SpriteBatch batch;
-    private Texture img;
     private BitmapFont font;
     private float loaded = 0;
     private String currentlyLoading = "";
+
+    private float brightness = 0;
 
 
     public ScreenLoading() {
@@ -40,7 +41,7 @@ public class ScreenLoading extends HexagonScreen {
                 }
                 loadedIndividual = 0;
                 currentlyLoading = screen.getScreenType().name();
-                screen.create();
+                Gdx.app.postRunnable(screen::create); // run the creation on the libgdx thread
                 loaded = ((float) i) / ScreenManager.getInstance().getScreenList().size();
             }
         }).start();
@@ -54,8 +55,12 @@ public class ScreenLoading extends HexagonScreen {
 
     @Override
     public void render(float delta) {
+        if (brightness <= 1) {
+            brightness += 0.5 * delta;
+        }
+
+        ScreenManager.getInstance().clearScreen(0.05f * brightness, 0.15f * brightness, 0.2f * brightness);
         batch.begin();
-        //batch.draw(img, 0, 0);
         font.draw(batch, "Loading " + (Math.round(loaded*100)) + "% (" + currentlyLoading + " " + (Math.round(loadedIndividual*100)) + "%)", 20, 20);
         batch.end();
     }
@@ -83,6 +88,5 @@ public class ScreenLoading extends HexagonScreen {
     @Override
     public void dispose() {
         batch.dispose();
-        img.dispose();
     }
 }

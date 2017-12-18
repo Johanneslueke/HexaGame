@@ -22,6 +22,7 @@ public class KeyListener implements InputProcessor {
 
     @Override
     public boolean keyTyped(char character) {
+        // for testing only
         if (character == '1') {
             ScreenManager.getInstance().setCurrentScreen(ScreenType.LOADING);
         } else if (character == '2') {
