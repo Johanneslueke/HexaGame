@@ -1,40 +1,36 @@
 package com.hexagon.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
-import de.svdragster.logica.system.SystemMessageDelivery;
-import de.svdragster.logica.world.Engine;
-import sun.rmi.runtime.Log;
+import com.hexagon.game.graphics.screens.ScreenManager;
+import com.hexagon.game.input.KeyListener;
 
 public class Main extends Game {
 
-	private Engine	Logic;
+    private static Main instance;
 
-	
 	@Override
 	public void create () {
-		Logic = new Engine();
+	    instance = this;
 
-		Logic.getSystemManager().addSystem(new SystemMessageDelivery(Logic.getEntityManager()));
+		new ScreenManager();
+		// The first screen is the loading screen which will load all other screens
+		ScreenManager.getInstance().getCurrentScreen().create();
 
-	}
+        Gdx.input.setInputProcessor(new KeyListener());
+    }
 
 	@Override
 	public void render () {
-		/**/
-		Logic.run();
-		/**/
-		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+		super.render();
 	}
 	
 	@Override
 	public void dispose () {
+
 	}
+
+    public static Main getInstance() {
+        return instance;
+    }
 }
