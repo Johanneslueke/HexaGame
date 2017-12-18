@@ -7,7 +7,7 @@ import com.hexagon.game.input.KeyListener;
 
 public class Main extends Game {
 
-    private static Main instance;
+    private static Main instance; //You Shall not PASS
 
 	@Override
 	public void create () {
