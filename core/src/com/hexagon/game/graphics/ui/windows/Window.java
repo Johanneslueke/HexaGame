@@ -63,6 +63,15 @@ public class Window {
             element.hide(stage);
         }
         elementList.add(element);
+        element.setDisplayX(x + element.getX());
+        element.setDisplayY(y + element.getY());
+    }
+
+    public void updateElements() {
+        for (UiElement element : elementList) {
+            element.setDisplayX(x + element.getX());
+            element.setDisplayY(y + element.getY());
+        }
     }
 
     public float getX() {

@@ -2,6 +2,7 @@ package com.hexagon.game.graphics.screens;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.hexagon.game.graphics.ui.WindowManager;
 import com.hexagon.game.input.HexMultiplexer;
 
 /**
@@ -12,15 +13,22 @@ public abstract class HexagonScreen implements Screen {
 
     private ScreenType screenType;
 
+    protected WindowManager windowManager;
+
     protected Stage stage;
 
     public HexagonScreen(ScreenType screenType) {
         this.screenType = screenType;
         stage = new Stage();
+        windowManager = new WindowManager();
     }
 
     public ScreenType getScreenType() {
         return screenType;
+    }
+
+    public WindowManager getWindowManager() {
+        return windowManager;
     }
 
     public abstract void create();
@@ -32,12 +40,14 @@ public abstract class HexagonScreen implements Screen {
     @Override
     public void show() {
         HexMultiplexer.getInstance().add(this.getStage());
+        HexMultiplexer.getInstance().add(this.windowManager);
         HexMultiplexer.getInstance().multiplex();
     }
 
     @Override
     public void hide() {
         HexMultiplexer.getInstance().remove(this.getStage());
+        HexMultiplexer.getInstance().remove(this.windowManager);
         HexMultiplexer.getInstance().multiplex();
     }
 }

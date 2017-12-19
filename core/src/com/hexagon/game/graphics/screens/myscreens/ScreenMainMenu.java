@@ -1,6 +1,7 @@
 package com.hexagon.game.graphics.screens.myscreens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,8 +12,7 @@ import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.ui.UiButton;
-import com.hexagon.game.graphics.ui.WindowManager;
-import com.hexagon.game.graphics.ui.windows.Window;
+import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 
 /**
  * Created by Sven on 14.12.2017.
@@ -24,7 +24,7 @@ public class ScreenMainMenu extends HexagonScreen {
     private BitmapFont font;
     private ShapeRenderer shapeRenderer;
 
-    private WindowManager windowManager;
+    //private WindowManager windowManager;
 
 
     public ScreenMainMenu() {
@@ -39,22 +39,33 @@ public class ScreenMainMenu extends HexagonScreen {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
 
-        windowManager = new WindowManager();
+        //windowManager = new WindowManager();
 
 
-        final Window window = new Window(20, Gdx.graphics.getHeight() - 50 - 200, 200, 200);
+        UiButton button = new UiButton("Hello World", 50, Gdx.graphics.getHeight() - 50, 100, 50);
+
+        final DropdownScrollableWindow window = new DropdownScrollableWindow(20, 0, 0, 0, 0, 0, 15);
         windowManager.getWindowList().add(window);
 
-        UiButton buttonWindow = new UiButton("Inside Window Button", 40, Gdx.graphics.getHeight() - 100, 100, 50);
+        for (int i=0; i<400; i++) {
+            UiButton buttonWindow = new UiButton(String.valueOf(i), 0, 0, 50, 20);
+            window.add(buttonWindow, stage);
+        }
+
+        window.orderAllNeatly(13, 0, 15);
+        window.setY(button.getY() - window.getHeight());
+        window.setX(button.getX());
+        window.updateElements();
+
+        /*UiButton buttonWindow = new UiButton("Inside Window Button", 0, 0, 100, 50);
         buttonWindow.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 System.out.println("Clicked inside Window Button");
             }
         });
-        window.add(buttonWindow, stage);
+        window.add(buttonWindow, stage);*/
 
-        UiButton button = new UiButton("Hello World", 50, Gdx.graphics.getHeight() - 50, 100, 50);
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -76,7 +87,10 @@ public class ScreenMainMenu extends HexagonScreen {
 
     @Override
     public void render(float delta) {
-
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            windowManager.getWindowList().get(0).setX(windowManager.getWindowList().get(0).getX() + 10);
+            windowManager.getWindowList().get(0).updateElements();
+        }
 
         ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);
         batch.begin();

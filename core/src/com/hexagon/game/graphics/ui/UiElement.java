@@ -11,6 +11,9 @@ public abstract class UiElement {
     private float x;
     private float y;
 
+    private float displayX;
+    private float displayY;
+
     private float width;
     private float height;
 
@@ -19,6 +22,8 @@ public abstract class UiElement {
         this.y = y;
         this.width = width;
         this.height = height;
+        this.displayX = x;
+        this.displayY = y;
     }
 
     public abstract void addToStage(Stage stage);
@@ -57,5 +62,21 @@ public abstract class UiElement {
 
     public void setHeight(float height) {
         this.height = height;
+    }
+
+    public float getDisplayX() {
+        return displayX;
+    }
+
+    public void setDisplayX(float displayX) {
+        this.displayX = displayX;
+    }
+
+    public float getDisplayY() {
+        return displayY;
+    }
+
+    public void setDisplayY(float displayY) {
+        this.displayY = displayY;
     }
 }

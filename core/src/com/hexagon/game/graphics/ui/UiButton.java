@@ -61,13 +61,14 @@ public class UiButton extends UiElement {
     }
 
     @Override
-    public void setX(float x) {
-        super.setX(x);
+    public void setDisplayX(float x) {
+        super.setDisplayX(x);
         textButton.setX(x);
     }
 
     @Override
-    public void setY(float y) {
+    public void setDisplayY(float y) {
+        super.setDisplayX(y);
         textButton.setY(y);
     }
 }
