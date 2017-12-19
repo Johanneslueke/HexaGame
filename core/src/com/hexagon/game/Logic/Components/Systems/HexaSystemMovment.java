@@ -39,21 +39,25 @@ public class HexaSystemMovment extends System {
 
         for(int entity : idCache){
 
-            if(getGlobalEntityContext().isEntityAlive(entity)){
-                ComponentPosition position = (ComponentPosition) getGlobalEntityContext().retrieveComponent(entity,StdComponents.POSITION);
-                ComponentMovement movement = (ComponentMovement) getGlobalEntityContext().retrieveComponent(entity,StdComponents.MOVEMENT);
+            synchronized (this){
+                if(getGlobalEntityContext().isEntityAlive(entity)){
+                    ComponentPosition position = (ComponentPosition) getGlobalEntityContext().retrieveComponent(entity,StdComponents.POSITION);
+                    ComponentMovement movement = (ComponentMovement) getGlobalEntityContext().retrieveComponent(entity,StdComponents.MOVEMENT);
 
-                if(position.X < 0)
-                    movement.dX *= -1;
-                if(position.X > width)
-                    movement.dX *= -1;
-                if(position.Y < 0)
-                    movement.dY *= -1;
-                if(position.Y > height)
-                    movement.dY *= -1;
+                    if(position.X < 0)
+                        movement.dX *= -1;
+                    if(position.X > width)
+                        movement.dX *= -1;
+                    if(position.Y < 0)
+                        movement.dY *= -1;
+                    if(position.Y > height)
+                        movement.dY *= -1;
 
-                position.X += movement.dX * delta;
-                position.Y += movement.dY * delta;
+                    position.lastX = position.X;
+                    position.lastY = position.Y;
+                    position.X += movement.dX * delta;
+                    position.Y += movement.dY * delta;
+                 }
             }
 
         }

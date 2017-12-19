@@ -32,19 +32,27 @@ public class ScreenLoading extends HexagonScreen {
         batch = new SpriteBatch();
         font = new BitmapFont();
 
-        new Thread(() -> {
-            int i=0;
-            for (HexagonScreen screen : ScreenManager.getInstance().getScreenList()) {
-                i++;
-                if (screen.getScreenType() == ScreenType.LOADING) {
-                    continue;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int i=0;
+                for (final HexagonScreen screen : ScreenManager.getInstance().getScreenList()) {
+                    i++;
+                    if (screen.getScreenType() == ScreenType.LOADING) {
+                        continue;
+                    }
+                    loadedIndividual = 0;
+                    currentlyLoading = screen.getScreenType().name();
+                    Gdx.app.postRunnable(new Runnable() {
+                        @Override
+                        public void run() {
+                            screen.create();
+                        }
+                    }); // run the creation on the libgdx thread
+                    loaded = ((float) i) / ScreenManager.getInstance().getScreenList().size();
                 }
-                loadedIndividual = 0;
-                currentlyLoading = screen.getScreenType().name();
-                Gdx.app.postRunnable(screen::create); // run the creation on the libgdx thread
-                loaded = ((float) i) / ScreenManager.getInstance().getScreenList().size();
             }
-        }).start();
+        } ).start();
 
     }
 
