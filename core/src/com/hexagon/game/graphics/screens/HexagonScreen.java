@@ -1,6 +1,7 @@
 package com.hexagon.game.graphics.screens;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.ui.WindowManager;
 import com.hexagon.game.input.InputManager;
@@ -11,16 +12,20 @@ import com.hexagon.game.input.InputManager;
 
 public abstract class HexagonScreen implements Screen {
 
-    private ScreenType screenType;
+    private ScreenType          screenType;
 
-    protected WindowManager windowManager;
+    protected WindowManager     windowManager;
 
-    protected Stage stage;
+    protected Stage             stage;
+
+    protected ShapeRenderer     shapeRenderer;
 
     public HexagonScreen(ScreenType screenType) {
         this.screenType = screenType;
         stage = new Stage();
         windowManager = new WindowManager();
+        shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setAutoShapeType(true);
     }
 
     public ScreenType getScreenType() {

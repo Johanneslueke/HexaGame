@@ -37,7 +37,7 @@ public class Window {
             return;
         }
         renderer.set(ShapeRenderer.ShapeType.Filled);
-        renderer.setColor(0f, 0f, 0.0f, 0.2f);
+        renderer.setColor(0f, 0f, 0.0f, 0.5f);
         renderer.rect(x, y, width, height);
     }
 

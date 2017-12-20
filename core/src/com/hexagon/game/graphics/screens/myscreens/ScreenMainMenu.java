@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.HexagonScreen;
@@ -22,10 +21,6 @@ public class ScreenMainMenu extends HexagonScreen {
 
     private SpriteBatch batch;
     private BitmapFont font;
-    private ShapeRenderer shapeRenderer;
-
-    //private WindowManager windowManager;
-
 
     public ScreenMainMenu() {
         super(ScreenType.MAIN_MENU);
@@ -35,12 +30,6 @@ public class ScreenMainMenu extends HexagonScreen {
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-
-        shapeRenderer = new ShapeRenderer();
-        shapeRenderer.setAutoShapeType(true);
-
-        //windowManager = new WindowManager();
-
 
         UiButton button = new UiButton("Hello World", 50, Gdx.graphics.getHeight() - 50, 100, 50);
 

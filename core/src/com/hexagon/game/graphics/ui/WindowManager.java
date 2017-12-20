@@ -76,10 +76,10 @@ public class WindowManager implements InputProcessor {
         int diff = screenY - startTouchY;
         int amount = 0;
         if (diff > 10) {
-            amount = 1;
+            amount = -1;
             startTouchY = screenY;
         } else if (diff < -10) {
-            amount = -1;
+            amount = 1;
             startTouchY = screenY;
         }
         if (lastDiff < 0 && diff >= 0) {
