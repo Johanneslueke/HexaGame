@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
-import com.hexagon.game.input.HexMultiplexer;
+import com.hexagon.game.input.InputManager;
 
 /**
  * Created by Sven on 14.12.2017.
@@ -66,8 +66,9 @@ public class ScreenLoading extends HexagonScreen {
     }
 
     public void doneLoading() {
-        HexMultiplexer.getInstance().add(this.getStage());
-        HexMultiplexer.getInstance().multiplex();
+        //HexMultiplexer.getInstance().add(this.getStage());
+        //HexMultiplexer.getInstance().multiplex();
+        InputManager.getInstance().register(this.getStage());
     }
 
     @Override

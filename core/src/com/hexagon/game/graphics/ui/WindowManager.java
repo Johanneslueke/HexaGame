@@ -54,8 +54,12 @@ public class WindowManager implements InputProcessor {
         return false;
     }
 
+
+    private int startTouchY = -1;
+
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        startTouchY = screenY;
         return false;
     }
 
@@ -64,8 +68,33 @@ public class WindowManager implements InputProcessor {
         return false;
     }
 
+
+    int lastDiff = 0;
+
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        int diff = screenY - startTouchY;
+        int amount = 0;
+        if (diff > 10) {
+            amount = 1;
+            startTouchY = screenY;
+        } else if (diff < -10) {
+            amount = -1;
+            startTouchY = screenY;
+        }
+        if (lastDiff < 0 && diff >= 0) {
+            startTouchY = screenY;
+        } else if (lastDiff > 0 && diff <= 0) {
+            startTouchY = screenY;
+        }
+        lastDiff = diff;
+        for (Window window : windowList) {
+            if (window instanceof DropdownScrollableWindow) {
+                if (((DropdownScrollableWindow) window).scroll(amount)) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -78,8 +107,9 @@ public class WindowManager implements InputProcessor {
     public boolean scrolled(int amount) {
         for (Window window : windowList) {
             if (window instanceof DropdownScrollableWindow) {
-                ((DropdownScrollableWindow) window).scroll(amount);
-                return true;
+                if (((DropdownScrollableWindow) window).scroll(amount)) {
+                    return true;
+                }
             }
         }
         return false;

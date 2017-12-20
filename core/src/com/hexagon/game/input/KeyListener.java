@@ -12,11 +12,21 @@ public class KeyListener implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        for (InputProcessor processor : InputManager.getInstance().getInputListeners()) {
+            if (processor.keyDown(keycode)) {
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
+        for (InputProcessor processor : InputManager.getInstance().getInputListeners()) {
+            if (processor.keyUp(keycode)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -30,31 +40,61 @@ public class KeyListener implements InputProcessor {
         } else if (character == '3') {
             ScreenManager.getInstance().setCurrentScreen(ScreenType.GAME);
         }
+        for (InputProcessor processor : InputManager.getInstance().getInputListeners()) {
+            if (processor.keyTyped(character)) {
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        for (InputProcessor processor : InputManager.getInstance().getInputListeners()) {
+            if (processor.touchDown(screenX, screenY, pointer, button)) {
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        for (InputProcessor processor : InputManager.getInstance().getInputListeners()) {
+            if (processor.touchUp(screenX, screenY, pointer, button)) {
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        for (InputProcessor processor : InputManager.getInstance().getInputListeners()) {
+            if (processor.touchDragged(screenX, screenY, pointer)) {
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        for (InputProcessor processor : InputManager.getInstance().getInputListeners()) {
+            if (processor.mouseMoved(screenX, screenY)) {
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public boolean scrolled(int amount) {
+        for (InputProcessor processor : InputManager.getInstance().getInputListeners()) {
+            if (processor.scrolled(amount)) {
+                return true;
+            }
+        }
         return false;
     }
 }

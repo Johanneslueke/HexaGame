@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.ui.WindowManager;
 import com.hexagon.game.input.HexMultiplexer;
+import com.hexagon.game.input.InputManager;
 import com.hexagon.game.input.KeyListener;
 
 public class Main extends Game {
@@ -14,6 +15,7 @@ public class Main extends Game {
 	public void create () {
 	    instance = this;
 
+        new InputManager();
 	    new HexMultiplexer();
 	    new WindowManager();
 		new ScreenManager();

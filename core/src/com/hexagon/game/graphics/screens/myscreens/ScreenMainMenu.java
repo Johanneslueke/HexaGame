@@ -70,11 +70,9 @@ public class ScreenMainMenu extends HexagonScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (window.isVisible()) {
-                    System.out.println("Hiding");
                     window.hide(stage);
                 } else {
                     window.show(stage);
-                    System.out.println("Showing");
                 }
             }
         });

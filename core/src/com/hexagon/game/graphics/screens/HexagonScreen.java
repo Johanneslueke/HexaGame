@@ -3,7 +3,7 @@ package com.hexagon.game.graphics.screens;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.ui.WindowManager;
-import com.hexagon.game.input.HexMultiplexer;
+import com.hexagon.game.input.InputManager;
 
 /**
  * Created by Sven on 18.12.2017.
@@ -39,15 +39,19 @@ public abstract class HexagonScreen implements Screen {
 
     @Override
     public void show() {
-        HexMultiplexer.getInstance().add(this.getStage());
-        HexMultiplexer.getInstance().add(this.windowManager);
-        HexMultiplexer.getInstance().multiplex();
+        InputManager.getInstance().register(this.getStage());
+        InputManager.getInstance().register(this.windowManager);
+        //HexMultiplexer.getInstance().add(this.getStage());
+        //HexMultiplexer.getInstance().add(this.windowManager);
+        //HexMultiplexer.getInstance().multiplex();
     }
 
     @Override
     public void hide() {
-        HexMultiplexer.getInstance().remove(this.getStage());
-        HexMultiplexer.getInstance().remove(this.windowManager);
-        HexMultiplexer.getInstance().multiplex();
+        //HexMultiplexer.getInstance().remove(this.getStage());
+        //HexMultiplexer.getInstance().remove(this.windowManager);
+        //HexMultiplexer.getInstance().multiplex();
+        InputManager.getInstance().unregister(this.getStage());
+        InputManager.getInstance().unregister(this.windowManager);
     }
 }

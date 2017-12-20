@@ -2,6 +2,7 @@ package com.hexagon.game.graphics.ui.windows;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.hexagon.game.graphics.ui.UiElement;
+import com.hexagon.game.input.InputUtil;
 
 /**
  * Created by Sven on 19.12.2017.
@@ -78,8 +79,16 @@ public class DropdownScrollableWindow extends DropdownWindow {
 
     }
 
+    public boolean scroll(int amount) {
+        float mouseX = InputUtil.mouseX();
+        float mouseY = InputUtil.mouseY();
 
-    public void scroll(int amount) {
+        if (mouseX > getX() + getWidth()
+                || mouseX < getX()
+                || mouseY < getY()
+                || mouseY > getY() + getHeight()) {
+            return false;
+        }
         amount *= -1;
         currentLine += amount;
         if (currentLine < 0) {
@@ -87,8 +96,8 @@ public class DropdownScrollableWindow extends DropdownWindow {
         } else if (currentLine > maxLines - displayAmount) {
             currentLine = maxLines - displayAmount;
         }
-        System.out.println("Scrolled " + amount + " -> " + currentLine);
         orderAllNeatly(this.columns, currentLine, currentLine + this.displayAmount);
+        return true;
     }
 
     @Override
