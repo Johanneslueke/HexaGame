@@ -47,9 +47,8 @@ public class DemoScreen extends HexagonScreen {
     public void create() {
         render = new ShapeRenderer();
         Logic = new Engine();
+
         Logic.getSystemManager().addSystem(new SystemMessageDelivery(Logic.getEntityManager()));
-        Logic.getSystemManager().addSystem(new HexaSystemCollision());
-        Logic.getSystemManager().addSystem(new HexaSystemMovment(300,400));
 
         LogicThread = new Thread(new Runnable() {
             @Override
@@ -83,96 +82,12 @@ public class DemoScreen extends HexagonScreen {
 
 
 
-        id = Logic.getEntityManager().getEntityContext().size();
-
-        ComponentMailbox msg = null;
-        if (id > 0)
-            msg = (ComponentMailbox) Logic.getEntityManager().retrieveComponent(id, StdComponents.MESSAGE);
-        if (msg != null && !msg.Inbox.isEmpty())
-            msg.Inbox.poll().InvokeCallback();
-
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            Random rn = new Random();
-            id = Logic.getEntityManager().createEntity(
-                    new ComponentPosition(rn.nextInt(400), rn.nextInt(300)),
-                    new ComponentMovement(1 + rn.nextInt(9), 1 + rn.nextInt(9)),
-                    new ComponentMailbox());
-
-            SystemManager.getInstance().BroadcastMessage(id);
-            java.lang.System.out.println(id);
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.R)) {
-            if (id > 0)
-                Logic.getEntityManager().removeEntity(id);
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-            ComponentMailbox.Message SpeedUp = new ComponentMailbox.Message(id, id, "", new Delegate() {
-                @Override
-                public void invoke(Object... args) {
-                    ComponentMovement speed = (ComponentMovement)Logic.getEntityManager() .retrieveComponent(id, StdComponents.MOVEMENT);
-                    if (speed.dX < 0)
-                        speed.dX -= 1.1;
-                    else
-                        speed.dX += 1.1;
-
-                    if (speed.dY < 0)
-                        speed.dY -= 1.1;
-                    else
-                        speed.dY += 1.1;
-                }
-            });
-
-            SystemManager.getInstance().BroadcastMessage(SpeedUp);
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-            ComponentMailbox.Message SpeedUp = new ComponentMailbox.Message(id, id, "", new Delegate() {
-                @Override
-                public void invoke(Object... args) {
-                    ComponentMovement speed = (ComponentMovement) Logic.getEntityManager().retrieveComponent(id, StdComponents.MOVEMENT);
-                    if (speed.dX < 0)
-                        speed.dX += 1.1;
-                    else
-                        speed.dX -= 1.1;
-
-                    if (speed.dY < 0)
-                        speed.dY += 1.1;
-                    else
-                        speed.dY -= 1.1;
-                }
-            });
-
-            SystemManager.getInstance().BroadcastMessage(SpeedUp);
-        }
-
-
-        //Logic.run();
-        ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);
-
-        List<Component> entity = Logic.getComponentManager().getComponentList().get(StdComponents.POSITION);
-
-
-        for (Component com : entity) {
-            ComponentPosition pos = (ComponentPosition) com;
-            //batch.draw(img, (int)pos.X, (int)pos.Y);
-            render.begin(ShapeRenderer.ShapeType.Line);
-
-            Random rn = new Random();
-            render.setColor(rn.nextInt(255) / 2, rn.nextInt(255), rn.nextInt(255), 1);
-            render.rect((float) pos.X, (float) pos.Y, 10, 10);
-
-            render.flush();
-            render.end();
-        }
-
 
 
         System.out.println("FPS: " + Gdx.app.getGraphics().getFramesPerSecond()
                           +" delta: " + Gdx.graphics.getRawDeltaTime() + " \t"
-                          + " Logic FPS: "+ (long)Logic.FramesPerSecond()+ " \t" + " FrameTime(ns): " + Logic.FrameTime()  + " \t"
-                          + " FrameTime(ms) " + Logic.FrameTime() / Math.pow(10,6) + "\t"
+                          + " Logic FPS: "+ (long) Engine.FramesPerSecond()+ " \t" + " FrameTime(ns): " + Engine.FrameTime()  + " \t"
+                          + " FrameTime(ms) " + Engine.FrameTime() / Math.pow(10,6) + "\t"
                           +" Entity Count: " + Logic.getEntityManager().getEntityContext().size());
 
     }
