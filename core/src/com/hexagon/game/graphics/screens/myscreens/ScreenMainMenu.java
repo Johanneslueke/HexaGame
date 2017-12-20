@@ -10,8 +10,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
-import com.hexagon.game.graphics.ui.UiButton;
+import com.hexagon.game.graphics.ui.UiImage;
+import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
+import com.hexagon.game.graphics.ui.windows.FadeWindow;
+import com.hexagon.game.graphics.ui.windows.StandardWindow;
+import com.hexagon.game.util.MenuUtil;
 
 /**
  * Created by Sven on 14.12.2017.
@@ -68,15 +72,89 @@ public class ScreenMainMenu extends HexagonScreen {
         button.addToStage(stage);
 
 
+        //MenuUtil.getInstance().createStandardMenu(this);
+        final StandardWindow standardWindow = new StandardWindow(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY(), 224, 600, stage);
 
+        FadeWindow fadeWindow = new FadeWindow(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY(), 224, 600, stage);
+        fadeWindow.show(stage);
+        fadeWindow.add(new UiImage(0, 0, 224, 600, "sidebar.png"), stage);
+
+
+
+        standardWindow.getWindowList().add(fadeWindow);
+
+        /*
+         * Subwindow 1
+         */
+        final FadeWindow subwindow = new FadeWindow(fadeWindow.getX() + fadeWindow.getWidth() + 10, fadeWindow.getY(), 800 - fadeWindow.getWidth(), 600, stage);
+        subwindow.add(new UiImage(0, 0, 558, 600, "window_small.png"), stage);
+
+        UiButton text = new UiButton("This is subwindow 1", 40, subwindow.getHeight() - 60, 100, 40);
+        subwindow.add(text, stage);
+
+        subwindow.updateElements();
+        standardWindow.getWindowList().add(subwindow);
+
+         /*
+         * Subwindow 2
+         */
+        final FadeWindow subwindow2 = new FadeWindow(fadeWindow.getX() + fadeWindow.getWidth() + 10, fadeWindow.getY(), 800 - fadeWindow.getWidth(), 600, stage);
+        subwindow2.add(new UiImage(0, 0, 558, 600, "window_small.png"), stage);
+
+        UiButton text2 = new UiButton("This is subwindow 2", 40, subwindow2.getHeight() - 60, 100, 40);
+        subwindow2.add(text2, stage);
+
+        subwindow2.updateElements();
+        standardWindow.getWindowList().add(subwindow2);
+
+        /*
+         * Sidebar Buttons
+         */
+
+        UiButton buttonSubwindow = new UiButton("Subwindow", 20, fadeWindow.getHeight() - 60, 50, 40);
+        UiButton buttonSubwindow2 = new UiButton("Subwindow 2", 20, buttonSubwindow.getY() - 50, 50, 40);
+
+        buttonSubwindow.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (subwindow.isVisible()) {
+                    standardWindow.hide(subwindow, stage);
+                } else {
+                    standardWindow.show(subwindow, stage);
+                }
+            }
+        });
+
+        buttonSubwindow2.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (subwindow2.isVisible()) {
+                    standardWindow.hide(subwindow2, stage);
+                } else {
+                    standardWindow.show(subwindow2, stage);
+                }
+            }
+        });
+
+        fadeWindow.add(buttonSubwindow, stage);
+        fadeWindow.add(buttonSubwindow2, stage);
+
+        fadeWindow.updateElements();
+
+        this.windowManager.getWindowList().add(standardWindow);
 
     }
 
     @Override
     public void render(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            windowManager.getWindowList().get(0).setX(windowManager.getWindowList().get(0).getX() + 10);
-            windowManager.getWindowList().get(0).updateElements();
+            //windowManager.getWindowList().get(0).setX(windowManager.getWindowList().get(0).getX() + 10);
+            //windowManager.getWindowList().get(0).updateElements();
+            /*if (windowManager.getWindowList().get(1).isVisible()) {
+                windowManager.getWindowList().get(1).hide(stage);
+            } else {
+                windowManager.getWindowList().get(1).show(stage);
+            }*/
         }
 
         ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);

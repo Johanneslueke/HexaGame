@@ -23,7 +23,7 @@ import com.badlogic.gdx.utils.UBJsonReader;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
-import com.hexagon.game.graphics.ui.UiButton;
+import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 import com.hexagon.game.input.InputManager;
 import com.hexagon.game.map.TileLocation;
@@ -72,7 +72,7 @@ public class ScreenGame extends HexagonScreen {
         UBJsonReader jsonReader = new UBJsonReader();
         // Create a model loader passing in our json reader
         G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
-        model = modelLoader.loadModel(Gdx.files.getFileHandle("hexagon.g3db", Files.FileType.Internal));
+        model = modelLoader.loadModel(Gdx.files.getFileHandle("desert_lvl0.g3db", Files.FileType.Internal));
 
         box = new ModelBuilder().createBox(100, 2, 100,
                 new Material(ColorAttribute.createDiffuse(0.6f, 0.6f, 0.6f, 1)),
@@ -80,8 +80,8 @@ public class ScreenGame extends HexagonScreen {
 
 
         float height = 0;
-        for (int x=0; x<100; x++) {
-            for (int y=0; y<100; y++) {
+        for (int x=0; x<10; x++) {
+            for (int y=0; y<10; y++) {
                 ModelInstance modelInstance = new ModelInstance(model);
                 TileLocation loc = HexagonUtil.getTileLocation(x, y);
                 modelInstance.transform.translate((float) loc.getX(), height, (float) loc.getY());

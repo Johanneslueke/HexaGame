@@ -47,18 +47,18 @@ public class ScreenLoading extends HexagonScreen {
                     loadedIndividual = 0;
                     currentlyLoading = screen.getScreenType().name();
 
-                    loadCount = 0;
+                    //loadCount = 0;
                     //Gdx.app.postRunnable(screen::create); // run the creation on the libgdx thread
                     Gdx.app.postRunnable(new Runnable() {
                         @Override
                         public void run() {
                             screen.create();
-                            loadCount = 1;
+                            //loadCount = 1;
                         }
                     });
-                    while (loadCount <= 0) {
+                    /*while (loadCount <= 0) {
 
-                    }
+                    }*/
                     loadedIndividual = 1;
                     loaded = ((float) i) / ScreenManager.getInstance().getScreenList().size();
                     if (i == ScreenManager.getInstance().getScreenList().size() - 1) {

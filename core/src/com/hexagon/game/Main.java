@@ -6,6 +6,7 @@ import com.hexagon.game.graphics.ui.WindowManager;
 import com.hexagon.game.input.HexMultiplexer;
 import com.hexagon.game.input.InputManager;
 import com.hexagon.game.input.KeyListener;
+import com.hexagon.game.util.MenuUtil;
 
 public class Main extends Game {
 
@@ -15,16 +16,19 @@ public class Main extends Game {
 	public void create () {
 	    instance = this;
 
+	    new MenuUtil();
         new InputManager();
+
 	    new HexMultiplexer();
+        HexMultiplexer.getInstance().add(new KeyListener());
+        HexMultiplexer.getInstance().multiplex();
+
 	    new WindowManager();
 		new ScreenManager();
 
 		// The first screen is the loading screen which will load all other screens
 		ScreenManager.getInstance().getCurrentScreen().create();
 
-        HexMultiplexer.getInstance().add(new KeyListener());
-        HexMultiplexer.getInstance().multiplex();
 
     }
 

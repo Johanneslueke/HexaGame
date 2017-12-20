@@ -78,8 +78,16 @@ public class KeyListener implements InputProcessor {
         return false;
     }
 
+    // workaround against concurrent modification exception
+    private boolean workaround = true;
+
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        System.out.println("mouse moved " + screenX + ", " + screenY);
+        if (workaround) {
+            workaround = false;
+            return false;
+        }
         for (InputProcessor processor : InputManager.getInstance().getInputListeners()) {
             if (processor.mouseMoved(screenX, screenY)) {
                 return true;

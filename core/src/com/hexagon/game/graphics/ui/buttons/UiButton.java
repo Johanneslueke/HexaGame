@@ -1,10 +1,11 @@
-package com.hexagon.game.graphics.ui;
+package com.hexagon.game.graphics.ui.buttons;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.hexagon.game.graphics.ui.UiElement;
 
 /**
  * Created by Sven on 18.12.2017.
