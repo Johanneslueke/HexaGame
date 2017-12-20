@@ -3,7 +3,7 @@ package com.hexagon.game.graphics.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.hexagon.game.Main;
-import com.hexagon.game.graphics.screens.myscreens.ScreenGame;
+import com.hexagon.game.graphics.screens.myscreens.game.ScreenGame;
 import com.hexagon.game.graphics.screens.myscreens.ScreenLoading;
 import com.hexagon.game.graphics.screens.myscreens.ScreenMainMenu;
 

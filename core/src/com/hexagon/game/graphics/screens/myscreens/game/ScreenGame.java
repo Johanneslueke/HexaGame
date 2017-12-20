@@ -1,4 +1,4 @@
-package com.hexagon.game.graphics.screens.myscreens;
+package com.hexagon.game.graphics.screens.myscreens.game;
 
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
@@ -45,9 +45,12 @@ public class ScreenGame extends HexagonScreen {
     private ModelBatch modelBatch;
     private Model model;
     private Model box;
+    private Model tree;
     private ModelInstance bigBox;
+    private ModelInstance treeInstance;
     private Environment environment;
-    private CameraInputController camController;
+    private InputGame inputGame;
+    //private CameraInputController camController;
 
     private Map<TileLocation, ModelInstance> modelInstanceMap = new HashMap<>();
 
@@ -68,16 +71,22 @@ public class ScreenGame extends HexagonScreen {
         camera.far = 300f;
         camera.update();
 
+        inputGame = new InputGame(this);
+        InputManager.getInstance().register(inputGame);
+
         // Model loader needs a binary json reader to decode
         UBJsonReader jsonReader = new UBJsonReader();
         // Create a model loader passing in our json reader
         G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
-        model = modelLoader.loadModel(Gdx.files.getFileHandle("desert_lvl0.g3db", Files.FileType.Internal));
+        model = modelLoader.loadModel(Gdx.files.getFileHandle("fucking fuckshit.g3db", Files.FileType.Internal));
 
         box = new ModelBuilder().createBox(100, 2, 100,
                 new Material(ColorAttribute.createDiffuse(0.6f, 0.6f, 0.6f, 1)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
+        tree = modelLoader.loadModel(Gdx.files.getFileHandle("tree.g3db", Files.FileType.Internal));
+        treeInstance = new ModelInstance(tree);
+        treeInstance.transform.translate((float) 0.5f, 1, (float) 0.5f);
 
         float height = 0;
         for (int x=0; x<10; x++) {
@@ -102,8 +111,8 @@ public class ScreenGame extends HexagonScreen {
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, 0f, -0.8f, -0.2f));
 
-        camController = new CameraInputController(camera);
-        InputManager.getInstance().register(camController);
+        //camController = new CameraInputController(camera);
+        //InputManager.getInstance().register(camController);
 
         UiButton button = new UiButton("Hello World", 50, Gdx.graphics.getHeight() - 50, 100, 50);
 
@@ -156,7 +165,7 @@ public class ScreenGame extends HexagonScreen {
         Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
         //Gdx.gl.glDisable(GL20.GL_BLEND); // disallow transparent drawing
 
-        camController.update();
+        //camController.update();
         modelBatch.begin(camera);
 
         for (TileLocation loc : this.modelInstanceMap.keySet()) {
@@ -164,6 +173,7 @@ public class ScreenGame extends HexagonScreen {
 
             modelBatch.render(model, environment);
         }
+        modelBatch.render(treeInstance, environment);
         modelBatch.end();
 
         batch.begin();
@@ -178,7 +188,7 @@ public class ScreenGame extends HexagonScreen {
 
         stage.draw();
 
-        System.out.println(Gdx.graphics.getFramesPerSecond() + " FPS");
+        //System.out.println(Gdx.graphics.getFramesPerSecond() + " FPS");
     }
 
     @Override
@@ -201,5 +211,9 @@ public class ScreenGame extends HexagonScreen {
         model.dispose();
         font.dispose();
         batch.dispose();
+    }
+
+    public PerspectiveCamera getCamera() {
+        return camera;
     }
 }

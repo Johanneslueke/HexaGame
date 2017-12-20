@@ -83,7 +83,6 @@ public class KeyListener implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        System.out.println("mouse moved " + screenX + ", " + screenY);
         if (workaround) {
             workaround = false;
             return false;
