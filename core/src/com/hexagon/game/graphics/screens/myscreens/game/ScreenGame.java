@@ -156,6 +156,11 @@ public class ScreenGame extends HexagonScreen {
 
                 TileLocation loc = HexagonUtil.getTileLocation(x, y);
                 modelInstance.transform.translate((float) loc.getX(), height, (float) loc.getY());
+                if (height == 0) {
+                    height = 0.05f;
+                } else {
+                    height = 0;
+                }
 
                 modelInstanceMap.put(loc, modelInstance);
             }
