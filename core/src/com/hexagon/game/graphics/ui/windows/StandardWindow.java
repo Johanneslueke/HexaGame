@@ -49,8 +49,9 @@ public class StandardWindow extends Window {
     }
 
     public void show(int index, Stage stage) {
-        for (Window window : windowList) {
-            window.hide(stage);
+        // start at 1 so we don't hide the main window
+        for (int i=1; i<windowList.size(); i++) {
+            windowList.get(i).hide(stage);
         }
         windowList.get(index).show(stage);
     }
@@ -60,8 +61,9 @@ public class StandardWindow extends Window {
     }
 
     public void show(Window w, Stage stage) {
-        for (Window window : windowList) {
-            window.hide(stage);
+        // start at 1 so we don't hide the main window
+        for (int i=1; i<windowList.size(); i++) {
+            windowList.get(i).hide(stage);
         }
         w.show(stage);
     }

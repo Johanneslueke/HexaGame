@@ -1,7 +1,6 @@
 package com.hexagon.game.graphics.screens.myscreens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,8 +9,20 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
-import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
+import com.hexagon.game.graphics.ui.windows.FadeWindow;
+import com.hexagon.game.graphics.ui.windows.StandardWindow;
+import com.hexagon.game.map.HexMap;
+import com.hexagon.game.map.MapManager;
+import com.hexagon.game.map.tiles.Biome;
+import com.hexagon.game.map.tiles.Tile;
+import com.hexagon.game.map.generator.GeneratorCallback;
+import com.hexagon.game.map.generator.MapGenerator;
+import com.hexagon.game.map.generator.TileGenerator;
+import com.hexagon.game.util.MenuUtil;
+
+import java.util.Random;
 
 /**
  * Created by Sven on 14.12.2017.
@@ -22,8 +33,10 @@ public class ScreenGenerator extends HexagonScreen {
     private SpriteBatch batch;
     private BitmapFont font;
 
+    private UiButton buttonProgress;
+
     public ScreenGenerator() {
-        super(ScreenType.MAIN_MENU);
+        super(ScreenType.GENERATOR);
     }
 
     @Override
@@ -31,59 +44,121 @@ public class ScreenGenerator extends HexagonScreen {
         batch = new SpriteBatch();
         font = new BitmapFont();
 
-        UiButton button = new UiButton("Hello World", 50, Gdx.graphics.getHeight() - 50, 100, 50);
-
-        final DropdownScrollableWindow window = new DropdownScrollableWindow(20, 0, 0, 0, 0, 0, 15);
-        windowManager.getWindowList().add(window);
-
-        for (int i=0; i<400; i++) {
-            UiButton buttonWindow = new UiButton(String.valueOf(i), 0, 0, 50, 20);
-            window.add(buttonWindow, stage);
-        }
-
-        window.orderAllNeatly(13, 0, 15);
-        window.setY(button.getY() - window.getHeight());
-        window.setX(button.getX());
-        window.updateElements();
-
-        /*UiButton buttonWindow = new UiButton("Inside Window Button", 0, 0, 100, 50);
-        buttonWindow.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("Clicked inside Window Button");
-            }
-        });
-        window.add(buttonWindow, stage);*/
-
+        final UiButton button = new UiButton("<= Back", 50, Gdx.graphics.getHeight() - 50, 100, 50);
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (window.isVisible()) {
-                    window.hide(stage);
-                } else {
-                    window.show(stage);
-                }
+                ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
             }
         });
+
         button.addToStage(stage);
 
+        /*
+         * Main Generator Window
+         */
 
+        final StandardWindow standardWindow = new StandardWindow(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY(), 800, 600, stage);
 
+        FadeWindow fadeWindow = new FadeWindow(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY(), 800, 600, stage);
+        fadeWindow.show(stage);
+        fadeWindow.add(new UiImage(0, 0, 800, 600, "window.png"), stage);
+        standardWindow.getWindowList().add(fadeWindow);
+
+        buttonProgress = new UiButton("0%", 40, fadeWindow.getHeight() - 60, 100, 40);
+
+        fadeWindow.add(buttonProgress, stage);
+
+        fadeWindow.updateElements();
+
+        this.windowManager.getWindowList().add(standardWindow);
 
     }
 
     @Override
-    public void render(float delta) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            windowManager.getWindowList().get(0).setX(windowManager.getWindowList().get(0).getX() + 10);
-            windowManager.getWindowList().get(0).updateElements();
-        }
+    public void show() {
+        super.show();
 
+        System.out.println("Showing generator");
+
+        /*
+         * Start creating the world
+         */
+
+        final MapGenerator mapGenerator = new MapGenerator(30, 20, 2);
+
+        // Tile Generators
+
+        TileGenerator biomeGenerator = new TileGenerator() {
+            @Override
+            public Tile generate(Tile tile, int x, int y, Random random) {
+                if (x == 0 && y == 0) {
+                    return tile;
+                }
+                Biome biomeLast;
+                if (y > 0) {
+                    biomeLast = mapGenerator.getGeneratedTiles()[x][y - 1].getBiome();
+                } else {
+                    biomeLast = mapGenerator.getGeneratedTiles()[x - 1][y].getBiome();
+                }
+                if (random.nextInt(100) < 20) {
+                    tile.setBiome(biomeLast);
+                } else {
+                    int r = random.nextInt(2);
+                    if (r == 0) {
+                        tile.setBiome(Biome.DESERT);
+                    } else if (r == 1) {
+                        tile.setBiome(Biome.PLAINS);
+                    }
+                }
+                return tile;
+            }
+        };
+
+        // Add the ice generator last! Highest Priority == called last
+        TileGenerator iceGenerator = new TileGenerator() {
+            @Override
+            public Tile generate(Tile tile, int x, int y, Random random) {
+                if (y > 5 && y < mapGenerator.getSizeY() - 5) {
+                    // don't modify
+                    return tile;
+                }
+                if (y <= 2 || y >= mapGenerator.getSizeY() - 2) {
+                    tile.setBiome(Biome.ICE);
+                } else {
+                    tile.setBiome(Biome.WATER);
+                }
+                return tile;
+            }
+        };
+
+        mapGenerator.getTileGeneratorList().add(biomeGenerator);
+        mapGenerator.getTileGeneratorList().add(iceGenerator); // Add the ice generator last! Highest Priority == called last
+
+
+        mapGenerator.setCallback(new GeneratorCallback() {
+            @Override
+            public void generatorFinished() {
+                buttonProgress.getTextButton().setText("100%");
+
+                final HexMap hexMap = new HexMap(mapGenerator.getSizeX(), mapGenerator.getSizeY());
+                hexMap.setTiles(mapGenerator.getGeneratedTiles());
+
+                MapManager.getInstance().setCurrentHexMap(hexMap);
+
+                ScreenManager.getInstance().setCurrentScreen(ScreenType.GAME);
+            }
+        });
+
+        mapGenerator.startGenerating();
+    }
+
+    @Override
+    public void render(float delta) {
         ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);
         batch.begin();
         font.draw(batch, "Generator", 20, 20);
         batch.end();
-
 
         Gdx.gl.glEnable(GL20.GL_BLEND); // allows transparent drawing
         shapeRenderer.begin();

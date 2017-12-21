@@ -8,6 +8,7 @@ public enum ScreenType {
 
     LOADING,
     MAIN_MENU,
-    GAME
+    GAME,
+    GENERATOR
 
 }

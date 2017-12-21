@@ -23,9 +23,6 @@ public class ScreenLoading extends HexagonScreen {
 
     private float brightness = -1;
 
-    private int loadCount = 100;
-
-
     public ScreenLoading() {
         super(ScreenType.LOADING);
     }
@@ -47,23 +44,23 @@ public class ScreenLoading extends HexagonScreen {
                     loadedIndividual = 0;
                     currentlyLoading = screen.getScreenType().name();
 
-                    //loadCount = 0;
-                    //Gdx.app.postRunnable(screen::create); // run the creation on the libgdx thread
                     Gdx.app.postRunnable(new Runnable() {
                         @Override
                         public void run() {
                             screen.create();
-                            //loadCount = 1;
                         }
                     });
-                    /*while (loadCount <= 0) {
-
-                    }*/
                     loadedIndividual = 1;
                     loaded = ((float) i) / ScreenManager.getInstance().getScreenList().size();
                     if (i == ScreenManager.getInstance().getScreenList().size() - 1) {
                         // done loading
-                        doneLoading();
+                        // run this on the render thread to prevent two threads accessing the same list at the same time
+                        Gdx.app.postRunnable(new Runnable() {
+                            @Override
+                            public void run() {
+                                doneLoading();
+                            }
+                        });
                     }
                 }
             }
@@ -75,14 +72,12 @@ public class ScreenLoading extends HexagonScreen {
     }
 
     public void doneLoading() {
-        //HexMultiplexer.getInstance().add(this.getStage());
-        //HexMultiplexer.getInstance().multiplex();
         InputManager.getInstance().register(this.getStage());
+        ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
     }
 
     @Override
     public void render(float delta) {
-        loadCount = 1;
         if (brightness <= 1) {
             if (brightness < 0) {
                 brightness = 0;

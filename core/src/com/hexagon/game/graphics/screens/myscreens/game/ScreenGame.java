@@ -26,7 +26,11 @@ import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 import com.hexagon.game.input.InputManager;
+import com.hexagon.game.map.HexMap;
+import com.hexagon.game.map.MapManager;
 import com.hexagon.game.map.TileLocation;
+import com.hexagon.game.map.tiles.Biome;
+import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.util.HexagonUtil;
 
 import java.util.HashMap;
@@ -43,14 +47,17 @@ public class ScreenGame extends HexagonScreen {
 
     private PerspectiveCamera camera;
     private ModelBatch modelBatch;
-    private Model model;
+    private Map<Biome, Model> biomeModelMap = new HashMap<>();
     private Model box;
     private Model tree;
     private ModelInstance bigBox;
     private ModelInstance treeInstance;
     private Environment environment;
     private InputGame inputGame;
-    //private CameraInputController camController;
+    private CameraInputController camController;
+
+    private HexMap currentMap;
+    private float mapLength;
 
     private Map<TileLocation, ModelInstance> modelInstanceMap = new HashMap<>();
 
@@ -65,8 +72,8 @@ public class ScreenGame extends HexagonScreen {
 
         modelBatch = new ModelBatch();
         camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.position.set(10f, 10f, 10f);
-        camera.lookAt(0,0,0);
+        camera.position.set(0, 6f, 0);
+        camera.lookAt(0, 0, -3f);
         camera.near = 1f;
         camera.far = 300f;
         camera.update();
@@ -78,7 +85,11 @@ public class ScreenGame extends HexagonScreen {
         UBJsonReader jsonReader = new UBJsonReader();
         // Create a model loader passing in our json reader
         G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
-        model = modelLoader.loadModel(Gdx.files.getFileHandle("fucking fuckshit.g3db", Files.FileType.Internal));
+
+        // Load all Biome Models
+        for (Biome biome : Biome.values()) {
+            biomeModelMap.put(biome, modelLoader.loadModel(Gdx.files.getFileHandle(biome.getModel(), Files.FileType.Internal)));
+        }
 
         box = new ModelBuilder().createBox(100, 2, 100,
                 new Material(ColorAttribute.createDiffuse(0.6f, 0.6f, 0.6f, 1)),
@@ -88,30 +99,13 @@ public class ScreenGame extends HexagonScreen {
         treeInstance = new ModelInstance(tree);
         treeInstance.transform.translate((float) 0.5f, 1, (float) 0.5f);
 
-        float height = 0;
-        for (int x=0; x<10; x++) {
-            for (int y=0; y<10; y++) {
-                ModelInstance modelInstance = new ModelInstance(model);
-                TileLocation loc = HexagonUtil.getTileLocation(x, y);
-                modelInstance.transform.translate((float) loc.getX(), height, (float) loc.getY());
-                modelInstance.transform.rotate(0, 1, 0, 90);
 
-                modelInstanceMap.put(loc, modelInstance);
-            }
-            System.out.println(x);
-        }
-
-
-        TileLocation loc = HexagonUtil.getTileLocation(0, 0);
-        bigBox = new ModelInstance(box);
-        bigBox.transform.translate((float) loc.getX() + 50, height, (float) loc.getY() + 50);
-        bigBox.transform.rotate(0, 1, 0, 90);
 
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, 0f, -0.8f, -0.2f));
 
-        //camController = new CameraInputController(camera);
+        camController = new CameraInputController(camera);
         //InputManager.getInstance().register(camController);
 
         UiButton button = new UiButton("Hello World", 50, Gdx.graphics.getHeight() - 50, 100, 50);
@@ -143,22 +137,40 @@ public class ScreenGame extends HexagonScreen {
     }
 
     @Override
-    public void render(float delta) {
-        /*if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            for (TileLocation loc : this.modelInstanceMap.keySet()) {
-                ModelInstance model = this.modelInstanceMap.get(loc);
-                if (model.model.equals(this.box)) {
-                    model = new ModelInstance(this.model);
-                    model.transform.translate((float) loc.getX(), 0, (float) loc.getY());
-                    model.transform.rotate(0, 1, 0, 90);
-                    modelInstanceMap.put(loc, model);
-                } else {
-                    model = new ModelInstance(this.box);
-                    model.transform.translate((float) loc.getX(), 0, (float) loc.getY());
-                    modelInstanceMap.put(loc, model);
-                }
+    public void show() {
+        super.show();
+
+        HexMap hexMap = MapManager.getInstance().getCurrentHexMap();
+        if (hexMap == null) {
+            return;
+        }
+        currentMap = hexMap;
+        mapLength = (float) (currentMap.getTiles().length*0.75f * HexagonUtil.hexagon.getSideLengthX()*2f);
+
+        float height = 0;
+        for (int x=0; x<hexMap.getTiles().length; x++) {
+            for (int y=0; y<hexMap.getTiles()[x].length; y++) {
+                Tile tile = hexMap.getTiles()[x][y];
+
+                ModelInstance modelInstance = new ModelInstance(biomeModelMap.get(tile.getBiome()));
+
+                TileLocation loc = HexagonUtil.getTileLocation(x, y);
+                modelInstance.transform.translate((float) loc.getX(), height, (float) loc.getY());
+
+                modelInstanceMap.put(loc, modelInstance);
             }
-        }*/
+        }
+
+
+        TileLocation loc = HexagonUtil.getTileLocation(0, 0);
+        bigBox = new ModelInstance(box);
+        bigBox.transform.translate((float) loc.getX() + 50, height, (float) loc.getY() + 50);
+        bigBox.transform.rotate(0, 1, 0, 90);
+    }
+
+    @Override
+    public void render(float delta) {
+        inputGame.update(delta);
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);
@@ -168,16 +180,55 @@ public class ScreenGame extends HexagonScreen {
         //camController.update();
         modelBatch.begin(camera);
 
-        for (TileLocation loc : this.modelInstanceMap.keySet()) {
-            ModelInstance model = this.modelInstanceMap.get(loc);
+        if (camera.position.x < 10) {
+            if (camera.position.x < 0) {
+                camera.position.x = mapLength;
+            } else {
+                for (TileLocation loc : this.modelInstanceMap.keySet()) {
+                    if (loc.getX() < mapLength - 10) {
+                        continue;
+                    }
+                    ModelInstance model = this.modelInstanceMap.get(loc);
 
+                    model.transform.translate(-mapLength, 0, 0);
+                    modelBatch.render(model, environment);
+                    model.transform.translate(mapLength, 0, 0);
+                }
+            }
+        } else if (camera.position.x >= mapLength - 10) {
+            if (camera.position.x >= mapLength) {
+                camera.position.x = 0;
+            } else {
+                for (TileLocation loc : this.modelInstanceMap.keySet()) {
+                    if (loc.getX() > 10) {
+                        continue;
+                    }
+                    ModelInstance model = this.modelInstanceMap.get(loc);
+
+                    model.transform.translate(mapLength, 0, 0);
+                    modelBatch.render(model, environment);
+                    model.transform.translate(-mapLength, 0, 0);
+                }
+            }
+        }
+
+        for (TileLocation loc : this.modelInstanceMap.keySet()) {
+            if (loc.getX() < camera.position.x - 10
+                    || loc.getX() > camera.position.x + 10) {
+                continue;
+            }
+            if (loc.getY() > camera.position.z + 2) {
+                continue;
+            }
+            ModelInstance model = this.modelInstanceMap.get(loc);
             modelBatch.render(model, environment);
         }
+
         modelBatch.render(treeInstance, environment);
         modelBatch.end();
 
         batch.begin();
-        font.draw(batch, "Awesome game", 20, 20);
+        font.draw(batch, "Awesome game " + Gdx.graphics.getFramesPerSecond(), 20, 20);
         batch.end();
 
 
@@ -187,8 +238,6 @@ public class ScreenGame extends HexagonScreen {
         shapeRenderer.end();
 
         stage.draw();
-
-        //System.out.println(Gdx.graphics.getFramesPerSecond() + " FPS");
     }
 
     @Override
@@ -208,7 +257,9 @@ public class ScreenGame extends HexagonScreen {
     @Override
     public void dispose() {
         modelBatch.dispose();
-        model.dispose();
+        for (Model model : biomeModelMap.values()) {
+            model.dispose();
+        }
         font.dispose();
         batch.dispose();
     }

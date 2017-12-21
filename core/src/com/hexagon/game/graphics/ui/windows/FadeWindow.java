@@ -65,7 +65,6 @@ public class FadeWindow extends Window {
     @Override
     public void show(Stage stage) {
         super.show(stage);
-        System.out.println("show");
     }
 
     @Override

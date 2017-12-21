@@ -6,6 +6,7 @@ import com.hexagon.game.graphics.ui.WindowManager;
 import com.hexagon.game.input.HexMultiplexer;
 import com.hexagon.game.input.InputManager;
 import com.hexagon.game.input.KeyListener;
+import com.hexagon.game.map.MapManager;
 import com.hexagon.game.util.MenuUtil;
 
 public class Main extends Game {
@@ -18,7 +19,7 @@ public class Main extends Game {
 
 	    new MenuUtil();
         new InputManager();
-
+        new MapManager();
 	    new HexMultiplexer();
         HexMultiplexer.getInstance().add(new KeyListener());
         HexMultiplexer.getInstance().multiplex();

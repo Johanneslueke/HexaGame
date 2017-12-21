@@ -84,16 +84,26 @@ public class ScreenMainMenu extends HexagonScreen {
         standardWindow.getWindowList().add(fadeWindow);
 
         /*
-         * Subwindow 1
+         * Subwindow 1: Play
          */
-        final FadeWindow subwindow = new FadeWindow(fadeWindow.getX() + fadeWindow.getWidth() + 10, fadeWindow.getY(), 800 - fadeWindow.getWidth(), 600, stage);
-        subwindow.add(new UiImage(0, 0, 558, 600, "window_small.png"), stage);
+        final FadeWindow subwindowPlay = new FadeWindow(fadeWindow.getX() + fadeWindow.getWidth() + 10, fadeWindow.getY(), 800 - fadeWindow.getWidth(), 600, stage);
+        subwindowPlay.add(new UiImage(0, 0, 558, 600, "window_small.png"), stage);
 
-        UiButton text = new UiButton("This is subwindow 1", 40, subwindow.getHeight() - 60, 100, 40);
-        subwindow.add(text, stage);
+        UiButton playText = new UiButton("Play", 40, subwindowPlay.getHeight() - 60, 100, 40);
+        UiButton playGenerate = new UiButton("Generate World", 40, subwindowPlay.getHeight() - 100, 100, 40);
 
-        subwindow.updateElements();
-        standardWindow.getWindowList().add(subwindow);
+        playGenerate.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ScreenManager.getInstance().setCurrentScreen(ScreenType.GENERATOR);
+            }
+        });
+
+        subwindowPlay.add(playText, stage);
+        subwindowPlay.add(playGenerate, stage);
+
+        subwindowPlay.updateElements();
+        standardWindow.getWindowList().add(subwindowPlay);
 
          /*
          * Subwindow 2
@@ -111,16 +121,16 @@ public class ScreenMainMenu extends HexagonScreen {
          * Sidebar Buttons
          */
 
-        UiButton buttonSubwindow = new UiButton("Subwindow", 20, fadeWindow.getHeight() - 60, 50, 40);
-        UiButton buttonSubwindow2 = new UiButton("Subwindow 2", 20, buttonSubwindow.getY() - 50, 50, 40);
+        UiButton buttonPlay = new UiButton("Play", 20, fadeWindow.getHeight() - 60, 50, 40);
+        UiButton buttonSubwindow2 = new UiButton("Subwindow 2", 20, buttonPlay.getY() - 50, 50, 40);
 
-        buttonSubwindow.addListener(new ChangeListener() {
+        buttonPlay.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (subwindow.isVisible()) {
-                    standardWindow.hide(subwindow, stage);
+                if (subwindowPlay.isVisible()) {
+                    standardWindow.hide(subwindowPlay, stage);
                 } else {
-                    standardWindow.show(subwindow, stage);
+                    standardWindow.show(subwindowPlay, stage);
                 }
             }
         });
@@ -136,7 +146,7 @@ public class ScreenMainMenu extends HexagonScreen {
             }
         });
 
-        fadeWindow.add(buttonSubwindow, stage);
+        fadeWindow.add(buttonPlay, stage);
         fadeWindow.add(buttonSubwindow2, stage);
 
         fadeWindow.updateElements();

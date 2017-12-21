@@ -1,6 +1,6 @@
 package com.hexagon.game.map.generator;
 
-import com.hexagon.game.map.Tile;
+import com.hexagon.game.map.tiles.Tile;
 
 import java.util.Random;
 
