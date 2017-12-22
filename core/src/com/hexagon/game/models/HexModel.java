@@ -18,9 +18,9 @@ public class HexModel {
         modelInstance.transform.translate(x, y, z);
     }
 
-    public void setLocation(float x, float y, float z) {
+    /*public void setLocation(float x, float y, float z) {
         modelInstance.transform.set(new float[]{x, y, z});
-    }
+    }*/
 
     public ModelInstance getModelInstance() {
         return modelInstance;

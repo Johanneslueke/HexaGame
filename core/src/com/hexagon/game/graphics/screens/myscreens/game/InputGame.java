@@ -4,6 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.utils.Array;
+import com.hexagon.game.models.HexModel;
+import com.hexagon.game.util.HexagonUtil;
 
 /**
  * Created by Sven on 20.12.2017.
@@ -16,10 +25,17 @@ public class InputGame implements InputProcessor {
     private float velX = 0;
     private float velY = 0;
 
+    private HexModel selected;
+    private Material selectionMaterial;
+    private Array<Material> originalMaterial;
+
     private ScreenGame screenGame;
 
     public InputGame(ScreenGame screenGame) {
         this.screenGame = screenGame;
+
+        selectionMaterial = new Material();
+        selectionMaterial.set(ColorAttribute.createDiffuse(Color.ORANGE));
     }
 
     @Override
@@ -49,6 +65,12 @@ public class InputGame implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        HexModel model = getObject(screenX, screenY);
+        if (model == null) {
+            System.out.println("null");
+        } else {
+            select(model);
+        }
         return false;
     }
 
@@ -64,7 +86,11 @@ public class InputGame implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        return false;
+        HexModel model = getObject(screenX, screenY);
+        if (model != null) {
+            select(model);
+        }
+        return true;
     }
 
     @Override
@@ -96,5 +122,52 @@ public class InputGame implements InputProcessor {
                 velX = 0;
             }
         }
+    }
+
+    private Vector3 position = new Vector3();
+
+    public HexModel getObject(float x, float y) {
+        Ray ray = screenGame.getCamera().getPickRay(x, y);
+
+        for (HexModel model : screenGame.getModelInstanceMap().values()) {
+            model.getModelInstance().transform.getTranslation(position);
+            position.add((float) (HexagonUtil.hexagon.getSideLengthX()/2), 0.5f, (float) (HexagonUtil.hexagon.getSideLengthY()/2));
+            //float distance = ray.origin.dst2(position);
+            if (Intersector.intersectRaySphere(ray, position, 1.0f, null)) {
+                return model;
+            }
+        }
+
+        return null;
+    }
+
+    public void select(HexModel model) {
+        if (selected != null) {
+            //selected.getModelInstance().materials.clear();
+            //selected.getModelInstance().materials.addAll(originalMaterial);
+            for (int i=0; i<selected.getModelInstance().materials.size; i++) {
+                if (i >= originalMaterial.size) {
+                    break;
+                }
+                selected.getModelInstance().materials.get(i).clear();
+                selected.getModelInstance().materials.get(i).set(originalMaterial.get(i));
+            }
+            /*Array<Material> newMaterials = new Array<>();
+            for (Material m : selected.getModelInstance().materials) {
+                if (!m.equals(selectionMaterial)) {
+                    newMaterials.add(m);
+                }
+            }
+            selected.getModelInstance().materials.clear();
+            selected.getModelInstance().materials.addAll(newMaterials);*/
+        }
+        //Material material = model.getModelInstance().materials.get(0);
+        //originalMaterial = material;
+        //material.clear();
+        originalMaterial = model.getModelInstance().materials;
+        Material material = model.getModelInstance().materials.get(0);
+        //material.clear();
+        material.set(selectionMaterial);
+        selected = model;
     }
 }

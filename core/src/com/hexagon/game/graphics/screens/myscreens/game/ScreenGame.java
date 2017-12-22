@@ -31,6 +31,7 @@ import com.hexagon.game.map.MapManager;
 import com.hexagon.game.map.TileLocation;
 import com.hexagon.game.map.tiles.Biome;
 import com.hexagon.game.map.tiles.Tile;
+import com.hexagon.game.models.HexModel;
 import com.hexagon.game.util.HexagonUtil;
 
 import java.util.HashMap;
@@ -59,7 +60,7 @@ public class ScreenGame extends HexagonScreen {
     private HexMap currentMap;
     private float mapLength;
 
-    private Map<TileLocation, ModelInstance> modelInstanceMap = new HashMap<>();
+    private Map<TileLocation, HexModel> modelInstanceMap = new HashMap<>();
 
     public ScreenGame() {
         super(ScreenType.GAME);
@@ -152,17 +153,17 @@ public class ScreenGame extends HexagonScreen {
             for (int y=0; y<hexMap.getTiles()[x].length; y++) {
                 Tile tile = hexMap.getTiles()[x][y];
 
-                ModelInstance modelInstance = new ModelInstance(biomeModelMap.get(tile.getBiome()));
+                HexModel hexModel = new HexModel(new ModelInstance(biomeModelMap.get(tile.getBiome())));
 
                 TileLocation loc = HexagonUtil.getTileLocation(x, y);
-                modelInstance.transform.translate((float) loc.getX(), height, (float) loc.getY());
+                hexModel.move((float) loc.getX(), height, (float) loc.getY());
                 if (height == 0) {
                     height = 0.05f;
                 } else {
                     height = 0;
                 }
 
-                modelInstanceMap.put(loc, modelInstance);
+                modelInstanceMap.put(loc, hexModel);
             }
         }
 
@@ -193,11 +194,11 @@ public class ScreenGame extends HexagonScreen {
                     if (loc.getX() < mapLength - 10) {
                         continue;
                     }
-                    ModelInstance model = this.modelInstanceMap.get(loc);
+                    HexModel model = this.modelInstanceMap.get(loc);
 
-                    model.transform.translate(-mapLength, 0, 0);
-                    modelBatch.render(model, environment);
-                    model.transform.translate(mapLength, 0, 0);
+                    model.move(-mapLength, 0, 0);
+                    modelBatch.render(model.getModelInstance(), environment);
+                    model.move(mapLength, 0, 0);
                 }
             }
         } else if (camera.position.x >= mapLength - 10) {
@@ -208,25 +209,25 @@ public class ScreenGame extends HexagonScreen {
                     if (loc.getX() > 10) {
                         continue;
                     }
-                    ModelInstance model = this.modelInstanceMap.get(loc);
+                    HexModel model = this.modelInstanceMap.get(loc);
 
-                    model.transform.translate(mapLength, 0, 0);
-                    modelBatch.render(model, environment);
-                    model.transform.translate(-mapLength, 0, 0);
+                    model.move(mapLength, 0, 0);
+                    modelBatch.render(model.getModelInstance(), environment);
+                    model.move(-mapLength, 0, 0);
                 }
             }
         }
 
         for (TileLocation loc : this.modelInstanceMap.keySet()) {
-            if (loc.getX() < camera.position.x - 10
-                    || loc.getX() > camera.position.x + 10) {
+            if (loc.getX() < camera.position.x - 20
+                    || loc.getX() > camera.position.x + 20) {
                 continue;
             }
-            if (loc.getY() > camera.position.z + 2) {
+            if (loc.getY() > camera.position.z + 5) {
                 continue;
             }
-            ModelInstance model = this.modelInstanceMap.get(loc);
-            modelBatch.render(model, environment);
+            HexModel model = this.modelInstanceMap.get(loc);
+            modelBatch.render(model.getModelInstance(), environment);
         }
 
         modelBatch.render(treeInstance, environment);
@@ -271,5 +272,9 @@ public class ScreenGame extends HexagonScreen {
 
     public PerspectiveCamera getCamera() {
         return camera;
+    }
+
+    public Map<TileLocation, HexModel> getModelInstanceMap() {
+        return modelInstanceMap;
     }
 }
