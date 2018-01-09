@@ -32,6 +32,7 @@ import com.hexagon.game.map.TileLocation;
 import com.hexagon.game.map.tiles.Biome;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
+import com.hexagon.game.models.HexTile;
 import com.hexagon.game.util.HexagonUtil;
 
 import java.util.HashMap;
@@ -60,7 +61,7 @@ public class ScreenGame extends HexagonScreen {
     private HexMap currentMap;
     private float mapLength;
 
-    private Map<TileLocation, HexModel> modelInstanceMap = new HashMap<>();
+    private Map<TileLocation, HexTile> modelInstanceMap = new HashMap<>();
 
     public ScreenGame() {
         super(ScreenType.GAME);
@@ -96,7 +97,7 @@ public class ScreenGame extends HexagonScreen {
                 new Material(ColorAttribute.createDiffuse(0.6f, 0.6f, 0.6f, 1)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
-        tree = modelLoader.loadModel(Gdx.files.getFileHandle("tree.g3db", Files.FileType.Internal));
+        tree = modelLoader.loadModel(Gdx.files.getFileHandle("tree2.g3db", Files.FileType.Internal));
         treeInstance = new ModelInstance(tree);
         treeInstance.transform.translate((float) 0.5f, 1, (float) 0.5f);
 
@@ -163,7 +164,27 @@ public class ScreenGame extends HexagonScreen {
                     height = 0;
                 }
 
-                modelInstanceMap.put(loc, hexModel);
+                HexTile hexTile = new HexTile(hexModel);
+                if (tile.getBiome() == Biome.PLAINS) {
+                    if (Math.random() < 0.4) {
+                        HexModel model1 = new HexModel(new ModelInstance(tree));
+                        model1.move((float) loc.getX() + 0.3f, height + 1.0f, (float) loc.getY() + 0.2f);
+                        hexTile.getStructures().add(model1);
+                    }
+                    if (Math.random() < 0.4) {
+                        HexModel model2 = new HexModel(new ModelInstance(tree));
+                        model2.move((float) loc.getX() - 0.3f, height + 1.0f, (float) loc.getY());
+                        hexTile.getStructures().add(model2);
+
+                    }
+                    if (Math.random() < 0.4) {
+                        HexModel model3 = new HexModel(new ModelInstance(tree));
+                        model3.move((float) loc.getX() + 0.3f, height + 1.0f, (float) loc.getY() - 0.3f);
+                        hexTile.getStructures().add(model3);
+                    }
+                }
+
+                modelInstanceMap.put(loc, hexTile);
             }
         }
 
@@ -194,7 +215,7 @@ public class ScreenGame extends HexagonScreen {
                     if (loc.getX() < mapLength - 10) {
                         continue;
                     }
-                    HexModel model = this.modelInstanceMap.get(loc);
+                    HexModel model = this.modelInstanceMap.get(loc).getModel();
 
                     model.move(-mapLength, 0, 0);
                     modelBatch.render(model.getModelInstance(), environment);
@@ -209,7 +230,7 @@ public class ScreenGame extends HexagonScreen {
                     if (loc.getX() > 10) {
                         continue;
                     }
-                    HexModel model = this.modelInstanceMap.get(loc);
+                    HexModel model = this.modelInstanceMap.get(loc).getModel();
 
                     model.move(mapLength, 0, 0);
                     modelBatch.render(model.getModelInstance(), environment);
@@ -226,8 +247,14 @@ public class ScreenGame extends HexagonScreen {
             if (loc.getY() > camera.position.z + 5) {
                 continue;
             }
-            HexModel model = this.modelInstanceMap.get(loc);
+            HexTile tile = this.modelInstanceMap.get(loc);
+            HexModel model = tile.getModel();
             modelBatch.render(model.getModelInstance(), environment);
+            if (tile.getStructures().size() > 0) {
+                for (HexModel structure : tile.getStructures()) {
+                    modelBatch.render(structure.getModelInstance());
+                }
+            }
         }
 
         modelBatch.render(treeInstance, environment);
@@ -274,7 +301,7 @@ public class ScreenGame extends HexagonScreen {
         return camera;
     }
 
-    public Map<TileLocation, HexModel> getModelInstanceMap() {
+    public Map<TileLocation, HexTile> getModelInstanceMap() {
         return modelInstanceMap;
     }
 }

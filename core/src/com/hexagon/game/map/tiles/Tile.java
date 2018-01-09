@@ -3,6 +3,9 @@ package com.hexagon.game.map.tiles;
 import com.hexagon.game.map.TileLocation;
 
 /**
+ *
+ * Stores data for a tile
+ *
  * Created by Sven on 08.12.2017.
  */
 

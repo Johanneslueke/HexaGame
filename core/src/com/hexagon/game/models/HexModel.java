@@ -10,6 +10,7 @@ public class HexModel {
 
     private ModelInstance modelInstance;
 
+
     public HexModel(ModelInstance modelInstance) {
         this.modelInstance = modelInstance;
     }

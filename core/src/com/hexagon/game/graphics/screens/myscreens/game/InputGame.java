@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.hexagon.game.models.HexModel;
-import com.hexagon.game.util.HexagonUtil;
+import com.hexagon.game.models.HexTile;
 
 /**
  * Created by Sven on 20.12.2017.
@@ -129,9 +129,10 @@ public class InputGame implements InputProcessor {
     public HexModel getObject(float x, float y) {
         Ray ray = screenGame.getCamera().getPickRay(x, y);
 
-        for (HexModel model : screenGame.getModelInstanceMap().values()) {
+        for (HexTile tile : screenGame.getModelInstanceMap().values()) {
+            final HexModel model = tile.getModel();
             model.getModelInstance().transform.getTranslation(position);
-            position.add((float) (HexagonUtil.hexagon.getSideLengthX()/2), 0.5f, (float) (HexagonUtil.hexagon.getSideLengthY()/2));
+            //position.add((float) (HexagonUtil.hexagon.getSideLengthX()/2), 0.5f, (float) (HexagonUtil.hexagon.getSideLengthY()/2));
             //float distance = ray.origin.dst2(position);
             if (Intersector.intersectRaySphere(ray, position, 1.0f, null)) {
                 return model;
