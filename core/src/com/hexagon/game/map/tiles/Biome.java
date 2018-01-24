@@ -6,10 +6,14 @@ package com.hexagon.game.map.tiles;
 
 public enum Biome {
 
-    PLAINS("plains.g3db"),
+    /*PLAINS("plains.g3db"),
     DESERT("desert_lvl0.g3db"),
     ICE("ice.g3db"),
-    WATER("water.g3db"),
+    WATER("water.g3db"),*/
+    PLAINS("flat_hexagon.g3db"),
+    DESERT("flat_hexagon.g3db"),
+    ICE("flat_hexagon.g3db"),
+    WATER("flat_hexagon.g3db")
     ;
 
     private String model;
