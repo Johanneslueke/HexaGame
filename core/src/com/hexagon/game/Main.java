@@ -19,6 +19,8 @@ public class Main extends Game {
 		ScreenManager.getInstance().getCurrentScreen().create();
 
         Gdx.input.setInputProcessor(new KeyListener());
+
+
     }
 
 	@Override
