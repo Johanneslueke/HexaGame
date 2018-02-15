@@ -42,6 +42,9 @@ public class HexVector {
 
     public HexVector normalize() {
         double len = length();
+        if (len == 0) {
+            return this;
+        }
         x /= len;
         y /= len;
         return this;

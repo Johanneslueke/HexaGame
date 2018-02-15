@@ -228,6 +228,8 @@ public class InputGame implements InputProcessor {
         return null;
     }
 
+
+    private boolean flanke = false;
     public void select(HexModel model) {
         /*if (selected != null) {
             //selected.getModelInstance().materials.clear();
@@ -263,13 +265,27 @@ public class InputGame implements InputProcessor {
         Point p = HexagonUtil.getArrayLocation(new TileLocation(Math.abs(pos.x) + 1, pos.z + 1));
         //System.out.println((Math.abs(pos.x) + 1) + ", " + (pos.z + 1) + " ---> " + p.getX() + ", " + p.getY());
 
-        if (Gdx.input.isTouched()) {
+        if (Gdx.input.isTouched() && !flanke) {
             AStar aStar = new AStar();
-            List<AStar.ATile> path = aStar.start(new AStar.ATile(p.getX(), p.getY(), null), new AStar.ATile(10, 10, null), screenGame.getCurrentMap());
+            int x;
+            int y;
+            do {
+                x = (int) (Math.random() * 30);
+                y = (int) (Math.random() * 30);
+            } while (Math.abs(p.getX() - x) <= 5 && Math.abs(p.getY() - y) <= 5);
+            List<AStar.ATile> path = aStar.start(new AStar.ATile(p.getX(), p.getY(), null), new AStar.ATile(x, y, null), screenGame.getCurrentMap());
             /*if (screenGame.car != null) {
                 screenGame.car.getInstance().model.dispose();
             }*/
-            screenGame.cars.add(new Car(path));
+            screenGame.cars.add(new Car(path, 0));
+            screenGame.cars.add(new Car(path, 1));
+            screenGame.cars.add(new Car(path, 2));
+            screenGame.cars.add(new Car(path, 3));
+            screenGame.cars.add(new Car(path, 4));
+            flanke = true;
+        }
+        if (!Gdx.input.isTouched()) {
+            flanke = false;
         }
     }
 }

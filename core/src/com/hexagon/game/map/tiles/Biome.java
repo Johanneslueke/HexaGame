@@ -10,8 +10,8 @@ public enum Biome {
     DESERT("desert_lvl0.g3db"),
     ICE("ice.g3db"),
     WATER("water.g3db"),*/
-    PLAINS("models/grassland.g3db"),
-    DESERT("models/desert.g3db"),
+    PLAINS("grassland.g3db"),
+    DESERT("desert.g3db"),
     ICE("models/iceland.g3db"),
     WATER("flat_hexagon.g3db")
     ;
