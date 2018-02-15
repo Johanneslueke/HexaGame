@@ -2,11 +2,20 @@ package com.hexagon.game.graphics.screens.myscreens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.hexagon.game.Logic.Components.HexaComponentOwner;
+import com.hexagon.game.Logic.Components.HexaComponentTest;
+import com.hexagon.game.Logic.HexaComponents;
+import com.hexagon.game.Logic.Systems.HexaSystemGeneralConsumer;
+import com.hexagon.game.Logic.Systems.HexaSystemGeneralProducer;
 import com.hexagon.game.Logic.Systems.InterfaceSystem;
 import com.hexagon.game.Logic.Systems.TestSystem;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenType;
 
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Observable;
 
 import de.svdragster.logica.components.Component;
 import de.svdragster.logica.components.ComponentConsumer;
@@ -14,11 +23,20 @@ import de.svdragster.logica.components.ComponentConverter;
 import de.svdragster.logica.components.ComponentExchanger;
 import de.svdragster.logica.components.ComponentMailbox;
 import de.svdragster.logica.components.ComponentProducer;
+import de.svdragster.logica.components.ComponentProduct;
 import de.svdragster.logica.components.ComponentResource;
 import de.svdragster.logica.components.meta.ComponentType;
+import de.svdragster.logica.components.meta.StdComponents;
 import de.svdragster.logica.manager.Entity.Entity;
+import de.svdragster.logica.manager.Entity.EntityManager;
+import de.svdragster.logica.system.System;
 import de.svdragster.logica.system.SystemMessageDelivery;
+import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
+import de.svdragster.logica.util.SystemNotifications.NotificationRemoveEntity;
 import de.svdragster.logica.world.Engine;
+
+import static de.svdragster.logica.manager.Entity.EntityManager.createRawEntity;
+import static java.lang.System.out;
 
 /**
  * Created by Johannes Lüke on 18.12.2017.
@@ -26,7 +44,7 @@ import de.svdragster.logica.world.Engine;
 
 public class DemoScreen extends HexagonScreen {
 
-    private static Engine Logic;
+    private static final Engine Logic = Engine.getInstance();
 
     private Thread LogicThread;
     private ShapeRenderer render;
@@ -35,73 +53,81 @@ public class DemoScreen extends HexagonScreen {
 
     public DemoScreen() {
         super(ScreenType.DEMOJoJo);
-        if(Logic == null)
-            Logic = new Engine();
     }
 
     @Override
     public void create() {
         render = new ShapeRenderer();
-        if(Logic == null)
-            Logic = new Engine();
 
-        Logic.getSystemManager().addSystem(new SystemMessageDelivery());
-        Logic.getSystemManager().addSystem(new InterfaceSystem());
-        Logic.getSystemManager().addSystem(new TestSystem());
+        Logic.getSystemManager().addSystem(
+                new SystemMessageDelivery(),
+                new InterfaceSystem(),
+                new HexaSystemGeneralProducer(Logic),
+                new HexaSystemGeneralConsumer(Logic)
+                );
 
-        id = Logic.getEntityManager().createID(new ComponentMailbox());
 
-        /*
-        //Mine
-        Logic.getEntityManager().createID(
-                new ComponentResource(1,2,3,4),
-                new ComponentProducer(),
-                new ComponentPosition(TileNummer),
-                new ComponentOwner(EntityOfPlayer),
-                new ComponentMeta("EisenMine")
-        );
+        /**
+         * EXAMPLE CODE READY FOR REMOVAL
+         */
 
-        //Schmiede
-        Logic.getEntityManager().createID(
-                new ComponentResource(1,2,3,4),
-                new ComponentConverter(ComponentType X, ComponentType Y, ....),
-                new ComponentPosition(TileNummer),
-                new ComponentOwner(EntityOfPlayer),
-                new ComponentMeta("EisenMine")
-        );
+        /**
+         * Producer
+         */
+            Entity id1 = createRawEntity(
+                    new ComponentProducer(),
+                    new ComponentResource(0.01f,3.0f,1.0f, Arrays.asList(
+                            (Component) (new ComponentProduct())
+                    )));
+            id1.associateComponent(new HexaComponentOwner("Alpha",id1));
 
-        //Trader
-        Logic.getEntityManager().createID(
-                new ComponentExchanger(EntityFromPlayer, EntityToPlayer),
-                new ComponentDeal(ComponentType From, ComponentType To) ,
-                new ComponentPosition(TileNummer),
-                new ComponentOwner(EntityOfPlayer)
-        );
 
-        //City
-        Logic.getEntityManager().createID(
-                new ComponentConsumer(),
-                new ComponentPopulus(),
-                new ComponentStorage(),
-                new ComponentModifier(x,y),
-                new ComponentModifier(z,w),
-                new ComponentPosition(TileNummer),
-                new ComponentOwner(EntityOfPlayer)
-        );
+            Logic.getEntityManager().getEntityContext().add(id1);
+            Logic.BroadcastMessage(new NotificationNewEntity(id1));
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+        /**
+         * Producer
+         */
+            Entity id2 = createRawEntity(
+                    new ComponentProducer(),
+                    new ComponentResource(0.01f,3.5f,1.0f, Arrays.asList(
+                            (Component) (new HexaComponentTest())
+                    )));
+            id2.associateComponent(new HexaComponentOwner("Beta",id2));
 
-        Logic.BroadcastMessage(new Message{
 
-            Entity getEntity(){
+            Logic.getEntityManager().getEntityContext().add(id2);
+            Logic.BroadcastMessage(new NotificationNewEntity(id2));
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+        /**
+         * Consumer
+         */
+            Entity id3 = createRawEntity(
+                    new ComponentConsumer(),
+                    new ComponentResource(2.01f,1.0f,100.0f,  Arrays.asList(
+                            (Component) (new ComponentProduct())
+                    ))
+            );
+            id3.associateComponent(new HexaComponentOwner("Alpha",id1));
 
-                return Logic.getEntityManager().createID(
-                        new ComponentExchanger(EntityFromPlayer, EntityToPlayer),
-                        new ComponentDeal(ComponentType From, ComponentType To),
-                )
-            }
+            Logic.getEntityManager().getEntityContext().add(id3);
+            Logic.BroadcastMessage(new NotificationNewEntity(id3));
 
-        });
+        /**
+         * Consumer
+         */
+            Entity id4 = createRawEntity(
+                    new ComponentConsumer(),
+                    new ComponentResource(1.01f,1.0f,2.0f,  Arrays.asList(
+                            (Component) (new HexaComponentTest())
+                    ))
+            );
+            id4.associateComponent(new HexaComponentOwner("Beta",id2));
 
-*/
+            Logic.getEntityManager().getEntityContext().add(id4);
+            Logic.BroadcastMessage(new NotificationNewEntity(id4));
+
+
     }
 
     @Override
@@ -112,14 +138,7 @@ public class DemoScreen extends HexagonScreen {
     @Override
     public void render(float delta) {
         try {
-           // if(!LogicThread.isAlive())
 
-            Entity t = Logic.getEntityManager().createID(new ComponentMailbox());
-
-
-            Logic.getSystemManager().BroadcastMessage(new ComponentMailbox.Message(id,t,"test",null));
-
-            //LogicThread.interrupt();
         }catch (IllegalThreadStateException e){
             //e.printStackTrace();
         }
@@ -128,11 +147,11 @@ public class DemoScreen extends HexagonScreen {
 
 
 
-        /*System.out.println("FPS: " + Gdx.app.getGraphics().getFramesPerSecond()
+       out.println("FPS: " + Gdx.app.getGraphics().getFramesPerSecond()
                           +" delta: " + Gdx.graphics.getRawDeltaTime() + " \t"
                           + " Logic FPS: "+ (long) Engine.FramesPerSecond()+ " \t" + " FrameTime(ns): " + Engine.FrameTime()  + " \t"
                           + " FrameTime(ms) " + Engine.FrameTime() / Math.pow(10,6) + "\t"
-                          +" Entity Count: " + Logic.getEntityManager().getEntityContext().size());*/
+                          +" Entity Count: " + Logic.getEntityManager().getEntityContext().size());
 
     }
 

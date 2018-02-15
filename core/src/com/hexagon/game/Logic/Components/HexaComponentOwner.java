@@ -13,8 +13,19 @@ import de.svdragster.logica.manager.Entity.Entity;
 
 public class HexaComponentOwner extends Component {
 
-    HexaComponentOwner(Entity e){
+    public String   name;
+
+    public HexaComponentOwner(String Name,Entity e){
         super.setType(HexaComponents.OWNER);
         super.setBackAssociation(e);
+
+        name = Name;
+    }
+
+    public void setOwner(Entity e){ setBackAssociation(e);}
+
+    @Override
+    public String toString(){
+        return "Owner( " + name + " ) => " + super.getID();
     }
 }

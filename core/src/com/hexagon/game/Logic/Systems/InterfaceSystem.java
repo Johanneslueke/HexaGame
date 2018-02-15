@@ -6,6 +6,7 @@ import de.svdragster.logica.components.Component;
 import de.svdragster.logica.components.meta.ComponentType;
 import de.svdragster.logica.system.System;
 import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
+import de.svdragster.logica.util.SystemNotifications.NotificationRemoveEntity;
 import de.svdragster.logica.world.Engine;
 
 /**
@@ -40,6 +41,13 @@ public class InterfaceSystem extends System {
         {
             NotificationNewEntity n = (NotificationNewEntity)o;
 
+
+        }
+        if(o instanceof NotificationRemoveEntity)
+        {
+            NotificationRemoveEntity e = (NotificationRemoveEntity) o;
+            if(e.getEntity().hasAnyAssociations())
+                Engine.getInstance().getEntityManager().getEntityContext().remove(e.getEntity());
 
         }
         if(o instanceof Message){
