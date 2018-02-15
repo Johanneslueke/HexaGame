@@ -48,6 +48,8 @@ public class ScreenLoading extends HexagonScreen {
                         @Override
                         public void run() {
                             screen.create();
+
+                            render(0.01f);
                         }
                     });
                     loadedIndividual = 1;

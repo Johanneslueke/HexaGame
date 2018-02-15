@@ -27,6 +27,9 @@ public class DropdownScrollableWindow extends DropdownWindow {
     }
 
     public void orderAllNeatly(int columns, int startLine, int stopLine) {
+        if (elementList.isEmpty()) {
+            return;
+        }
         float maxX = 0;
         UiElement lastElement = null;
         int counter = 0;

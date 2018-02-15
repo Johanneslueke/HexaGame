@@ -14,9 +14,13 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -24,6 +28,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.UBJsonReader;
+import com.hexagon.game.Main;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
@@ -33,13 +38,18 @@ import com.hexagon.game.input.InputManager;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.MapManager;
 import com.hexagon.game.map.TileLocation;
+import com.hexagon.game.map.detail.Car;
+import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.tiles.Biome;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
-import com.hexagon.game.models.HexTile;
+import com.hexagon.game.models.RenderTile;
+import com.hexagon.game.models.Text3D;
 import com.hexagon.game.util.HexagonUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,29 +58,48 @@ import java.util.Map;
 
 public class ScreenGame extends HexagonScreen {
 
-    private SpriteBatch batch;
-    private BitmapFont font;
+    private SpriteBatch     batch;
+    private SpriteBatch     batchCamera;
+    private BitmapFont      font;
+    private DecalBatch      decalBatch;
 
-    private PerspectiveCamera camera;
-    private ModelBatch modelBatch;
-    private Map<Biome, Model> biomeModelMap = new HashMap<>();
-    private Model box;
-    private Model tree;
-    private ModelInstance bigBox;
-    private ModelInstance treeInstance;
-    private Environment environment;
-    private InputGame inputGame;
-    private CameraInputController camController;
+    private PerspectiveCamera       camera;
+    private ModelBatch              modelBatch;
+    private Map<Biome, Model>       biomeModelMap = new HashMap<>();
+    private Model                   box;
+    private Model                   tree;
+    private ModelInstance           bigBox;
+    private ModelInstance           treeInstance;
 
-    private DirectionalShadowLight shadowLight;
-    private ModelBatch shadowBatch;
+    private Text3D                  text3D;
+    private Decal                   text3Ddecal;
 
-    private HexMap currentMap;
-    private float mapLength;
+    private Environment             environment;
+    private InputGame               inputGame;
+    private CameraInputController   camController;
 
-    private Map<TileLocation, HexTile> modelInstanceMap = new HashMap<>();
+    private DirectionalShadowLight  shadowLight;
+    private ModelBatch              shadowBatch;
 
-    private ModelCache modelCache;
+    private HexMap      currentMap;
+    private float       mapLength;
+
+    //Map<RenderTile>                  modelInstanceMap = new HashMap<>();
+    List<ModelInstance>             debugModels = new ArrayList<>();
+    ModelInstance                   selectedInstance;
+    private boolean                 selectedGrow = true;
+    AnimationController             animationController;
+    Model                           selectedModel;
+
+    Model                           truckModel;
+    Model                           streetModel;
+
+    private ModelCache      modelCache;
+
+
+    // Testing
+    List<Car> cars = new ArrayList<>();
+    /////
 
     public ScreenGame() {
         super(ScreenType.GAME);
@@ -80,6 +109,8 @@ public class ScreenGame extends HexagonScreen {
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
+
+        batchCamera = new SpriteBatch();
 
         modelBatch = new ModelBatch();
         camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -112,7 +143,11 @@ public class ScreenGame extends HexagonScreen {
         treeInstance = new ModelInstance(tree);
         treeInstance.transform.translate((float) 0.5f, 1, (float) 0.5f);
 
+        selectedModel = modelLoader.loadModel(Gdx.files.getFileHandle("selection_all_anim.g3db", Files.FileType.Internal));
 
+        truckModel = modelLoader.loadModel(Gdx.files.getFileHandle("truck.g3db", Files.FileType.Internal));
+
+        streetModel = modelLoader.loadModel(Gdx.files.getFileHandle("street.g3db", Files.FileType.Internal));
 
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 1f));
@@ -130,10 +165,10 @@ public class ScreenGame extends HexagonScreen {
         final DropdownScrollableWindow window = new DropdownScrollableWindow(20, 0, 0, 0, 0, 0, 15);
         windowManager.getWindowList().add(window);
 
-        for (int i=0; i<400; i++) {
+        /*for (int i=0; i<400; i++) {
             UiButton buttonWindow = new UiButton(String.valueOf(i), 0, 0, 50, 20);
             window.add(buttonWindow, stage);
-        }
+        }*/
 
         window.orderAllNeatly(13, 0, 15);
         window.setY(button.getY() - window.getHeight());
@@ -151,6 +186,13 @@ public class ScreenGame extends HexagonScreen {
             }
         });
         button.addToStage(stage);
+
+        decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
+
+        text3D = new Text3D();
+        text3Ddecal = text3D.create();
+        text3Ddecal.setPosition(0.5f, 2f, 0.5f);
+        text3Ddecal.setRotation(0, -50, 0);
     }
 
     @Override
@@ -183,31 +225,39 @@ public class ScreenGame extends HexagonScreen {
                     height = 0;
                 }*/
 
-                HexTile hexTile = new HexTile(hexModel);
-                if (tile.getBiome() == Biome.PLAINS) {
-                    if (Math.random() < 0.4) {
+                RenderTile renderTile = new RenderTile(loc, hexModel);
+                if (tile.getStructure() != null
+                        && tile.getStructure().getType() == StructureType.FOREST) {
+                    boolean placedTrees = false;
+                    if (Math.random() < 0.6) {
                         HexModel model1 = new HexModel(new ModelInstance(tree));
                         model1.move((float) loc.getX() + 0.3f, height, (float) loc.getY() + 0.2f);
-                        hexTile.getStructures().add(model1);
+                        renderTile.getStructures().add(model1);
+                        placedTrees = true;
                     }
-                    if (Math.random() < 0.4) {
+                    if (Math.random() < 0.6) {
                         HexModel model2 = new HexModel(new ModelInstance(tree));
                         model2.move((float) loc.getX() - 0.3f, height, (float) loc.getY());
-                        hexTile.getStructures().add(model2);
+                        renderTile.getStructures().add(model2);
+                        placedTrees = true;
 
                     }
-                    if (Math.random() < 0.4) {
+                    if (Math.random() < 0.6) {
                         HexModel model3 = new HexModel(new ModelInstance(tree));
                         model3.move((float) loc.getX() + 0.3f, height, (float) loc.getY() - 0.3f);
-                        hexTile.getStructures().add(model3);
+                        renderTile.getStructures().add(model3);
+                        placedTrees = true;
+                    }
+                    if (!placedTrees) {
+                        tile.setStructure(null);
                     }
                 }
 
-                modelInstanceMap.put(loc, hexTile);
-                modelCache.add(hexModel.getModelInstance());
-                for (HexModel structure : hexTile.getStructures()) {
+                tile.setRenderTile(renderTile);
+                /*modelCache.add(hexModel.getModelInstance());
+                for (HexModel structure : renderTile.getStructures()) {
                     modelCache.add(structure.getModelInstance());
-                }
+                }*/
             }
         }
 
@@ -219,11 +269,11 @@ public class ScreenGame extends HexagonScreen {
 
         modelCache.end();
 
+        selectedInstance = new ModelInstance(selectedModel);
+
+
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
-
-    long a = 0;
-    long b = 0;
 
     @Override
     public void render(float delta) {
@@ -232,13 +282,27 @@ public class ScreenGame extends HexagonScreen {
         ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);
         Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
         //Gdx.gl.glDisable(GL20.GL_BLEND); // disallow transparent drawing
+        Gdx.gl.glEnable(GL20.GL_BLEND);
 
         //camController.update();
 
         shadowLight.begin(Vector3.Zero, camera.direction);
         shadowBatch.begin(shadowLight.getCamera());
 
-        shadowBatch.render(modelCache);
+        for (int x=0; x<currentMap.getTiles().length; x++) {
+            for (int y=0; y<currentMap.getTiles()[x].length; y++) {
+                RenderTile tile = currentMap.getTiles()[x][y].getRenderTile();
+                HexModel model = tile.getModel();
+                shadowBatch.render(model.getModelInstance());
+                if (tile.getStructures().size() > 0) {
+                    for (HexModel structure : tile.getStructures()) {
+                        shadowBatch.render(structure.getModelInstance(), environment);
+                    }
+                }
+            }
+        }
+
+        shadowBatch.render(selectedInstance, environment);
 
         shadowBatch.end();
         shadowLight.end();
@@ -280,41 +344,89 @@ public class ScreenGame extends HexagonScreen {
         }*/
 
 
-        /*a = System.nanoTime();
-        for (TileLocation loc : this.modelInstanceMap.keySet()) {
-            if (loc.getX() < camera.position.x - 20
-                    || loc.getX() > camera.position.x + 20) {
-                continue;
-            }
-            if (loc.getY() > camera.position.z + 5) {
-                continue;
-            }
-            HexTile tile = this.modelInstanceMap.get(loc);
-            HexModel model = tile.getModel();
-            //modelBatch.render(model.getModelInstance(), environment);
-            if (tile.getStructures().size() > 0) {
-                for (HexModel structure : tile.getStructures()) {
-                    modelBatch.render(structure.getModelInstance());
+        for (int x=0; x<currentMap.getTiles().length; x++) {
+            for (int y=0; y<currentMap.getTiles()[x].length; y++) {
+                RenderTile tile = currentMap.getTiles()[x][y].getRenderTile();
+                if (tile.getTileLocation().getX() < camera.position.x - 21
+                        || tile.getTileLocation().getX() > camera.position.x + 21) {
+                    continue;
+                }
+                if (tile.getTileLocation().getY() > camera.position.z + 5
+                        || tile.getTileLocation().getY() < camera.position.z - 18) {
+                    continue;
+                }
+                HexModel model = tile.getModel();
+                modelBatch.render(model.getModelInstance(), environment);
+                if (tile.getStructures().size() > 0) {
+                    for (HexModel structure : tile.getStructures()) {
+                        modelBatch.render(structure.getModelInstance(), environment);
+                    }
                 }
             }
         }
-        a = System.nanoTime() - a;*/
+
+        for (ModelInstance debug : debugModels) {
+            modelBatch.render(debug, environment);
+        }
+
+        for (int i=0; i<cars.size(); i++) {
+            Car car = cars.get(i);
+            car.update(delta);
+            modelBatch.render(car.getInstance(), environment);
+        }
+
+        if (selectedInstance.transform.getScaleX() > 1.05f) {
+            selectedGrow = false;
+        } else if (selectedInstance.transform.getScaleX() < 0.95f) {
+            selectedGrow = true;
+        }
+        if (selectedGrow) {
+            float x = selectedInstance.transform.getScaleX();
+            float z = selectedInstance.transform.getScaleZ();
+            selectedInstance.transform.setToTranslationAndScaling(
+                selectedInstance.transform.getTranslation(Vector3.Zero),
+                new Vector3(x + 0.0025f, 1, z + 0.0025f)
+            );
+        } else {
+            float x = selectedInstance.transform.getScaleX();
+            float z = selectedInstance.transform.getScaleZ();
+            selectedInstance.transform.setToTranslationAndScaling(
+                    selectedInstance.transform.getTranslation(Vector3.Zero),
+                    new Vector3(x - 0.0025f, 1, z - 0.0025f)
+            );
+        }
+        modelBatch.render(selectedInstance, environment);
 
 
 
         //modelBatch.render(treeInstance, environment);
-        a = System.currentTimeMillis();
+       /* a = System.currentTimeMillis();
         modelBatch.render(modelCache, environment);
         a = System.currentTimeMillis() - a;
-        b = System.currentTimeMillis();
+        b = System.currentTimeMillis();*/
         modelBatch.end();
-        b = System.currentTimeMillis() - b;
 
+        decalBatch.add(text3Ddecal);
+        decalBatch.flush();
+
+        //b = System.currentTimeMillis() - b;
+
+        //System.out.println(.toString());
+
+        /*Matrix4 tmpM = new Matrix4(new Vector3(10, 0, 0),
+                new Quaternion(new Vector3(0, 1, 0), 90),
+                new Vector3(100, 10, 10));
+
+        batchCamera.setProjectionMatrix(tmpM);
+        batchCamera.begin();
+        font.draw(batchCamera, "Hiiiiiiiiiiiiiiiiiiii", 0, 0);
+        batchCamera.end();*/
 
         batch.begin();
-        font.draw(batch, "Awesome game " + Gdx.graphics.getFramesPerSecond(), 20, 20);
+        font.draw(batch, "Awesome game " + Gdx.graphics.getFramesPerSecond() + ", " + selectedInstance.transform.getScaleX(), 20, 20);
         batch.end();
 
+        Main.engine.run(delta);
 
         /*Gdx.gl.glEnable(GL20.GL_BLEND); // allows transparent drawing
         shapeRenderer.begin();
@@ -347,6 +459,15 @@ public class ScreenGame extends HexagonScreen {
         font.dispose();
         batch.dispose();
         modelCache.dispose();
+        selectedModel.dispose();
+        text3D.dispose();
+        decalBatch.dispose();
+
+        if (cars.size() > 0) {
+            cars.get(0).getInstance().model.dispose();
+        }
+
+        streetModel.dispose();
     }
 
     public PerspectiveCamera getCamera() {
@@ -357,7 +478,23 @@ public class ScreenGame extends HexagonScreen {
         return shadowLight;
     }
 
-    public Map<TileLocation, HexTile> getModelInstanceMap() {
+    /*public Map<TileLocation, RenderTile> getModelInstanceMap() {
         return modelInstanceMap;
+    }*/
+
+    public List<ModelInstance> getDebugModels() {
+        return debugModels;
+    }
+
+    public HexMap getCurrentMap() {
+        return currentMap;
+    }
+
+    public Model getTruckModel() {
+        return truckModel;
+    }
+
+    public Model getStreetModel() {
+        return streetModel;
     }
 }

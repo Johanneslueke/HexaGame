@@ -15,6 +15,8 @@ import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.graphics.ui.windows.StandardWindow;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.MapManager;
+import com.hexagon.game.map.structures.Structure;
+import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.tiles.Biome;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.map.generator.GeneratorCallback;
@@ -132,8 +134,23 @@ public class ScreenGenerator extends HexagonScreen {
             }
         };
 
+        TileGenerator treeGenerator = new TileGenerator() {
+            @Override
+            public Tile generate(Tile tile, int x, int y, Random random) {
+                if (tile.getBiome() != Biome.PLAINS) {
+                    // Trees can only spawn on grassland
+                    return tile;
+                }
+                if (random.nextInt(100) <= 80) {
+                    tile.setStructure(new Structure(StructureType.FOREST));
+                }
+                return tile;
+            }
+        };
+
         mapGenerator.getTileGeneratorList().add(biomeGenerator);
         mapGenerator.getTileGeneratorList().add(iceGenerator); // Add the ice generator last! Highest Priority == called last
+        mapGenerator.getTileGeneratorList().add(treeGenerator);
 
 
         mapGenerator.setCallback(new GeneratorCallback() {

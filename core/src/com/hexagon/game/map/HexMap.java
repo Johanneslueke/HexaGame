@@ -24,4 +24,13 @@ public class HexMap {
     public Tile[][] getTiles() {
         return tiles;
     }
+
+    public Tile getTileAt(int x, int y) {
+        if (x < 0 || y < 0
+                || x > tiles.length
+                || y > tiles[x].length) {
+            return null;
+        }
+        return tiles[x][y];
+    }
 }

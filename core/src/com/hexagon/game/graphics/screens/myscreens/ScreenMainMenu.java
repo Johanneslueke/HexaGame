@@ -40,10 +40,10 @@ public class ScreenMainMenu extends HexagonScreen {
         final DropdownScrollableWindow window = new DropdownScrollableWindow(20, 0, 0, 0, 0, 0, 15);
         windowManager.getWindowList().add(window);
 
-        for (int i=0; i<400; i++) {
+        /*for (int i=0; i<400; i++) {
             UiButton buttonWindow = new UiButton(String.valueOf(i), 0, 0, 50, 20);
             window.add(buttonWindow, stage);
-        }
+        }*/
 
         window.orderAllNeatly(13, 0, 15);
         window.setY(button.getY() - window.getHeight());
@@ -90,7 +90,7 @@ public class ScreenMainMenu extends HexagonScreen {
         subwindowPlay.add(new UiImage(0, 0, 558, 600, "window_small.png"), stage);
 
         UiButton playText = new UiButton("Play", 40, subwindowPlay.getHeight() - 60, 100, 40);
-        UiButton playGenerate = new UiButton("Generate World", 40, subwindowPlay.getHeight() - 100, 100, 40);
+        UiButton playGenerate = new UiButton("Generate World", 40, subwindowPlay.getHeight() - 100, 200, 40);
 
         playGenerate.addListener(new ChangeListener() {
             @Override

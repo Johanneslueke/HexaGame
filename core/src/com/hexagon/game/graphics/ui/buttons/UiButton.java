@@ -1,6 +1,8 @@
 package com.hexagon.game.graphics.ui.buttons;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -20,15 +22,26 @@ public class UiButton extends UiElement {
 
     public UiButton(String text, float x, float y, float width, float height) {
         super(x, y, width, height);
-        font = new BitmapFont();
-        skin = new Skin();
+        //font = new BitmapFont();
+        //font.getData().setScale(1.1f);
+        //skin = new Skin();
+
+
+        long start = System.currentTimeMillis();
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Piximisa.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 32;
+        BitmapFont font12 = generator.generateFont(parameter);
+        generator.dispose(); // don't forget to dispose to avoid memory leaks!
 
         textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = font;
+        textButtonStyle.font = font12;
+
 
         textButton = new TextButton(text, textButtonStyle);
         textButton.setX(x);
         textButton.setY(y);
+        System.out.println("Time: " + (System.currentTimeMillis() - start));
     }
 
     public UiButton(String text, float x, float y, float width, float height, Stage stage, ChangeListener changeListener) {
