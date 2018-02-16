@@ -87,7 +87,7 @@ public class ScreenGenerator extends HexagonScreen {
          * Start creating the world
          */
 
-        final MapGenerator mapGenerator = new MapGenerator(30, 20, 2);
+        final MapGenerator mapGenerator = new MapGenerator(100, 20, 2);
 
         // Tile Generators
 
@@ -103,7 +103,9 @@ public class ScreenGenerator extends HexagonScreen {
                 } else {
                     biomeLast = mapGenerator.getGeneratedTiles()[x - 1][y].getBiome();
                 }
-                if (random.nextInt(100) < 20) {
+                if (biomeLast != Biome.WATER
+                        && biomeLast != Biome.ICE
+                        && random.nextInt(100) < 20) {
                     tile.setBiome(biomeLast);
                 } else {
                     int r = random.nextInt(2);
@@ -121,15 +123,21 @@ public class ScreenGenerator extends HexagonScreen {
         TileGenerator iceGenerator = new TileGenerator() {
             @Override
             public Tile generate(Tile tile, int x, int y, Random random) {
-                if (y > 5 && y < mapGenerator.getSizeY() - 5) {
-                    // don't modify
-                    return tile;
+                if (x < 5 || x > mapGenerator.getSizeX() - 5) {
+                    if (x <= 2 || x >= mapGenerator.getSizeX() - 2) {
+                        tile.setBiome(Biome.ICE);
+                    } else if (tile.getBiome() != Biome.ICE){
+                        tile.setBiome(Biome.WATER);
+                    }
                 }
-                if (y <= 2 || y >= mapGenerator.getSizeY() - 2) {
-                    tile.setBiome(Biome.ICE);
-                } else {
-                    tile.setBiome(Biome.WATER);
+                if (y < 5 || y > mapGenerator.getSizeY() - 5) {
+                    if (y <= 2 || y >= mapGenerator.getSizeY() - 2) {
+                        tile.setBiome(Biome.ICE);
+                    } else if (tile.getBiome() != Biome.ICE){
+                        tile.setBiome(Biome.WATER);
+                    }
                 }
+
                 return tile;
             }
         };
