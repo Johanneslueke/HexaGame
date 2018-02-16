@@ -6,7 +6,7 @@ package com.hexagon.game.map.structures;
 
 public class StructureResource extends Structure {
 
-    
+
 
     public StructureResource() {
         super(StructureType.RESOURCE);
