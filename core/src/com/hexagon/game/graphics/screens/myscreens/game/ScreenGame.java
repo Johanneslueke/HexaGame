@@ -4,9 +4,11 @@ import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
@@ -20,6 +22,7 @@ import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.UBJsonReader;
 import com.hexagon.game.Main;
@@ -33,6 +36,7 @@ import com.hexagon.game.map.Point;
 import com.hexagon.game.map.TileLocation;
 import com.hexagon.game.map.detail.Car;
 import com.hexagon.game.map.structures.StructureType;
+import com.hexagon.game.map.structures.resources.StructureResource;
 import com.hexagon.game.map.tiles.Biome;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
@@ -134,6 +138,9 @@ public class ScreenGame extends HexagonScreen {
         shadowBatch = new ModelBatch(new DepthShaderProvider());
         modelBatch = new ModelBatch();
 
+        box = new ModelBuilder().createBox(0.3f, 0.3f, 0.3f,
+                new Material(ColorAttribute.createDiffuse(0.7f, 0.3f, 0.3f, 1)),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
     }
 
@@ -146,7 +153,7 @@ public class ScreenGame extends HexagonScreen {
         environment.shadowMap = shadowLight;
     }
 
-    private void createMap( HexMap hexMap){
+    private void createMap(HexMap hexMap){
         if (hexMap == null) {
             return;
         }
@@ -172,30 +179,38 @@ public class ScreenGame extends HexagonScreen {
                 }*/
 
                 RenderTile renderTile = new RenderTile(loc, hexModel);
-                if (tile.getStructure() != null
-                        && tile.getStructure().getType() == StructureType.FOREST) {
-                    boolean placedTrees = false;
-                    if (Math.random() < 0.6) {
-                        HexModel model1 = new HexModel(new ModelInstance(tree));
-                        model1.move((float) loc.getX() + 0.3f, height, (float) loc.getY() + 0.2f);
-                        renderTile.getStructures().add(model1);
-                        placedTrees = true;
-                    }
-                    if (Math.random() < 0.6) {
-                        HexModel model2 = new HexModel(new ModelInstance(tree));
-                        model2.move((float) loc.getX() - 0.3f, height, (float) loc.getY());
-                        renderTile.getStructures().add(model2);
-                        placedTrees = true;
+                if (tile.getStructure() != null) {
+                    StructureType type = tile.getStructure().getType();
+                    if (type == StructureType.FOREST) {
+                        boolean placedTrees = false;
+                        if (Math.random() < 0.6) {
+                            HexModel model1 = new HexModel(new ModelInstance(tree));
+                            model1.move((float) loc.getX() + 0.3f, height, (float) loc.getY() + 0.2f);
+                            renderTile.getStructures().add(model1);
+                            placedTrees = true;
+                        }
+                        if (Math.random() < 0.6) {
+                            HexModel model2 = new HexModel(new ModelInstance(tree));
+                            model2.move((float) loc.getX() - 0.3f, height, (float) loc.getY());
+                            renderTile.getStructures().add(model2);
+                            placedTrees = true;
 
-                    }
-                    if (Math.random() < 0.6) {
-                        HexModel model3 = new HexModel(new ModelInstance(tree));
-                        model3.move((float) loc.getX() + 0.3f, height, (float) loc.getY() - 0.3f);
-                        renderTile.getStructures().add(model3);
-                        placedTrees = true;
-                    }
-                    if (!placedTrees) {
-                        tile.setStructure(null);
+                        }
+                        if (Math.random() < 0.6) {
+                            HexModel model3 = new HexModel(new ModelInstance(tree));
+                            model3.move((float) loc.getX() + 0.3f, height, (float) loc.getY() - 0.3f);
+                            renderTile.getStructures().add(model3);
+                            placedTrees = true;
+                        }
+                        if (!placedTrees) {
+                            tile.setStructure(null);
+                        }
+
+                    } else if (type == StructureType.RESOURCE) {
+                        StructureResource resource = (StructureResource) tile.getStructure();
+                        HexModel model = new HexModel(new ModelInstance(box));
+                        model.move((float) loc.getX() + 0.5f, 0.3f, (float) loc.getY() - 0.5f);
+                        renderTile.getStructures().add(model);
                     }
                 }
 
