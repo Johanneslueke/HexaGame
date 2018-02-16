@@ -26,6 +26,8 @@ import com.hexagon.game.map.generator.MapGenerator;
 import com.hexagon.game.map.generator.TileGenerator;
 import com.hexagon.game.util.MenuUtil;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -41,6 +43,104 @@ public class ScreenGenerator extends HexagonScreen {
 
     public ScreenGenerator() {
         super(ScreenType.GENERATOR);
+    }
+
+    private List<TileGenerator> setupBiomeGenerator(final MapGenerator mapGenerator){
+
+        // Tile Generators
+        List<TileGenerator> res = new ArrayList<>();
+
+        //biomeGenerator
+        res.add(new TileGenerator() {
+            @Override
+            public Tile generate(Tile tile, int x, int y, Random random) {
+                if (x == 0 && y == 0) {
+                    return tile;
+                }
+                Biome biomeLast;
+                if (y > 0) {
+                    biomeLast = mapGenerator.getGeneratedTiles()[x][y - 1].getBiome();
+                } else {
+                    biomeLast = mapGenerator.getGeneratedTiles()[x - 1][y].getBiome();
+                }
+                if (biomeLast != Biome.WATER
+                        && biomeLast != Biome.ICE
+                        && random.nextInt(100) < 20) {
+                    tile.setBiome(biomeLast);
+                } else {
+                    int r = random.nextInt(2);
+                    if (r == 0) {
+                        tile.setBiome(Biome.DESERT);
+                    } else if (r == 1) {
+                        tile.setBiome(Biome.PLAINS);
+                    }
+                }
+                return tile;
+            }
+        });
+
+        // Add the ice generator last! Highest Priority == called last
+        //iceGenerator
+        res.add( new TileGenerator() {
+            @Override
+            public Tile generate(Tile tile, int x, int y, Random random) {
+                if (x < 5 || x > mapGenerator.getSizeX() - 5) {
+                    if (x <= 2 || x >= mapGenerator.getSizeX() - 2) {
+                        tile.setBiome(Biome.ICE);
+                    } else if (tile.getBiome() != Biome.ICE){
+                        tile.setBiome(Biome.WATER);
+                    }
+                }
+                if (y < 5 || y > mapGenerator.getSizeY() - 5) {
+                    if (y <= 2 || y >= mapGenerator.getSizeY() - 2) {
+                        tile.setBiome(Biome.ICE);
+                    } else if (tile.getBiome() != Biome.ICE){
+                        tile.setBiome(Biome.WATER);
+                    }
+                }
+
+                return tile;
+            }
+        });
+
+        //resourceGenerator
+        res.add( new TileGenerator() {
+            @Override
+            public Tile generate(Tile tile, int x, int y, Random random) {
+                if (tile.getBiome() != Biome.PLAINS) {
+                    return tile;
+                }
+                if (tile.getStructure() != null) {
+                    return tile;
+                }
+                if (random.nextInt(100) <= 20) {
+                    int r = random.nextInt(ResourceType.values().length - 1);
+                    ResourceType resourceType = ResourceType.values()[r];
+                    tile.setStructure(new StructureResource(resourceType));
+                }
+                return tile;
+            }
+        });
+
+        //treeGenerator
+        res.add( new TileGenerator() {
+            @Override
+            public Tile generate(Tile tile, int x, int y, Random random) {
+                if (tile.getBiome() != Biome.PLAINS) {
+                    // Trees can only spawn on grassland
+                    return tile;
+                }
+                if (tile.getStructure() != null) {
+                    return tile;
+                }
+                if (random.nextInt(100) <= 80) {
+                    tile.setStructure(new Structure(StructureType.FOREST));
+                }
+                return tile;
+            }
+        });
+
+        return res;
     }
 
     @Override
@@ -90,99 +190,10 @@ public class ScreenGenerator extends HexagonScreen {
          */
 
         final MapGenerator mapGenerator = new MapGenerator(100, 20, 2);
+        List<TileGenerator> Biomes = setupBiomeGenerator(mapGenerator);
+        for(TileGenerator generator : Biomes)
+            mapGenerator.getTileGeneratorList().add(generator);
 
-        // Tile Generators
-
-        TileGenerator biomeGenerator = new TileGenerator() {
-            @Override
-            public Tile generate(Tile tile, int x, int y, Random random) {
-                if (x == 0 && y == 0) {
-                    return tile;
-                }
-                Biome biomeLast;
-                if (y > 0) {
-                    biomeLast = mapGenerator.getGeneratedTiles()[x][y - 1].getBiome();
-                } else {
-                    biomeLast = mapGenerator.getGeneratedTiles()[x - 1][y].getBiome();
-                }
-                if (biomeLast != Biome.WATER
-                        && biomeLast != Biome.ICE
-                        && random.nextInt(100) < 20) {
-                    tile.setBiome(biomeLast);
-                } else {
-                    int r = random.nextInt(2);
-                    if (r == 0) {
-                        tile.setBiome(Biome.DESERT);
-                    } else if (r == 1) {
-                        tile.setBiome(Biome.PLAINS);
-                    }
-                }
-                return tile;
-            }
-        };
-
-        // Add the ice generator last! Highest Priority == called last
-        TileGenerator iceGenerator = new TileGenerator() {
-            @Override
-            public Tile generate(Tile tile, int x, int y, Random random) {
-                if (x < 5 || x > mapGenerator.getSizeX() - 5) {
-                    if (x <= 2 || x >= mapGenerator.getSizeX() - 2) {
-                        tile.setBiome(Biome.ICE);
-                    } else if (tile.getBiome() != Biome.ICE){
-                        tile.setBiome(Biome.WATER);
-                    }
-                }
-                if (y < 5 || y > mapGenerator.getSizeY() - 5) {
-                    if (y <= 2 || y >= mapGenerator.getSizeY() - 2) {
-                        tile.setBiome(Biome.ICE);
-                    } else if (tile.getBiome() != Biome.ICE){
-                        tile.setBiome(Biome.WATER);
-                    }
-                }
-
-                return tile;
-            }
-        };
-
-        TileGenerator resourceGenerator = new TileGenerator() {
-            @Override
-            public Tile generate(Tile tile, int x, int y, Random random) {
-                if (tile.getBiome() != Biome.PLAINS) {
-                    return tile;
-                }
-                if (tile.getStructure() != null) {
-                    return tile;
-                }
-                if (random.nextInt(100) <= 20) {
-                    int r = random.nextInt(ResourceType.values().length - 1);
-                    ResourceType resourceType = ResourceType.values()[r];
-                    tile.setStructure(new StructureResource(resourceType));
-                }
-                return tile;
-            }
-        };
-
-        TileGenerator treeGenerator = new TileGenerator() {
-            @Override
-            public Tile generate(Tile tile, int x, int y, Random random) {
-                if (tile.getBiome() != Biome.PLAINS) {
-                    // Trees can only spawn on grassland
-                    return tile;
-                }
-                if (tile.getStructure() != null) {
-                    return tile;
-                }
-                if (random.nextInt(100) <= 80) {
-                    tile.setStructure(new Structure(StructureType.FOREST));
-                }
-                return tile;
-            }
-        };
-
-        mapGenerator.getTileGeneratorList().add(biomeGenerator);
-        mapGenerator.getTileGeneratorList().add(iceGenerator); // Add the ice generator last! Highest Priority == called last
-        mapGenerator.getTileGeneratorList().add(resourceGenerator);
-        mapGenerator.getTileGeneratorList().add(treeGenerator);
 
 
         mapGenerator.setCallback(new GeneratorCallback() {
