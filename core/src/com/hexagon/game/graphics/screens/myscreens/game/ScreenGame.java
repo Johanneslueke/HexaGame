@@ -29,6 +29,7 @@ import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.input.InputManager;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.MapManager;
+import com.hexagon.game.map.Point;
 import com.hexagon.game.map.TileLocation;
 import com.hexagon.game.map.detail.Car;
 import com.hexagon.game.map.structures.StructureType;
@@ -98,31 +99,23 @@ public class ScreenGame extends HexagonScreen {
         super(ScreenType.GAME);
     }
 
-    @Override
-    public void create() {
-        gameManager = new GameManager(this);
+    private void setupCamera(Point pos, Point lookTo,float fieldOfView, float near,float far){
 
+        camera = new PerspectiveCamera(fieldOfView, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.position.set((float)pos.getX(),(float)pos.getY(), (float)pos.getZ());
+        camera.lookAt((float)lookTo.getX(), (float)lookTo.getY(), (float)lookTo.getZ());
+        camera.near = near;
+        camera.far = far;
+        camera.update();
+    }
+
+    private void setupModels(){
         batch = new SpriteBatch();
         font = new BitmapFont();
-
-        modelBatch = new ModelBatch();
-        camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.position.set(0, 6f, 0);
-        camera.lookAt(0, 0, -3f);
-        camera.near = 1f;
-        camera.far = 300f;
-        camera.update();
-
-        inputGame = new InputGame(this);
-        InputManager.getInstance().register(inputGame);
-
         // Model loader needs a binary json reader to decode
         UBJsonReader jsonReader = new UBJsonReader();
         // Create a model loader passing in our json reader
         G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
-
-        //modelCache = new ModelCache();
-
         // Load all Biome Models
         for (Biome biome : Biome.values()) {
             biomeModelMap.put(biome, modelLoader.loadModel(Gdx.files.getFileHandle(biome.getModel(), Files.FileType.Internal)));
@@ -138,35 +131,22 @@ public class ScreenGame extends HexagonScreen {
 
         streetModel = modelLoader.loadModel(Gdx.files.getFileHandle("street.g3db", Files.FileType.Internal));
 
-        environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 1f));
-        environment.add(new DirectionalLight().set(0.8f, 0.5f, 0.5f, 0f, -0.8f, -0.2f));
-        environment.add((shadowLight = new DirectionalShadowLight(1024*2, 1024*2, 60f*4, 60f*4, 1f, 300f))
-                .set(1f, 1f, 1f, 40.0f, -35f, -35f));
-        environment.shadowMap = shadowLight;
         shadowBatch = new ModelBatch(new DepthShaderProvider());
-
-        //camController = new CameraInputController(camera);
-        //InputManager.getInstance().register(camController);
+        modelBatch = new ModelBatch();
 
 
-        gameManager.createAll();
-
-
-
-        //decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
-
-        /*text3D = new Text3D();
-        text3Ddecal = text3D.create();
-        text3Ddecal.setPosition(0.5f, 2f, 0.5f);
-        text3Ddecal.setRotation(0, -50, 0);*/
     }
 
-    @Override
-    public void show() {
-        super.show();
+    private void setupEviroment(ColorAttribute attr,DirectionalLight light, DirectionalShadowLight shadow){
+        shadowLight = shadow;
+        environment = new Environment();
+        environment.set(attr);
+        environment.add();
+        environment.add(shadowLight.set(1f, 1f, 1f, 40.0f, -35f, -35f));
+        environment.shadowMap = shadowLight;
+    }
 
-        HexMap hexMap = MapManager.getInstance().getCurrentHexMap();
+    private void createMap( HexMap hexMap){
         if (hexMap == null) {
             return;
         }
@@ -174,7 +154,6 @@ public class ScreenGame extends HexagonScreen {
         mapLength = (float) (currentMap.getTiles().length*0.75f * HexagonUtil.hexagon.getSideLengthX()*2f);
 
         modelCache = new ModelCache();
-
         modelCache.begin();
 
         float height = 0;
@@ -228,31 +207,15 @@ public class ScreenGame extends HexagonScreen {
             }
         }
 
-
-        /*TileLocation loc = HexagonUtil.getTileLocation(0, 0);
+         /*TileLocation loc = HexagonUtil.getTileLocation(0, 0);
         bigBox = new ModelInstance(box);
         bigBox.transform.translate((float) loc.getX() + 50, height, (float) loc.getY() + 50);
         bigBox.transform.rotate(0, 1, 0, 90);*/
 
         modelCache.end();
-
-        selectedInstance = new ModelInstance(selectedModel);
-
-
-        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
-    @Override
-    public void render(float delta) {
-        inputGame.update(delta);
-
-        ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);
-        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
-        //Gdx.gl.glDisable(GL20.GL_BLEND); // disallow transparent drawing
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-
-        //camController.update();
-
+    private void renderShadow(){
         shadowLight.begin(Vector3.Zero, camera.direction);
         shadowBatch.begin(shadowLight.getCamera());
 
@@ -273,43 +236,10 @@ public class ScreenGame extends HexagonScreen {
 
         shadowBatch.end();
         shadowLight.end();
+    }
 
+    private void renderModels(){
         modelBatch.begin(camera);
-
-
-
-        /*if (camera.position.x < 10) {
-            if (camera.position.x < 0) {
-                camera.position.x = mapLength;
-            } else {
-                for (TileLocation loc : this.modelInstanceMap.keySet()) {
-                    if (loc.getX() < mapLength - 10) {
-                        continue;
-                    }
-                    HexModel model = this.modelInstanceMap.get(loc).getModel();
-
-                    model.move(-mapLength, 0, 0);
-                    modelBatch.render(model.getModelInstance(), environment);
-                    model.move(mapLength, 0, 0);
-                }
-            }
-        } else if (camera.position.x >= mapLength - 10) {
-            if (camera.position.x >= mapLength) {
-                camera.position.x = 0;
-            } else {
-                for (TileLocation loc : this.modelInstanceMap.keySet()) {
-                    if (loc.getX() > 10) {
-                        continue;
-                    }
-                    HexModel model = this.modelInstanceMap.get(loc).getModel();
-
-                    model.move(mapLength, 0, 0);
-                    modelBatch.render(model.getModelInstance(), environment);
-                    model.move(-mapLength, 0, 0);
-                }
-            }
-        }*/
-
 
         for (int x=0; x<currentMap.getTiles().length; x++) {
             for (int y=0; y<currentMap.getTiles()[x].length; y++) {
@@ -338,7 +268,7 @@ public class ScreenGame extends HexagonScreen {
 
         for (int i=0; i<cars.size(); i++) {
             Car car = cars.get(i);
-            car.update(delta);
+            car.update(0.0016f);
             modelBatch.render(car.getInstance(), environment);
         }
 
@@ -351,8 +281,8 @@ public class ScreenGame extends HexagonScreen {
             float x = selectedInstance.transform.getScaleX();
             float z = selectedInstance.transform.getScaleZ();
             selectedInstance.transform.setToTranslationAndScaling(
-                selectedInstance.transform.getTranslation(Vector3.Zero),
-                new Vector3(x + 0.0025f, 1, z + 0.0025f)
+                    selectedInstance.transform.getTranslation(Vector3.Zero),
+                    new Vector3(x + 0.0025f, 1, z + 0.0025f)
             );
         } else {
             float x = selectedInstance.transform.getScaleX();
@@ -368,22 +298,68 @@ public class ScreenGame extends HexagonScreen {
         //modelBatch.render(modelCache, environment);
 
         modelBatch.end();
+    }
 
-        //decalBatch.add(text3Ddecal);
-        //decalBatch.flush();
-
-
-
-        batch.begin();
-        font.draw(batch, "" + Gdx.graphics.getFramesPerSecond() + " FPS", 20, 20);
-        batch.end();
-
-        Main.engine.run(delta);
+    private void renderUI(){
 
         Gdx.gl.glEnable(GL20.GL_BLEND); // allows transparent drawing
         shapeRenderer.begin();
         windowManager.render(shapeRenderer);
         shapeRenderer.end();
+    }
+
+    private void renderDEBUGMETA(){
+        batch.begin();
+        font.draw(batch, "" + Gdx.graphics.getFramesPerSecond() + " FPS", 20, 20);
+        batch.end();
+    }
+
+    @Override
+    public void create() {
+
+
+        gameManager = new GameManager(this);
+        setupModels();
+        setupCamera(new Point(0,6,0),new Point(0,0, -3),67,1,300);
+        setupEviroment(
+                new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 1f),
+                new DirectionalLight().set(0.8f, 0.5f, 0.5f, 0f, -0.8f, -0.2f),
+                new DirectionalShadowLight(1024*2, 1024*2, 60f*4, 60f*4, 1f, 300f)
+                );
+
+        inputGame = new InputGame(this);
+        InputManager.getInstance().register(inputGame);
+        gameManager.createAll();
+
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        createMap(MapManager.getInstance().getCurrentHexMap());
+
+        selectedInstance = new ModelInstance(selectedModel);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    }
+
+    @Override
+    public void render(float delta) {
+        inputGame.update(delta);
+
+        ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);
+        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+        //Gdx.gl.glDisable(GL20.GL_BLEND); // disallow transparent drawing
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+
+
+        renderShadow();
+        renderModels();
+        renderUI();
+        renderDEBUGMETA();
+
+        Main.engine.run(delta);
+
+
 
         stage.draw();
     }

@@ -22,7 +22,7 @@ public class Main extends Game {
 
     private static Main instance;
 
-    public static Engine engine;
+    public static  Engine engine = Engine.getInstance();
 
 	@Override
 	public void create () {
@@ -43,29 +43,9 @@ public class Main extends Game {
 		// The first screen is the loading screen which will load all other screens
 		ScreenManager.getInstance().getCurrentScreen().create();
 
-        // Init Engine
-        engine = new Engine();
-
+        engine = Engine.getInstance();;
         engine.getSystemManager().addSystem(new SystemMessageDelivery());
-        engine.getSystemManager().addSystem(new System() {
 
-            @Override
-            public void process(double v) {
-                // unused
-            }
-
-            @Override
-            public void update(Observable observable, Object o) {
-                java.lang.System.out.println("Update");
-                if (o instanceof NotificationNewEntity) {
-                    java.lang.System.out.println("Hello");
-                }
-                if (o instanceof Integer) {
-                    engine.getEntityManager().createID();
-                }
-            }
-
-        });
 
         HexVector vector = new HexVector(0, 1);
         java.lang.System.out.println("0: " + vector.toString());
