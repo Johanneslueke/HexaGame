@@ -33,6 +33,8 @@ public class ScreenLoading extends HexagonScreen {
     public void create() {
         batch = new SpriteBatch();
 
+        font = new BitmapFont();
+
 
         // Create Font
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Piximisa.ttf"));

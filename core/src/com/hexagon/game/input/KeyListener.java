@@ -55,6 +55,8 @@ public class KeyListener implements InputProcessor {
             ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
         } else if (character == '3') {
             ScreenManager.getInstance().setCurrentScreen(ScreenType.GAME);
+        } else if (character == '4') {
+            ScreenManager.getInstance().setCurrentScreen(ScreenType.DEMOJoJo);
         }
         processorList.clear();
         processorList.addAll(InputManager.getInstance().getInputListeners());

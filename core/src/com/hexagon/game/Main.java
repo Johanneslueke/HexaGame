@@ -1,6 +1,7 @@
 package com.hexagon.game;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.ui.WindowManager;
 import com.hexagon.game.input.HexMultiplexer;
@@ -18,9 +19,10 @@ import de.svdragster.logica.system.SystemMessageDelivery;
 import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
 import de.svdragster.logica.world.Engine;
 
+
 public class Main extends Game {
 
-    private static Main instance;
+    private static Main instance; //You Shall not PASS
 
     public static  Engine engine = Engine.getInstance();
 
@@ -43,6 +45,9 @@ public class Main extends Game {
 		// The first screen is the loading screen which will load all other screens
 		ScreenManager.getInstance().getCurrentScreen().create();
 
+
+        Gdx.input.setInputProcessor(new KeyListener());
+
         engine = Engine.getInstance();;
         engine.getSystemManager().addSystem(new SystemMessageDelivery());
 
@@ -53,6 +58,7 @@ public class Main extends Game {
         java.lang.System.out.println("270: " + vector.toString());
         vector.rotate90();
         java.lang.System.out.println("360: " + vector.toString());
+
 
     }
 
