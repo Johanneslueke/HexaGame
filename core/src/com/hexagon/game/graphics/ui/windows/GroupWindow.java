@@ -10,11 +10,11 @@ import java.util.List;
  * Created by Sven on 20.12.2017.
  */
 
-public class StandardWindow extends Window {
+public class GroupWindow extends Window {
 
     private List<Window> windowList;
 
-    public StandardWindow(float x, float y, float width, float height, Stage stage) {
+    public GroupWindow(float x, float y, float width, float height, Stage stage) {
         super(x, y, width, height);
 
         windowList = new ArrayList<>();

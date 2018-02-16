@@ -4,15 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
-import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
-import com.hexagon.game.graphics.ui.windows.StandardWindow;
+import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.MapManager;
 import com.hexagon.game.map.structures.Structure;
@@ -143,12 +140,9 @@ public class ScreenGenerator extends HexagonScreen {
         return res;
     }
 
-    @Override
-    public void create() {
-        batch = new SpriteBatch();
-        font = new BitmapFont();
+    private void setupUserInterface(){
 
-        final UiButton button = new UiButton("<= Back", 50, Gdx.graphics.getHeight() - 50, 100, 50);
+        /*final UiButton button = new UiButton("<= Back", 50, Gdx.graphics.getHeight() - 50, 100, 50);
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -156,17 +150,16 @@ public class ScreenGenerator extends HexagonScreen {
             }
         });
 
-        button.addToStage(stage);
-
+        button.addToStage(stage);*/
         /*
          * Main Generator Window
          */
 
-        final StandardWindow standardWindow = new StandardWindow(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY(), 800, 600, stage);
+        final GroupWindow standardWindow = new GroupWindow(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY(), 800, 600, stage);
 
         FadeWindow fadeWindow = new FadeWindow(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY(), 800, 600, stage);
         fadeWindow.show(stage);
-        fadeWindow.add(new UiImage(0, 0, 800, 600, "window.png"), stage);
+        //fadeWindow.add(new UiImage(0, 0, 800, 600, "window.png"), stage);
         standardWindow.getWindowList().add(fadeWindow);
 
         buttonProgress = new UiButton("0%", 40, fadeWindow.getHeight() - 60, 100, 40);
@@ -176,6 +169,15 @@ public class ScreenGenerator extends HexagonScreen {
         fadeWindow.updateElements();
 
         this.windowManager.getWindowList().add(standardWindow);
+    }
+
+    @Override
+    public void create() {
+        batch = new SpriteBatch();
+        font = new BitmapFont();
+
+
+        setupUserInterface();
 
     }
 
@@ -193,8 +195,6 @@ public class ScreenGenerator extends HexagonScreen {
         List<TileGenerator> Biomes = setupBiomeGenerator(mapGenerator);
         for(TileGenerator generator : Biomes)
             mapGenerator.getTileGeneratorList().add(generator);
-
-
 
         mapGenerator.setCallback(new GeneratorCallback() {
             @Override

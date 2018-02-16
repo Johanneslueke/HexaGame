@@ -14,7 +14,7 @@ import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
-import com.hexagon.game.graphics.ui.windows.StandardWindow;
+import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.util.MenuUtil;
 
 /**
@@ -73,7 +73,7 @@ public class ScreenMainMenu extends HexagonScreen {
 
 
         //MenuUtil.getInstance().createStandardMenu(this);
-        final StandardWindow standardWindow = new StandardWindow(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY(), 224, 600, stage);
+        final GroupWindow standardWindow = new GroupWindow(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY(), 224, 600, stage);
 
         FadeWindow fadeWindow = new FadeWindow(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY(), 224, 600, stage);
         fadeWindow.show(stage);

@@ -11,7 +11,7 @@ import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.buttons.UiSkinButton;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
-import com.hexagon.game.graphics.ui.windows.StandardWindow;
+import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.util.MenuUtil;
 
 /**
@@ -26,7 +26,7 @@ public class GameManager {
 
     ShapeRenderer           shapeRenderer;
 
-    StandardWindow          standardWindow;
+    GroupWindow standardWindow;
 
     FadeWindow              spaceWindow;
 
@@ -79,7 +79,7 @@ public class GameManager {
     ///////////////////////
 
     public void createWindows() {
-        //standardWindow = new StandardWindow(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY(), 800, 600, stage);
+        //standardWindow = new GroupWindow(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY(), 800, 600, stage);
         createSpaceWindow();
     }
 
