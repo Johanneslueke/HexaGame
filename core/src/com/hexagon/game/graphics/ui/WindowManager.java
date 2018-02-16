@@ -89,6 +89,9 @@ public class WindowManager implements InputProcessor {
         }
         lastDiff = diff;
         for (Window window : windowList) {
+            if (!window.isVisible()) {
+                continue;
+            }
             if (window instanceof DropdownScrollableWindow) {
                 if (((DropdownScrollableWindow) window).scroll(amount)) {
                     return true;
@@ -106,6 +109,9 @@ public class WindowManager implements InputProcessor {
     @Override
     public boolean scrolled(int amount) {
         for (Window window : windowList) {
+            if (!window.isVisible()) {
+                continue;
+            }
             if (window instanceof DropdownScrollableWindow) {
                 if (((DropdownScrollableWindow) window).scroll(amount)) {
                     return true;

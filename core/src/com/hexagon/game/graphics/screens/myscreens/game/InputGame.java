@@ -2,29 +2,26 @@ package com.hexagon.game.graphics.screens.myscreens.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.hexagon.game.Main;
+import com.hexagon.game.graphics.ui.windows.FadeWindow;
+import com.hexagon.game.input.HexInput;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.Point;
 import com.hexagon.game.map.TileLocation;
-import com.hexagon.game.map.detail.Car;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
-import com.hexagon.game.util.AStar;
 import com.hexagon.game.util.CameraHelper;
 import com.hexagon.game.util.HexagonUtil;
-
-import java.util.List;
 
 /**
  * Created by Sven on 20.12.2017.
  */
 
-public class InputGame implements InputProcessor {
+public class InputGame extends HexInput {
 
     private static float    SPEED = 5;
 
@@ -67,14 +64,18 @@ public class InputGame implements InputProcessor {
         }
 
         if (keycode == Input.Keys.SPACE) {
-            if (cameraLockOnTile == null) {
+            /*if (cameraLockOnTile == null) {
                 cameraLockOnTile = screenGame.getCamera().position.cpy();
                 Vector3 pos = cameraHelper.getCamera().position;
                 cameraHelper.moveTo(new Vector3(pos.x, 2, pos.z - 2), false);
             } else {
                 cameraHelper.moveTo(cameraLockOnTile, true);
                 cameraLockOnTile = null;
-            }
+            }*/
+            FadeWindow window = screenGame.gameManager.spaceWindow;
+            window.toggleVisibility(this);
+            setDisableMouse(!isDisableMouse());
+
         }
 
         if (keycode == Input.Keys.ENTER) {
@@ -96,6 +97,7 @@ public class InputGame implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        
         HexModel model = getObject(screenX, screenY);
         if (model != null) {
             select(model);
@@ -107,11 +109,13 @@ public class InputGame implements InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        
         float zoom = this.screenGame.getCamera().fieldOfView * 0.01f;
         if (zoom > 1.0f) {
             zoom = 1;
@@ -125,12 +129,14 @@ public class InputGame implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        
         updateSelected(screenX, screenY);
         return true;
     }
 
     @Override
     public boolean scrolled(int amount) {
+        
         zoom = amount*0.4f;
         return true;
     }
@@ -143,6 +149,7 @@ public class InputGame implements InputProcessor {
             zoom = 0;
             return;
         }
+        
         if (zoom != 0) {
             zoom *= 0.8f;
             /*float fov = screenGame.getCamera().fieldOfView + zoom;
@@ -229,35 +236,9 @@ public class InputGame implements InputProcessor {
     }
 
 
-    private boolean flanke = false;
+    //private boolean flanke = false;
+
     public void select(HexModel model) {
-        /*if (selected != null) {
-            //selected.getModelInstance().materials.clear();
-            //selected.getModelInstance().materials.addAll(originalMaterial);
-            for (int i=0; i<selected.getModelInstance().materials.size; i++) {
-                if (i >= originalMaterial.size) {
-                    break;
-                }
-                selected.getModelInstance().materials.get(i).clear();
-                selected.getModelInstance().materials.get(i).set(originalMaterial.get(i));
-            }
-            /*Array<Material> newMaterials = new Array<>();
-            for (Material m : selected.getModelInstance().materials) {
-                if (!m.equals(selectionMaterial)) {
-                    newMaterials.add(m);
-                }
-            }
-            selected.getModelInstance().materials.clear();
-            selected.getModelInstance().materials.addAll(newMaterials);*/
-        /*}
-        //Material material = model.getModelInstance().materials.get(0);
-        //originalMaterial = material;
-        //material.clear();
-        originalMaterial = model.getModelInstance().materials;
-        Material material = model.getModelInstance().materials.get(0);
-        //material.clear();
-        material.set(selectionMaterial);
-        selected = model;*/
         Vector3 pos = model.getModelInstance().transform.getTranslation(Vector3.Zero);
         pos.y += 0.02f;
         screenGame.selectedInstance.transform.setTranslation(pos);
@@ -265,7 +246,7 @@ public class InputGame implements InputProcessor {
         Point p = HexagonUtil.getArrayLocation(new TileLocation(Math.abs(pos.x) + 1, pos.z + 1));
         //System.out.println((Math.abs(pos.x) + 1) + ", " + (pos.z + 1) + " ---> " + p.getX() + ", " + p.getY());
 
-        if (Gdx.input.isTouched() && !flanke) {
+        /*if (Gdx.input.isTouched() && !flanke) {
             AStar aStar = new AStar();
             int x;
             int y;
@@ -276,7 +257,7 @@ public class InputGame implements InputProcessor {
             List<AStar.ATile> path = aStar.start(new AStar.ATile(p.getX(), p.getY(), null), new AStar.ATile(x, y, null), screenGame.getCurrentMap());
             /*if (screenGame.car != null) {
                 screenGame.car.getInstance().model.dispose();
-            }*/
+            }* /
             screenGame.cars.add(new Car(path, 0));
             screenGame.cars.add(new Car(path, 1));
             screenGame.cars.add(new Car(path, 2));
@@ -286,6 +267,6 @@ public class InputGame implements InputProcessor {
         }
         if (!Gdx.input.isTouched()) {
             flanke = false;
-        }
+        }*/
     }
 }

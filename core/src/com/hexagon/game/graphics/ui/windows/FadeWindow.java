@@ -1,6 +1,7 @@
 package com.hexagon.game.graphics.ui.windows;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -22,6 +23,24 @@ public class FadeWindow extends Window {
         super(x, y, width, height);
 
         this.stage = stage;
+    }
+
+    public void toggleVisibility() {
+        toggleVisibility(null);
+    }
+
+    public void toggleVisibility(InputProcessor parent) {
+        if (isVisible()) {
+            setVisible(false);
+            if (parent != null) {
+
+            }
+        } else {
+            show(stage);
+            if (parent != null) {
+
+            }
+        }
     }
 
     @Override

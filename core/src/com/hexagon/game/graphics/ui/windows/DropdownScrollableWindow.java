@@ -53,6 +53,9 @@ public class DropdownScrollableWindow extends DropdownWindow {
             element.setDisplayY(-100);
         }
         for (int i=startLine; i<stopLine; i++) {
+            if (i < 0 || i >= elementList.size()) {
+                continue;
+            }
             UiElement element = elementList.get(i);
             int row = counter / columns;
             int col = counter % columns;

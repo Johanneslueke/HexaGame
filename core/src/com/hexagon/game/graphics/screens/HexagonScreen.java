@@ -44,8 +44,8 @@ public abstract class HexagonScreen implements Screen {
 
     @Override
     public void show() {
-        InputManager.getInstance().register(this.getStage());
         InputManager.getInstance().register(this.windowManager);
+        InputManager.getInstance().register(this.getStage());
         //HexMultiplexer.getInstance().add(this.getStage());
         //HexMultiplexer.getInstance().add(this.windowManager);
         //HexMultiplexer.getInstance().multiplex();
@@ -58,5 +58,10 @@ public abstract class HexagonScreen implements Screen {
         //HexMultiplexer.getInstance().multiplex();
         InputManager.getInstance().unregister(this.getStage());
         InputManager.getInstance().unregister(this.windowManager);
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true);
     }
 }

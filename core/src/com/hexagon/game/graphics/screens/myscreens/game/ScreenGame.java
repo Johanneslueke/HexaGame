@@ -4,17 +4,14 @@ import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
@@ -23,17 +20,12 @@ import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.UBJsonReader;
 import com.hexagon.game.Main;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
-import com.hexagon.game.graphics.ui.buttons.UiButton;
-import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 import com.hexagon.game.input.InputManager;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.MapManager;
@@ -58,8 +50,9 @@ import java.util.Map;
 
 public class ScreenGame extends HexagonScreen {
 
+    GameManager     gameManager;
+
     private SpriteBatch     batch;
-    private SpriteBatch     batchCamera;
     private BitmapFont      font;
     private DecalBatch      decalBatch;
 
@@ -107,10 +100,10 @@ public class ScreenGame extends HexagonScreen {
 
     @Override
     public void create() {
+        gameManager = new GameManager(this);
+
         batch = new SpriteBatch();
         font = new BitmapFont();
-
-        batchCamera = new SpriteBatch();
 
         modelBatch = new ModelBatch();
         camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -135,10 +128,6 @@ public class ScreenGame extends HexagonScreen {
             biomeModelMap.put(biome, modelLoader.loadModel(Gdx.files.getFileHandle(biome.getModel(), Files.FileType.Internal)));
         }
 
-        box = new ModelBuilder().createBox(100, 2, 100,
-                new Material(ColorAttribute.createDiffuse(0.6f, 0.6f, 0.6f, 1)),
-                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
-
         tree = modelLoader.loadModel(Gdx.files.getFileHandle("tree2.g3db", Files.FileType.Internal));
         treeInstance = new ModelInstance(tree);
         treeInstance.transform.translate((float) 0.5f, 1, (float) 0.5f);
@@ -157,42 +146,20 @@ public class ScreenGame extends HexagonScreen {
         environment.shadowMap = shadowLight;
         shadowBatch = new ModelBatch(new DepthShaderProvider());
 
-        camController = new CameraInputController(camera);
+        //camController = new CameraInputController(camera);
         //InputManager.getInstance().register(camController);
 
-        UiButton button = new UiButton("Hello World", 50, Gdx.graphics.getHeight() - 50, 100, 50);
 
-        final DropdownScrollableWindow window = new DropdownScrollableWindow(20, 0, 0, 0, 0, 0, 15);
-        windowManager.getWindowList().add(window);
+        gameManager.createAll();
 
-        /*for (int i=0; i<400; i++) {
-            UiButton buttonWindow = new UiButton(String.valueOf(i), 0, 0, 50, 20);
-            window.add(buttonWindow, stage);
-        }*/
 
-        window.orderAllNeatly(13, 0, 15);
-        window.setY(button.getY() - window.getHeight());
-        window.setX(button.getX());
-        window.updateElements();
 
-        button.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (window.isVisible()) {
-                    window.hide(stage);
-                } else {
-                    window.show(stage);
-                }
-            }
-        });
-        button.addToStage(stage);
+        //decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
 
-        decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
-
-        text3D = new Text3D();
+        /*text3D = new Text3D();
         text3Ddecal = text3D.create();
         text3Ddecal.setPosition(0.5f, 2f, 0.5f);
-        text3Ddecal.setRotation(0, -50, 0);
+        text3Ddecal.setRotation(0, -50, 0);*/
     }
 
     @Override
@@ -398,47 +365,27 @@ public class ScreenGame extends HexagonScreen {
         modelBatch.render(selectedInstance, environment);
 
 
+        //modelBatch.render(modelCache, environment);
 
-        //modelBatch.render(treeInstance, environment);
-       /* a = System.currentTimeMillis();
-        modelBatch.render(modelCache, environment);
-        a = System.currentTimeMillis() - a;
-        b = System.currentTimeMillis();*/
         modelBatch.end();
 
-        decalBatch.add(text3Ddecal);
-        decalBatch.flush();
+        //decalBatch.add(text3Ddecal);
+        //decalBatch.flush();
 
-        //b = System.currentTimeMillis() - b;
 
-        //System.out.println(.toString());
-
-        /*Matrix4 tmpM = new Matrix4(new Vector3(10, 0, 0),
-                new Quaternion(new Vector3(0, 1, 0), 90),
-                new Vector3(100, 10, 10));
-
-        batchCamera.setProjectionMatrix(tmpM);
-        batchCamera.begin();
-        font.draw(batchCamera, "Hiiiiiiiiiiiiiiiiiiii", 0, 0);
-        batchCamera.end();*/
 
         batch.begin();
-        font.draw(batch, "Awesome game " + Gdx.graphics.getFramesPerSecond() + ", " + selectedInstance.transform.getScaleX(), 20, 20);
+        font.draw(batch, "" + Gdx.graphics.getFramesPerSecond() + " FPS", 20, 20);
         batch.end();
 
         Main.engine.run(delta);
 
-        /*Gdx.gl.glEnable(GL20.GL_BLEND); // allows transparent drawing
+        Gdx.gl.glEnable(GL20.GL_BLEND); // allows transparent drawing
         shapeRenderer.begin();
         windowManager.render(shapeRenderer);
-        shapeRenderer.end();*/
+        shapeRenderer.end();
 
-        //stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
+        stage.draw();
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.hexagon.game.input.HexMultiplexer;
 import com.hexagon.game.input.InputManager;
 import com.hexagon.game.input.KeyListener;
 import com.hexagon.game.map.MapManager;
+import com.hexagon.game.util.FontManager;
 import com.hexagon.game.util.HexVector;
 import com.hexagon.game.util.MenuUtil;
 
@@ -36,6 +37,8 @@ public class Main extends Game {
 
 	    new WindowManager();
 		new ScreenManager();
+
+        FontManager.init();
 
 		// The first screen is the loading screen which will load all other screens
 		ScreenManager.getInstance().getCurrentScreen().create();
