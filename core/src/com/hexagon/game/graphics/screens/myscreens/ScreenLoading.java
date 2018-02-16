@@ -3,9 +3,11 @@ package com.hexagon.game.graphics.screens.myscreens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.input.InputManager;
 
 /**
  * Created by Sven on 14.12.2017.
@@ -20,8 +22,8 @@ public class ScreenLoading extends HexagonScreen {
     private float loaded = 0;
     private String currentlyLoading = "";
 
-    private float brightness = 0;
-
+    private float brightness = -1;
+    private boolean renderedOnce = false;
 
     public ScreenLoading() {
         super(ScreenType.LOADING);
@@ -30,12 +32,31 @@ public class ScreenLoading extends HexagonScreen {
     @Override
     public void create() {
         batch = new SpriteBatch();
+
         font = new BitmapFont();
 
-        new Thread(new Runnable() {
+
+        // Create Font
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Piximisa.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 80;
+        font = generator.generateFont(parameter);
+        generator.dispose(); // don't forget to dispose to avoid memory leaks!
+
+        // Start loading thread
+        final Thread loadThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                int i=0;
+                //noinspection StatementWithEmptyBody
+                while (!renderedOnce) {
+                    // wait
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                int i = 0;
                 for (final HexagonScreen screen : ScreenManager.getInstance().getScreenList()) {
                     i++;
                     if (screen.getScreenType() == ScreenType.LOADING) {
@@ -43,34 +64,66 @@ public class ScreenLoading extends HexagonScreen {
                     }
                     loadedIndividual = 0;
                     currentlyLoading = screen.getScreenType().name();
+
                     Gdx.app.postRunnable(new Runnable() {
                         @Override
                         public void run() {
                             screen.create();
+
+                            render(0.01f);
                         }
-                    }); // run the creation on the libgdx thread
+                    });
+                    loadedIndividual = 1;
                     loaded = ((float) i) / ScreenManager.getInstance().getScreenList().size();
+                    if (i == ScreenManager.getInstance().getScreenList().size() - 1) {
+                        // done loading
+                        // run this on the render thread to prevent two threads accessing the same list at the same time
+                        Gdx.app.postRunnable(new Runnable() {
+                            @Override
+                            public void run() {
+                                doneLoading();
+                            }
+                        });
+                    }
                 }
             }
-        } ).start();
+        });
+        loadThread.start();
 
+
+        ScreenManager.getInstance().setCurrentScreen(ScreenType.LOADING);
     }
 
     @Override
     public void show() {
+        renderedOnce = false;
+    }
 
+    public void doneLoading() {
+        InputManager.getInstance().register(this.getStage());
+        ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
     }
 
     @Override
     public void render(float delta) {
-        if (brightness <= 1) {
-            brightness += 0.5 * delta;
-        }
+        brightness = 1;
+        /*if (brightness <= 1) {
+            if (brightness < 0) {
+                brightness = 0;
+            } else {
+                brightness += 0.45 * delta;
+            }
+        }*/
 
         ScreenManager.getInstance().clearScreen(0.05f * brightness, 0.15f * brightness, 0.2f * brightness);
         batch.begin();
-        font.draw(batch, "Loading " + (Math.round(loaded*100)) + "% (" + currentlyLoading + " " + (Math.round(loadedIndividual*100)) + "%)", 20, 20);
+        if (!renderedOnce) {
+            font.draw(batch, "Loading", 50, 100);
+        } else {
+            font.draw(batch, "Loading " + (Math.round(loaded * 100)) + "% (" + currentlyLoading + " " + (Math.round(loadedIndividual * 100)) + "%)", 50, 100);
+        }
         batch.end();
+        renderedOnce = true;
     }
 
     @Override
@@ -85,11 +138,6 @@ public class ScreenLoading extends HexagonScreen {
 
     @Override
     public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
 
     }
 

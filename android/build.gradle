@@ -135,5 +135,7 @@ idea {
     }
 }
 dependencies {
+
     compile files('dependencies/LogicaECS_android.jar')
+
 }

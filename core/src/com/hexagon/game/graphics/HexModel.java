@@ -1,12 +1,10 @@
 package com.hexagon.game.graphics;
 
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-
 /**
  * Created by Sven on 18.12.2017.
  */
 
-public class HexModel {
+/*public class HexModel {
 
     private ModelInstance modelInstance;
 
@@ -30,4 +28,4 @@ public class HexModel {
         this.modelInstance = modelInstance;
     }
 
-}
+}*/
