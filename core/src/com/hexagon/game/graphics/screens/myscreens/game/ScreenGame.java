@@ -38,6 +38,7 @@ import com.hexagon.game.map.detail.Car;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.structures.resources.StructureResource;
 import com.hexagon.game.map.tiles.Biome;
+import com.hexagon.game.map.tiles.Chunk;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
@@ -222,6 +223,8 @@ public class ScreenGame extends HexagonScreen {
             }
         }
 
+        hexMap.populateChunks();
+
          /*TileLocation loc = HexagonUtil.getTileLocation(0, 0);
         bigBox = new ModelInstance(box);
         bigBox.transform.translate((float) loc.getX() + 50, height, (float) loc.getY() + 50);
@@ -234,7 +237,7 @@ public class ScreenGame extends HexagonScreen {
         shadowLight.begin(Vector3.Zero, camera.direction);
         shadowBatch.begin(shadowLight.getCamera());
 
-        for (int x=0; x<currentMap.getTiles().length; x++) {
+        /*for (int x=0; x<currentMap.getTiles().length; x++) {
             for (int y=0; y<currentMap.getTiles()[x].length; y++) {
                 RenderTile tile = currentMap.getTiles()[x][y].getRenderTile();
                 HexModel model = tile.getModel();
@@ -245,7 +248,7 @@ public class ScreenGame extends HexagonScreen {
                     }
                 }
             }
-        }
+        }*/
 
         shadowBatch.render(selectedInstance, environment);
 
@@ -253,10 +256,32 @@ public class ScreenGame extends HexagonScreen {
         shadowLight.end();
     }
 
+    private int renderedChunks = 0;
+    public static int renderedTiles = 0;
     private void renderModels(){
         modelBatch.begin(camera);
 
-        for (int x=0; x<currentMap.getTiles().length; x++) {
+        renderedChunks = 0;
+        renderedTiles = 0;
+
+        for (int x=0; x<currentMap.getChunks().length; x++) {
+            for (int y=0; y<currentMap.getChunks()[x].length; y++) {
+                Chunk chunk = currentMap.getChunks()[x][y];
+                if (!chunk.isInside(
+                        camera.position.x - 38,
+                        camera.position.z - 48,
+                        camera.position.x + 38,
+                        camera.position.z + 16)) {
+                    continue;
+                }
+
+                renderedChunks++;
+
+                chunk.render(modelBatch, environment, camera);
+            }
+        }
+
+        /*for (int x=0; x<currentMap.getTiles().length; x++) {
             for (int y=0; y<currentMap.getTiles()[x].length; y++) {
                 RenderTile tile = currentMap.getTiles()[x][y].getRenderTile();
                 if (tile.getTileLocation().getX() < camera.position.x - 21
@@ -275,7 +300,7 @@ public class ScreenGame extends HexagonScreen {
                     }
                 }
             }
-        }
+        }*/
 
         for (ModelInstance debug : debugModels) {
             modelBatch.render(debug, environment);
@@ -325,7 +350,7 @@ public class ScreenGame extends HexagonScreen {
 
     private void renderDEBUGMETA(){
         batch.begin();
-        font.draw(batch, "" + Gdx.graphics.getFramesPerSecond() + " FPS", 20, 20);
+        font.draw(batch, "" + Gdx.graphics.getFramesPerSecond() + " FPS, " + renderedChunks + " Chunks, " + renderedTiles + " Tiles", 20, 20);
         batch.end();
     }
 

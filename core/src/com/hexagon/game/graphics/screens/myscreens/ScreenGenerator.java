@@ -191,7 +191,7 @@ public class ScreenGenerator extends HexagonScreen {
          * Start creating the world
          */
 
-        final MapGenerator mapGenerator = new MapGenerator(100, 20, 2);
+        final MapGenerator mapGenerator = new MapGenerator(100, 100, 2);
         List<TileGenerator> Biomes = setupBiomeGenerator(mapGenerator);
         for(TileGenerator generator : Biomes)
             mapGenerator.getTileGeneratorList().add(generator);

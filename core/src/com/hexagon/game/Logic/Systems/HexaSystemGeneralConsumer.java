@@ -76,8 +76,8 @@ public class HexaSystemGeneralConsumer extends SystemConsumerBase {
                 this.getLocalEntityCache().add(e.getEntity());
             }
 
-            if(e.isOfType(HexaComponents.OWNER))
-                System.out.println(e.getEntity());
+            /*if(e.isOfType(HexaComponents.OWNER))
+                System.out.println(e.getEntity());*/
 
         }
         if(o instanceof NotificationRemoveEntity)

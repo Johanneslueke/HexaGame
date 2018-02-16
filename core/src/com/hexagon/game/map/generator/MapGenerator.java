@@ -43,7 +43,7 @@ public class MapGenerator implements Runnable {
     public MapGenerator(int sizeX, int sizeY, long seed) {
         this.sizeX = sizeX;
 
-        sizeY += 10; // Add 5 at the bottom and top for the ice layers
+        //sizeY += 10; // Add 5 at the bottom and top for the ice layers
 
         this.sizeY = sizeY;
         this.random = new Random(seed);
