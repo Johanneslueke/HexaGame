@@ -1,12 +1,13 @@
 package com.hexagon.game.network.packets;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
  * Created by Johannes on 19.02.2018.
  */
 
-public abstract class Packet {
+public abstract class Packet implements Serializable{
 
     private PacketType      type;
     private boolean         isCancled;
@@ -53,4 +54,12 @@ public abstract class Packet {
     public void setGlobalClientID(UUID globalClientID) {
         this.globalClientID = globalClientID;
     }
+
+    public  String doSerialize(){
+         return null;
+    };
+
+     public  Packet doDeserialize(){
+         return null;
+     }
 }
