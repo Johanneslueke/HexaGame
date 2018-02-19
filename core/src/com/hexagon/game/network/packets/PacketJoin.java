@@ -6,6 +6,9 @@ import java.util.UUID;
  * Created by Johannes on 19.02.2018.
  */
 
+/**
+ * This packet will be send by the client!!
+ */
 public class PacketJoin extends Packet {
 
 
@@ -16,7 +19,7 @@ public class PacketJoin extends Packet {
     private String Username;
 
     /**
-     * Issued by the Client-Server
+     * Issued by the Client-Server itself
      */
     private String localClientID;
     private String Version;

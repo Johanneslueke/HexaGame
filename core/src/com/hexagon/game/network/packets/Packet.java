@@ -30,5 +30,27 @@ public abstract class Packet {
     }
 
 
+    public PacketType getType() {
+        return type;
+    }
 
+    public void setType(PacketType type) {
+        this.type = type;
+    }
+
+    public boolean isCancled() {
+        return isCancled;
+    }
+
+    public void setCancled(boolean cancled) {
+        isCancled = cancled;
+    }
+
+    public UUID getGlobalClientID() {
+        return globalClientID;
+    }
+
+    public void setGlobalClientID(UUID globalClientID) {
+        this.globalClientID = globalClientID;
+    }
 }
