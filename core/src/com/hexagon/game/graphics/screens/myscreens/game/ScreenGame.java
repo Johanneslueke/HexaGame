@@ -2,7 +2,6 @@ package com.hexagon.game.graphics.screens.myscreens.game;
 
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -25,14 +24,10 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.utils.UBJsonReader;
-import com.hexagon.game.Main;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
-import com.hexagon.game.graphics.ui.UILabel;
-import com.hexagon.game.graphics.ui.UiElement;
 import com.hexagon.game.input.InputManager;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.MapManager;
@@ -48,13 +43,11 @@ import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.models.Text3D;
 import com.hexagon.game.util.HexagonUtil;
-import com.hexagon.game.graphics.ui.windows.Window;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * Created by Sven on 14.12.2017.
@@ -151,7 +144,7 @@ public class ScreenGame extends HexagonScreen {
 
     }
 
-    private void setupEviroment(ColorAttribute attr,DirectionalLight light, DirectionalShadowLight shadow){
+    private void setupEnvironment(ColorAttribute attr, DirectionalLight light, DirectionalShadowLight shadow){
         shadowLight = shadow;
         environment = new Environment();
         environment.set(attr);
@@ -367,14 +360,13 @@ public class ScreenGame extends HexagonScreen {
         gameManager = new GameManager(this);
         setupModels();
         setupCamera(new Point(0,6,0),new Point(0,0, -3),67,1,300);
-        setupEviroment(
+        setupEnvironment(
                 new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 1f),
                 new DirectionalLight().set(0.8f, 0.5f, 0.5f, 0f, -0.8f, -0.2f),
                 new DirectionalShadowLight(1024*2, 1024*2, 60f*4, 60f*4, 1f, 300f)
                 );
 
         inputGame = new InputGame(this);
-        InputManager.getInstance().register(inputGame);
         gameManager.createAll();
 
     }
@@ -382,6 +374,8 @@ public class ScreenGame extends HexagonScreen {
     @Override
     public void show() {
         super.show();
+        InputManager.getInstance().register(inputGame);
+
         createMap(MapManager.getInstance().getCurrentHexMap());
 
         selectedInstance = new ModelInstance(selectedModel);
@@ -420,6 +414,13 @@ public class ScreenGame extends HexagonScreen {
     public void resume() {
 
     }
+
+    @Override
+    public void hide() {
+        super.hide();
+        InputManager.getInstance().unregister(this.inputGame);
+    }
+
     @Override
     public void dispose() {
         modelBatch.dispose();
