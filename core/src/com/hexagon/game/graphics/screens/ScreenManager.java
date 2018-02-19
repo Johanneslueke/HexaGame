@@ -21,12 +21,25 @@ import java.util.List;
 
 public class ScreenManager {
 
+    /**
+     * Singleton instance of this class!!!
+     */
     private static ScreenManager instance;
 
+    /**
+     * Holds all loaded screens
+     */
     private List<HexagonScreen> screenList;
 
+    /**
+     * stores reference to the actual display which is shown to the user
+     */
     private HexagonScreen currentScreen;
 
+
+    /**
+     * Constructor
+     */
     public ScreenManager() {
         instance = this;
 
@@ -43,6 +56,12 @@ public class ScreenManager {
         this.currentScreen = screenList.get(0); // loading screen
     }
 
+    /**
+     * Changes the currently displayed screen to the one specified
+     * in ScreenType parameter.
+     * @param type
+     * @return
+     */
     public HexagonScreen setCurrentScreen(ScreenType type) {
         for (HexagonScreen screen : screenList) {
             if (screen.getScreenType() == type) {
@@ -57,19 +76,38 @@ public class ScreenManager {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<HexagonScreen> getScreenList() {
         return screenList;
     }
 
+    /**
+     * returns the currently displayed screen
+     * @return
+     */
     public HexagonScreen getCurrentScreen() {
         return currentScreen;
     }
 
+    /**
+     * Clears the screen in the specified colour
+     *
+     * @param red
+     * @param green
+     * @param blue
+     */
     public void clearScreen(float red, float green, float blue) {
         Gdx.gl.glClearColor(red, green, blue, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 
+    /**
+     *
+     * @return
+     */
     public static ScreenManager getInstance() {
         return instance;
     }
