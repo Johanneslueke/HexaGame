@@ -15,9 +15,8 @@ public class HexaComponentOwner extends Component {
 
     public String   name;
 
-    public HexaComponentOwner(String Name,Entity e){
+    public HexaComponentOwner(String Name){
         super.setType(HexaComponents.OWNER);
-        super.setBackAssociation(e);
 
         name = Name;
     }

@@ -21,11 +21,11 @@ public class PacketJoin extends Packet {
     /**
      * Issued by the Client-Server itself
      */
-    private String localClientID;
+    private UUID localClientID;
     private String Version;
 
 
-    public PacketJoin(PacketType type, String username,String clientID,String version) {
+    public PacketJoin(PacketType type, String username,UUID clientID,String version) {
         super(type);
 
         this.localClientID = clientID;
@@ -33,7 +33,7 @@ public class PacketJoin extends Packet {
         this.Version = version;
     }
 
-    public PacketJoin(PacketType type, UUID globalClientID, String username,String clientID,String version) {
+    public PacketJoin(PacketType type, UUID globalClientID, String username,UUID clientID,String version) {
         super(type, globalClientID);
 
         this.Username = username;
@@ -49,11 +49,11 @@ public class PacketJoin extends Packet {
         Username = username;
     }
 
-    public String getLocalClientID() {
+    public UUID getLocalClientID() {
         return localClientID;
     }
 
-    public void setLocalClientID(String localClientID) {
+    public void setLocalClientID(UUID localClientID) {
         this.localClientID = localClientID;
     }
 

@@ -52,11 +52,8 @@ public class AStar {
 
     private boolean isForest(int x, int y) {
         Tile tile = map.getTiles()[x][y];
-        if (tile.getStructure() != null
-                && tile.getStructure().getType() == StructureType.FOREST) {
-            return true;
-        }
-        return false;
+        return tile.getStructure() != null
+                && tile.getStructure().getType() == StructureType.FOREST;
     }
 
     public float getCostG(ATile parent, ATile current) {

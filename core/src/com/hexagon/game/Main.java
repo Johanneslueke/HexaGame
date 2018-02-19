@@ -50,7 +50,7 @@ public class Main extends Game {
 
         Gdx.input.setInputProcessor(new KeyListener());
 
-        engine = Engine.getInstance();;
+        engine = Engine.getInstance();
         engine.getSystemManager().addSystem(
                 new SystemMessageDelivery(),
                 new HexaSystemGeneralProducer(engine),

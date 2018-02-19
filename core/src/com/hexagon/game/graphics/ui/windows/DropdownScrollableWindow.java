@@ -113,7 +113,7 @@ public class DropdownScrollableWindow extends DropdownWindow {
         }
         super.render(renderer);
         float scrollbarHeight = (1 / (float) (maxLines-displayAmount+1) * getHeight()) + 1;
-        float scrollbarPos = (getY() + ((int) ((currentLine / (float) (maxLines-displayAmount+1)) * (float) getHeight())));
+        float scrollbarPos = (getY() + ((int) ((currentLine / (float) (maxLines-displayAmount+1)) * getHeight())));
         renderer.setColor(1f, 0f, 0f, 1f);
         renderer.rect(getX() + getWidth() - 8, scrollbarPos, 8, scrollbarHeight);
     }

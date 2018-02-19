@@ -127,7 +127,7 @@ public class ScreenGame extends HexagonScreen {
 
         tree = modelLoader.loadModel(Gdx.files.getFileHandle("tree2.g3db", Files.FileType.Internal));
         treeInstance = new ModelInstance(tree);
-        treeInstance.transform.translate((float) 0.5f, 1, (float) 0.5f);
+        treeInstance.transform.translate(0.5f, 1, 0.5f);
 
         selectedModel = modelLoader.loadModel(Gdx.files.getFileHandle("selection_all_anim.g3db", Files.FileType.Internal));
 

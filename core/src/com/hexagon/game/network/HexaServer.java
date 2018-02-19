@@ -2,6 +2,7 @@ package com.hexagon.game.network;
 
 import com.hexagon.game.network.packets.Packet;
 import com.hexagon.game.network.packets.PacketListener;
+import com.hexagon.game.network.packets.PacketType;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -9,7 +10,13 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+
+import de.svdragster.logica.util.Delegate;
 
 /**
  * Created by Johannes on 19.02.2018.
@@ -35,6 +42,7 @@ public class HexaServer {
     private boolean             running = false;
 
     private PacketListener      packetListener;
+    private UUID                LocalClientID = UUID.randomUUID();
 
     /**
      * Acts on Events
@@ -42,14 +50,14 @@ public class HexaServer {
     private PacketListener listener;
 
 
-    public HexaServer(String address, int port) {
-        this();
+    public HexaServer(String address, int port, Map<PacketType,Delegate> DispatchTable) {
+        this(DispatchTable);
         this.address =   new InetSocketAddress(address, port);
     }
 
-    public HexaServer() {
+    public HexaServer(Map<PacketType,Delegate> DispatchTable) {
         socket = new Socket();
-        packetListener = new PacketListener();
+        packetListener = new PacketListener(DispatchTable);
     }
 
     public void connect(int timeout) throws IOException {
@@ -90,6 +98,10 @@ public class HexaServer {
         }
     }
 
+    /**
+     * Starts asynchronous thread. continuously sends everything contained in the "toSend" buffer.
+     *
+     */
     public void startSendingThread() {
         final List<Packet>        sendBuffer = new ArrayList<>();
 
@@ -127,6 +139,10 @@ public class HexaServer {
         }).start();
     }
 
+    /**
+     * Starts asynchronous thread. continuously receives everything and saves it in the "toCall" buffer.
+     *
+     */
     public void startReceivingThread() {
         final List<Packet>        receiveBuffer = new ArrayList<>();
         new Thread(new Runnable() {
@@ -158,7 +174,11 @@ public class HexaServer {
     public void callEvents() {
         synchronized (receivingLock) {
             for (int i=0; i<toCall.size(); i++) {
-                listener.call(toCall.get(i));
+                try {
+                    listener.call(toCall.get(i));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -171,5 +191,9 @@ public class HexaServer {
             return false;
         }
         return true;
+    }
+
+    public UUID getLocalClientID() {
+        return LocalClientID;
     }
 }
