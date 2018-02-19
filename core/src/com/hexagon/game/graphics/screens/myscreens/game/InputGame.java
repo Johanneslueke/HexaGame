@@ -133,7 +133,7 @@ public class InputGame extends HexInput {
                                 * code more readable :D this is always an plus
                                 */
                                 new ArrayList<Component>() {{
-                                    add(new HexaComponentOwner("PLAYER",null));
+                                    add(new HexaComponentOwner("PLAYER"));
                                     add(new HexaComponentPosition(new Point(downX,downY,0)));
                                     add(new HexaComponentTest());
                         }}

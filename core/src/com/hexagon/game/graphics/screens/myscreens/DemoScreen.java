@@ -78,7 +78,7 @@ public class DemoScreen extends HexagonScreen {
                     new ComponentResource(0.01f,3.0f,1.0f, Arrays.asList(
                             (Component) (new ComponentProduct())
                     )));
-            id1.associateComponent(new HexaComponentOwner("Alpha",id1));
+            id1.associateComponent(new HexaComponentOwner("Alpha"));
 
 
             Logic.getEntityManager().getEntityContext().add(id1);
@@ -92,7 +92,7 @@ public class DemoScreen extends HexagonScreen {
                     new ComponentResource(0.01f,3.5f,1.0f, Arrays.asList(
                             (Component) (new HexaComponentTest())
                     )));
-            id2.associateComponent(new HexaComponentOwner("Beta",id2));
+            id2.associateComponent(new HexaComponentOwner("Beta"));
 
 
             Logic.getEntityManager().getEntityContext().add(id2);
@@ -107,7 +107,7 @@ public class DemoScreen extends HexagonScreen {
                             (Component) (new ComponentProduct())
                     ))
             );
-            id3.associateComponent(new HexaComponentOwner("Alpha",id1));
+            id3.associateComponent(new HexaComponentOwner("Alpha"));
 
             Logic.getEntityManager().getEntityContext().add(id3);
             Logic.BroadcastMessage(new NotificationNewEntity(id3));
@@ -121,7 +121,7 @@ public class DemoScreen extends HexagonScreen {
                             (Component) (new HexaComponentTest())
                     ))
             );
-            id4.associateComponent(new HexaComponentOwner("Beta",id2));
+            id4.associateComponent(new HexaComponentOwner("Beta"));
 
             Logic.getEntityManager().getEntityContext().add(id4);
             Logic.BroadcastMessage(new NotificationNewEntity(id4));
