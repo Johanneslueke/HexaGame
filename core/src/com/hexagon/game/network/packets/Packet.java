@@ -10,20 +10,23 @@ public abstract class Packet {
 
     private PacketType      type;
     private boolean         isCancled;
-    private UUID            ClientID;
+    /**
+     * Issued by the server instance which hosts the game
+     */
+    private UUID            globalClientID;
 
 
 
      Packet(PacketType type){
         this.type = type;
         this.isCancled = false;
-        this.ClientID = UUID.randomUUID();
+        this.globalClientID = UUID.randomUUID();
     }
 
      Packet(PacketType type, UUID clientID){
         this.type = type;
         this.isCancled = false;
-        this.ClientID = clientID;
+        this.globalClientID = clientID;
     }
 
 
