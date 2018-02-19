@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
+import com.hexagon.game.Logic.Components.HexaComponentOwner;
+import com.hexagon.game.Logic.Components.HexaComponentPosition;
+import com.hexagon.game.Logic.Components.HexaComponentTest;
 import com.hexagon.game.Main;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.input.HexInput;
@@ -16,6 +19,14 @@ import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.util.CameraHelper;
 import com.hexagon.game.util.HexagonUtil;
+
+import java.util.ArrayList;
+
+import de.svdragster.logica.components.Component;
+import de.svdragster.logica.components.ComponentProducer;
+import de.svdragster.logica.components.ComponentResource;
+import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
+import de.svdragster.logica.world.Engine;
 
 /**
  * Created by Sven on 20.12.2017.
@@ -104,6 +115,30 @@ public class InputGame extends HexInput {
         }
         downX = screenX;
         downY = screenY;
+
+        System.out.println("MÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖP\n");
+
+        //TODO: This needs to be multiplexed to the right System for the correct player!!!!!!!!!
+        Engine.getInstance().BroadcastMessage(new NotificationNewEntity(
+                Engine.getInstance().getEntityManager().createID(
+                        new ComponentProducer(),
+                        new ComponentResource(
+                                0.2f,
+                                1,
+                                1,
+                                /*Create Signature for the requested resources produced by this system
+                                * But this inline Arraylist init is bit weird, nonetheless it makes
+                                * code more readable :D this is always an plus
+                                */
+                                new ArrayList<Component>() {{
+                                    add(new HexaComponentOwner("PLAYER",null));
+                                    add(new HexaComponentPosition(new Point(downX,downY,0)));
+                                    add(new HexaComponentTest());
+                        }}
+                        )
+                )
+        ));
+
         return false;
     }
 

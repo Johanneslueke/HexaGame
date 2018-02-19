@@ -8,5 +8,6 @@ import de.svdragster.logica.components.meta.ComponentType;
 
 public enum HexaComponents implements ComponentType {
     OWNER,
+    POSITION,
     TEST,
 }

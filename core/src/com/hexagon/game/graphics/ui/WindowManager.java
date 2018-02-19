@@ -33,6 +33,7 @@ public class WindowManager implements InputProcessor {
 
     public void registerInput() {
 
+
     }
 
     public void unregisterInput() {

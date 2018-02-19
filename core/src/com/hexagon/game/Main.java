@@ -2,6 +2,8 @@ package com.hexagon.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.hexagon.game.Logic.Systems.HexaSystemGeneralConsumer;
+import com.hexagon.game.Logic.Systems.HexaSystemGeneralProducer;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.ui.WindowManager;
 import com.hexagon.game.input.HexMultiplexer;
@@ -49,7 +51,11 @@ public class Main extends Game {
         Gdx.input.setInputProcessor(new KeyListener());
 
         engine = Engine.getInstance();;
-        engine.getSystemManager().addSystem(new SystemMessageDelivery());
+        engine.getSystemManager().addSystem(
+                new SystemMessageDelivery(),
+                new HexaSystemGeneralProducer(engine),
+                new HexaSystemGeneralConsumer(engine)
+        );
 
 
         HexVector vector = new HexVector(0, 1);

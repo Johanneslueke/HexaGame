@@ -21,6 +21,9 @@ import com.hexagon.game.util.MenuUtil;
  * Created by Sven on 14.12.2017.
  */
 
+/**
+ * Displays the first two Menus visible to the User
+ */
 public class ScreenMainMenu extends HexagonScreen {
 
     private SpriteBatch batch;

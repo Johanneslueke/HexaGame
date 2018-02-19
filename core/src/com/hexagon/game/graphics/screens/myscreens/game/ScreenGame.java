@@ -2,6 +2,7 @@ package com.hexagon.game.graphics.screens.myscreens.game;
 
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -24,11 +25,14 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.utils.UBJsonReader;
 import com.hexagon.game.Main;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.graphics.ui.UILabel;
+import com.hexagon.game.graphics.ui.UiElement;
 import com.hexagon.game.input.InputManager;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.MapManager;
@@ -44,11 +48,13 @@ import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.models.Text3D;
 import com.hexagon.game.util.HexagonUtil;
+import com.hexagon.game.graphics.ui.windows.Window;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Created by Sven on 14.12.2017.
@@ -382,6 +388,7 @@ public class ScreenGame extends HexagonScreen {
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
+
     @Override
     public void render(float delta) {
         inputGame.update(delta);
@@ -397,7 +404,7 @@ public class ScreenGame extends HexagonScreen {
         renderUI();
         renderDEBUGMETA();
 
-        Main.engine.run(delta);
+        //Main.engine.run(delta);
 
 
 
