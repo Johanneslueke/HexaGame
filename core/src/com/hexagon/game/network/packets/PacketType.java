@@ -4,7 +4,7 @@ package com.hexagon.game.network.packets;
  * Created by Johannes on 19.02.2018.
  */
 
-enum PacketType {
+public enum PacketType {
 
     KEEPALIVE((byte)(1<<0)),
     JOIN((byte)(1<<1)),

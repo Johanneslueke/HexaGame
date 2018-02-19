@@ -55,11 +55,12 @@ public abstract class Packet implements Serializable{
         this.globalClientID = globalClientID;
     }
 
-    public  String doSerialize(){
-         return null;
-    };
+    public String serialize() {
+         return "hi";
+    }
 
-     public  Packet doDeserialize(){
+     public static Packet deserialize(String string) {
+
          return null;
      }
 }

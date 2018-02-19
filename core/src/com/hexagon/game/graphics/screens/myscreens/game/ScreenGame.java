@@ -267,9 +267,9 @@ public class ScreenGame extends HexagonScreen {
             for (int y=0; y<currentMap.getChunks()[x].length; y++) {
                 Chunk chunk = currentMap.getChunks()[x][y];
                 if (!chunk.isInside(
-                        camera.position.x - 38,
+                        camera.position.x - 40,
                         camera.position.z - 48,
-                        camera.position.x + 38,
+                        camera.position.x + 32,
                         camera.position.z + 16)) {
                     continue;
                 }

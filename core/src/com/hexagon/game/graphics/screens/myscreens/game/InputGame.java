@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.Logic.Components.HexaComponentPosition;
 import com.hexagon.game.Logic.Components.HexaComponentTest;
-import com.hexagon.game.Main;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.input.HexInput;
 import com.hexagon.game.map.HexMap;
@@ -17,6 +16,8 @@ import com.hexagon.game.map.Point;
 import com.hexagon.game.map.TileLocation;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
+import com.hexagon.game.network.packets.PacketKeepAlive;
+import com.hexagon.game.network.packets.PacketType;
 import com.hexagon.game.util.CameraHelper;
 import com.hexagon.game.util.HexagonUtil;
 
@@ -90,8 +91,9 @@ public class InputGame extends HexInput {
         }
 
         if (keycode == Input.Keys.ENTER) {
-            System.out.println("Enter");
-            Main.engine.BroadcastMessage(123);
+            //System.out.println("Enter");
+            //Main.engine.BroadcastMessage(123);
+            screenGame.gameManager.server.send(new PacketKeepAlive(PacketType.KEEPALIVE, 1234));
         }
         return false;
     }

@@ -1,27 +1,21 @@
 package com.hexagon.game.graphics.screens.myscreens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
-import com.hexagon.game.graphics.ui.buttons.UiButton;
-import com.hexagon.game.graphics.ui.windows.FadeWindow;
-import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.MapManager;
+import com.hexagon.game.map.generator.GeneratorCallback;
+import com.hexagon.game.map.generator.MapGenerator;
+import com.hexagon.game.map.generator.TileGenerator;
 import com.hexagon.game.map.structures.Structure;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.structures.resources.ResourceType;
 import com.hexagon.game.map.structures.resources.StructureResource;
 import com.hexagon.game.map.tiles.Biome;
 import com.hexagon.game.map.tiles.Tile;
-import com.hexagon.game.map.generator.GeneratorCallback;
-import com.hexagon.game.map.generator.MapGenerator;
-import com.hexagon.game.map.generator.TileGenerator;
-import com.hexagon.game.util.MenuUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -160,7 +154,12 @@ public class ScreenGenerator extends HexagonScreen {
         super.show();
 
         System.out.println("Showing generator");
-        final MapGenerator mapGenerator = new MapGenerator(100, 100, 2);
+
+        /*
+         * Start creating the world
+         */
+
+        final MapGenerator mapGenerator = new MapGenerator(100, 40, 2);
         List<TileGenerator> Biomes = setupBiomeGenerator(mapGenerator);
         for(TileGenerator generator : Biomes)
             mapGenerator.getTileGeneratorList().add(generator);
@@ -168,7 +167,6 @@ public class ScreenGenerator extends HexagonScreen {
         mapGenerator.setCallback(new GeneratorCallback() {
             @Override
             public void generatorFinished() {
-                //buttonProgress.getTextButton().setText("100%");
 
                 final HexMap hexMap = new HexMap(mapGenerator.getSizeX(), mapGenerator.getSizeY());
                 hexMap.setTiles(mapGenerator.getGeneratedTiles());

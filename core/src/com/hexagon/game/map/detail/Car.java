@@ -226,7 +226,7 @@ public class Car {
 
             currentVector.multiply(delta * velocity);
 
-            System.out.println(currentVector.toString());
+            //System.out.println(currentVector.toString());
 
             currentLocation.setX(currentLocation.getX() + currentVector.getX());
             currentLocation.setY(currentLocation.getY() + currentVector.getY());

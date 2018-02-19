@@ -6,17 +6,16 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.WindowManager;
-import com.hexagon.game.graphics.ui.buttons.UiButton;
-import com.hexagon.game.graphics.ui.buttons.UiSkinButton;
-import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.graphics.ui.windows.Window;
+import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.util.MenuUtil;
+
+import java.io.IOException;
 
 /**
  * Created by Sven on 16.02.2018.
@@ -34,12 +33,22 @@ public class GameManager {
 
     FadeWindow              spaceWindow;
 
+    HexaServer              server;
+
     public GameManager(ScreenGame game) {
         this.game = game;
         this.windowManager = game.getWindowManager();
         this.stage = game.getStage();
 
         standardWindow = new GroupWindow(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),stage);
+
+        server = new HexaServer("localhost", 25565);
+        try {
+            server.connect(1000);
+        } catch (IOException e) {
+            System.out.println("Could not connect!");
+            //e.printStackTrace();
+        }
     }
 
     public void createAll() {
