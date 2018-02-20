@@ -5,20 +5,16 @@ import com.badlogic.gdx.Gdx;
 import com.hexagon.game.Logic.Systems.HexaSystemGeneralConsumer;
 import com.hexagon.game.Logic.Systems.HexaSystemGeneralProducer;
 import com.hexagon.game.graphics.screens.ScreenManager;
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.WindowManager;
 import com.hexagon.game.input.HexMultiplexer;
 import com.hexagon.game.input.InputManager;
 import com.hexagon.game.input.KeyListener;
 import com.hexagon.game.map.MapManager;
 import com.hexagon.game.util.FontManager;
-import com.hexagon.game.util.HexVector;
 import com.hexagon.game.util.MenuUtil;
 
-import java.util.Observable;
-
-import de.svdragster.logica.system.System;
 import de.svdragster.logica.system.SystemMessageDelivery;
-import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
 import de.svdragster.logica.world.Engine;
 
 
@@ -36,6 +32,7 @@ public class Main extends Game {
         new InputManager();
         new MapManager();
 	    new HexMultiplexer();
+
         HexMultiplexer.getInstance().add(new KeyListener());
         HexMultiplexer.getInstance().multiplex();
 
@@ -58,13 +55,7 @@ public class Main extends Game {
         );
 
 
-        HexVector vector = new HexVector(0, 1);
-        java.lang.System.out.println("0: " + vector.toString());
-        vector.rotate270();
-        java.lang.System.out.println("270: " + vector.toString());
-        vector.rotate90();
-        java.lang.System.out.println("360: " + vector.toString());
-
+		new GameManager(); // Init GameManager last because it depends on windows
 
     }
 

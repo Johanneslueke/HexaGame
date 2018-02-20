@@ -98,18 +98,19 @@ public class ScreenMainMenu extends HexagonScreen {
         final FadeWindow subwindowPlay = new FadeWindow(fadeWindow.getX() + fadeWindow.getWidth() + 10, fadeWindow.getY(), 800 - fadeWindow.getWidth(), 600, stage);
         subwindowPlay.add(new UiImage(0, 0, 558, 600, "window_small.png"), stage);
 
-        UiButton playText = new UiButton("Play", 40, subwindowPlay.getHeight() - 60, 100, 40);
-        UiButton playGenerate = new UiButton("Generate World", 40, subwindowPlay.getHeight() - 100, 200, 40);
+        UiButton playText = new UiButton("> Play", 20, subwindowPlay.getHeight() - 60, 100, 40);
+        UiButton playHost = new UiButton("Host Game", 40, subwindowPlay.getHeight() - 100, 200, 40);
+        UiButton playJoin = new UiButton("Join Game", 40, subwindowPlay.getHeight() - 140, 200, 40);
 
-        playGenerate.addListener(new ChangeListener() {
+        playHost.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ScreenManager.getInstance().setCurrentScreen(ScreenType.GENERATOR);
+                ScreenManager.getInstance().setCurrentScreen(ScreenType.HOST);
             }
         });
 
         subwindowPlay.add(playText, stage);
-        subwindowPlay.add(playGenerate, stage);
+        subwindowPlay.add(playHost, stage);
 
         subwindowPlay.updateElements();
         standardWindow.getWindowList().add(subwindowPlay);

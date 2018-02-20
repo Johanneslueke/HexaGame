@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.hexagon.game.Main;
 
 import com.hexagon.game.graphics.screens.myscreens.DemoScreen;
+import com.hexagon.game.graphics.screens.myscreens.ScreenHost;
 import com.hexagon.game.graphics.screens.myscreens.game.ScreenGame;
 
 import com.hexagon.game.graphics.screens.myscreens.ScreenGenerator;
@@ -46,6 +47,7 @@ public class ScreenManager {
         screenList = new ArrayList<>();
         screenList.add(new ScreenLoading());
         screenList.add(new ScreenMainMenu());
+        screenList.add(new ScreenHost());
         screenList.add(new ScreenGame());
 
         screenList.add(new DemoScreen());

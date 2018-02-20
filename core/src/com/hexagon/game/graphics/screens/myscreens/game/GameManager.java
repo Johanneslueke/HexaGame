@@ -44,11 +44,15 @@ public class GameManager {
 
     public GameManager() {
         instance = this;
-        this.windowManager = game.getWindowManager();
-        this.stage = game.getStage();
 
         standardWindow = new GroupWindow(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),stage);
 
+    }
+
+    public void startGame(ScreenGame game) {
+        this.game = game;
+        this.windowManager = game.getWindowManager();
+        this.stage = game.getStage();
     }
 
     public void connect(boolean isHost) {
@@ -201,7 +205,7 @@ public class GameManager {
     public void createSpaceWindow() {
         spaceWindow = new FadeWindow(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY(), 800, 600, stage);
         spaceWindow.add(new UiImage(0, 0, 800, 600, "window.png"), stage);
-        game.getWindowManager().getWindowList().add(spaceWindow);
+        windowManager.getWindowList().add(spaceWindow);
         //standardWindow.getWindowList().add(spaceWindow);
     }
 
@@ -228,7 +232,7 @@ public class GameManager {
         standardWindow.getWindowList().add(LeftSideBar);
         standardWindow.show(stage);
 
-        game.getWindowManager().getWindowList().add(standardWindow);
+        windowManager.getWindowList().add(standardWindow);
 
     }
 
@@ -236,10 +240,6 @@ public class GameManager {
 
     public ScreenGame getGame() {
         return game;
-    }
-
-    public void setGame(ScreenGame game) {
-        this.game = game;
     }
 
 

@@ -368,25 +368,25 @@ public class ScreenGame extends HexagonScreen {
 
     @Override
     public void create() {
-
         gameManager = GameManager.instance;
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        inputGame = new InputGame(this);
+        InputManager.getInstance().register(inputGame);
+
         setupModels();
         setupCamera(new Point(0,6,0),new Point(0,0, -3),67,1,300);
         setupEnvironment(
                 new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 1f),
                 new DirectionalLight().set(0.8f, 0.5f, 0.5f, 0f, -0.8f, -0.2f),
                 new DirectionalShadowLight(1024*2, 1024*2, 60f*4, 60f*4, 1f, 300f)
-                );
+        );
 
-        inputGame = new InputGame(this);
+        gameManager.startGame(this);
         gameManager.createAll();
-
-    }
-
-    @Override
-    public void show() {
-        super.show();
-        InputManager.getInstance().register(inputGame);
 
         createMap(MapManager.getInstance().getCurrentHexMap());
 
@@ -405,10 +405,10 @@ public class ScreenGame extends HexagonScreen {
         Gdx.gl.glEnable(GL20.GL_BLEND);
 
 
-        //renderShadow();
-        //renderModels();
+        renderShadow();
+        renderModels();
         renderUI();
-        //renderDEBUGMETA();
+        renderDEBUGMETA();
 
         //Main.engine.run(delta);
 

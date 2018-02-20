@@ -8,6 +8,8 @@ public enum ScreenType {
 
     LOADING,
     MAIN_MENU,
+    HOST,
+    JOIN,
     GAME,
 
     DEMOJoJo,
