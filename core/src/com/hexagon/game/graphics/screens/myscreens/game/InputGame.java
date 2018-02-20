@@ -101,7 +101,7 @@ public class InputGame extends HexInput {
             if (screenGame.gameManager.server.isHost()) {
                 screenGame.gameManager.server.send(new PacketRegister(
                         HexaServer.senderId, // This is the host id
-                        "Raum 9"));
+                        "Raum 8"));
             }
         }
         if (keycode == Input.Keys.P) {
