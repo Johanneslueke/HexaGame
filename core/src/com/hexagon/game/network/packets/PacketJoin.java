@@ -14,21 +14,29 @@ public class PacketJoin extends Packet {
 
     /**
      * Nickname of the player
-     * The combination of username & localClientID must be unique!
+     * The combination of username & hostId must be unique!
      */
     private String Username;
 
     /**
      * Issued by the Client-Server itself
      */
-    private UUID localClientID;
+    private UUID hostId;
     private String Version;
 
 
-    public PacketJoin(String username,UUID clientID,String version) {
+    public PacketJoin(String username,UUID hostId,String version) {
         super(PacketType.JOIN);
 
-        this.localClientID = clientID;
+        this.hostId = hostId;
+        this.Username = username;
+        this.Version = version;
+    }
+
+    public PacketJoin(UUID senderId, String username,UUID hostId,String version) {
+        super(PacketType.JOIN, senderId);
+
+        this.hostId = hostId;
         this.Username = username;
         this.Version = version;
     }
@@ -41,12 +49,12 @@ public class PacketJoin extends Packet {
         Username = username;
     }
 
-    public UUID getLocalClientID() {
-        return localClientID;
+    public UUID getHostId() {
+        return hostId;
     }
 
-    public void setLocalClientID(UUID localClientID) {
-        this.localClientID = localClientID;
+    public void setHostId(UUID senderId) {
+        this.hostId = senderId;
     }
 
     public String getVersion() {
@@ -55,5 +63,11 @@ public class PacketJoin extends Packet {
 
     public void setVersion(String version) {
         Version = version;
+    }
+
+    @Override
+    public String serialize() {
+        return super.serialize()
+                + hostId.toString() + ";" + Username + ";" + Version + ";";
     }
 }

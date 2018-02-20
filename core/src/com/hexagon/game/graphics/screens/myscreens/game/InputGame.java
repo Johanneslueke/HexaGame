@@ -91,18 +91,27 @@ public class InputGame extends HexInput {
             setDisableMouse(!isDisableMouse());
 
         }
-
+        if (keycode == Input.Keys.H) {
+            screenGame.gameManager.connect(true);
+        }
+        if (keycode == Input.Keys.C) {
+            screenGame.gameManager.connect(false);
+        }
         if (keycode == Input.Keys.ENTER) {
-            //System.out.println("Enter");
-            //Main.engine.BroadcastMessage(123);
-            screenGame.gameManager.server.send(new PacketRegister(
-                    UUID.fromString("e84223f7-f8dd-4ea4-8494-25ef9d27a1a9"),
-                    "Raum 9"));
+            if (screenGame.gameManager.server.isHost()) {
+                screenGame.gameManager.server.send(new PacketRegister(
+                        HexaServer.senderId, // This is the host id
+                        "Raum 9"));
+            }
         }
         if (keycode == Input.Keys.P) {
-            //System.out.println("Enter");
-            //Main.engine.BroadcastMessage(123);
-            screenGame.gameManager.server.send(new PacketJoin("Sven", HexaServer.clientID,"1.0"));
+            if (!screenGame.gameManager.server.isHost()) {
+                screenGame.gameManager.server.send(new PacketJoin(
+                        HexaServer.senderId, // The sender (us)
+                        "Sven",
+                        UUID.fromString("e84223f7-f8dd-4ea4-8494-25ef9d27a1a9"), // The host WE want to connect to
+                        "1.0"));
+            }
         }
         return false;
     }

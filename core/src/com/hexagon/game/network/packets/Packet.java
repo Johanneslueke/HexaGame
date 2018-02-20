@@ -1,5 +1,7 @@
 package com.hexagon.game.network.packets;
 
+import com.hexagon.game.network.HexaServer;
+
 import java.util.UUID;
 
 /**
@@ -13,20 +15,20 @@ public abstract class Packet {
     /**
      * Issued by the server instance which hosts the game
      */
-    private UUID            globalClientID;
+    private UUID senderId;
 
 
 
      Packet(PacketType type){
         this.type = type;
         this.cancelled = false;
-        this.globalClientID = UUID.randomUUID();
+        this.senderId = HexaServer.senderId;
     }
 
-     Packet(PacketType type, UUID clientID){
+     Packet(PacketType type, UUID senderId){
         this.type = type;
         this.cancelled = false;
-        this.globalClientID = clientID;
+        this.senderId = senderId;
     }
 
 
@@ -46,17 +48,17 @@ public abstract class Packet {
         this.cancelled = cancelled;
     }
 
-    public UUID getGlobalClientID() {
-        return globalClientID;
+    public UUID getSenderId() {
+        return senderId;
     }
 
-    public void setGlobalClientID(UUID globalClientID) {
-        this.globalClientID = globalClientID;
+    public void setSenderId(UUID senderId) {
+        this.senderId = senderId;
     }
 
     public String serialize() {
         return type.ID + ";"
-                + globalClientID.toString() + ";"
+                + senderId.toString() + ";"
                 + (cancelled ? 1 : 0) + ";";
     }
 
@@ -68,11 +70,11 @@ public abstract class Packet {
              return null;
          }
 
-         UUID clientId = UUID.fromString(arr[1]);
+         UUID senderId = UUID.fromString(arr[1]);
 
          if (packetType == PacketType.REGISTER) {
 
-             return new PacketRegister(clientId, arr[2]);
+             return new PacketRegister(senderId, arr[2]); // arr[2] is the room name
          }
 
          boolean cancelled = arr[2].equals("1");
@@ -82,7 +84,12 @@ public abstract class Packet {
          switch (packetType) {
              case KEEPALIVE:
                  int sessionId = Integer.parseInt(arr[offset]);
-                 return new PacketKeepAlive(clientId, sessionId);
+                 return new PacketKeepAlive(senderId, sessionId);
+             case JOIN:
+                 UUID hostId = UUID.fromString(arr[3]);
+                 String username = arr[4];
+                 String version = arr[5];
+                 return new PacketJoin(senderId, username, hostId, version);
          }
 
          return null;

@@ -19,6 +19,7 @@ public class PacketRegister extends Packet {
 
     public PacketRegister(UUID clientID, String roomName) {
         super(PacketType.REGISTER, clientID);
+        roomName = roomName.replace(";", "");
         this.roomName = roomName;
     }
 

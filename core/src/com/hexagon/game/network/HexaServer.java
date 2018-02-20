@@ -6,13 +6,13 @@ import com.hexagon.game.network.packets.PacketListener;
 import com.hexagon.game.network.packets.PacketType;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.UUID;
 
 import de.svdragster.logica.util.Delegate;
@@ -25,7 +25,7 @@ public class HexaServer {
 
     private static final int    TIMEOUT = 30_000;
 
-    public static UUID          clientID = UUID.fromString("525183d9-1a5a-40e1-a712-e3099282c341");
+    public static UUID          senderId = UUID.fromString("525183d9-1a5a-40e1-a712-e3099282c341");
 
     /**
      * connection stuff
@@ -48,16 +48,19 @@ public class HexaServer {
     private long                lastKeepAliveSent = System.currentTimeMillis();
 
 
-    private final SessionData   sessionData = new SessionData();
-
-    /**
-     * Acts on Events
-     */
-    private PacketListener listener;
+    private SessionData         sessionData;
 
 
     public HexaServer(String address, int port) {
         this.address =   new InetSocketAddress(address, port);
+        this.socket = new Socket();
+    }
+
+    public HexaServer(String address, int port, boolean isHost) {
+        this(address, port);
+        if (isHost) {
+            sessionData = new SessionData();
+        }
     }
 
     public void setDispatchTable(Map<PacketType, Delegate> dispatchTable) {
@@ -68,7 +71,7 @@ public class HexaServer {
         socket.connect(address, timeout);
         running = true;
         startSendingThread();
-        //startReceivingThread();
+        startReceivingThread();
         //serverSocket = new ServerSocket(this.address.getPort());
         //serverSocket.setSoTimeout(TIMEOUT);
 
@@ -104,7 +107,6 @@ public class HexaServer {
 
     /**
      * Starts asynchronous thread. continuously sends everything contained in the "toSend" buffer.
-     *
      */
     public void startSendingThread() {
         final List<Packet>        sendBuffer = new ArrayList<>();
@@ -149,7 +151,6 @@ public class HexaServer {
 
     /**
      * Starts asynchronous thread. continuously receives everything and saves it in the "toCall" buffer.
-     *
      */
     public void startReceivingThread() {
         final List<Packet>        receiveBuffer = new ArrayList<>();
@@ -160,18 +161,29 @@ public class HexaServer {
                     receiveBuffer.clear();
 
                     try {
-                        //Scanner in = new Scanner(socket.getInputStream());
-                        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-                        Packet packet = (Packet) in.readObject();
+                        Scanner in = new Scanner(socket.getInputStream());
+                        //ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
-                        receiveBuffer.add(packet);
-                    } catch (IOException | ClassNotFoundException e) {
+                        while (in.hasNext()) {
+                            String stringPacket = in.nextLine();
+                            System.out.println("I received a packet! " + stringPacket);
+                            Packet packet = Packet.deserialize(stringPacket);
+                            if (packet == null) {
+                                System.out.println("Packet is null :(");
+                            } else {
+                                //System.out.println(packet.getType().name() + " -> " + packet.getClass().getName());
+                            }
+                            //receiveBuffer.add(packet);
+                            synchronized (receivingLock) {
+                                toCall.add(packet);
+                            }
+                        }
+
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
 
-                    synchronized (receivingLock) {
-                        toCall.addAll(receiveBuffer);
-                    }
+
 
                     receiveBuffer.clear();
                 }
@@ -183,11 +195,12 @@ public class HexaServer {
         synchronized (receivingLock) {
             for (int i=0; i<toCall.size(); i++) {
                 try {
-                    listener.call(toCall.get(i));
+                    packetListener.call(toCall.get(i));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
+            toCall.clear();
         }
     }
 
@@ -210,10 +223,14 @@ public class HexaServer {
             return;
         }
         lastKeepAliveSent = System.currentTimeMillis();
-        send(new PacketKeepAlive(clientID, 1));
+        send(new PacketKeepAlive(senderId, 1));
     }
 
     public SessionData getSessionData() {
         return sessionData;
+    }
+
+    public boolean isHost() {
+        return sessionData != null;
     }
 }

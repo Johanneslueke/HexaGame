@@ -20,6 +20,7 @@ import com.hexagon.game.util.MenuUtil;
 
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.UUID;
 
 import de.svdragster.logica.util.Delegate;
 
@@ -28,6 +29,8 @@ import de.svdragster.logica.util.Delegate;
  */
 
 public class GameManager {
+
+    public static GameManager instance;
 
     private ScreenGame      game;
     private WindowManager   windowManager;
@@ -39,87 +42,102 @@ public class GameManager {
 
     HexaServer                  server;
 
-    public GameManager(ScreenGame game) {
-        this.game = game;
+    public GameManager() {
+        instance = this;
         this.windowManager = game.getWindowManager();
         this.stage = game.getStage();
 
         standardWindow = new GroupWindow(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),stage);
 
+    }
+
+    public void connect(boolean isHost) {
         server = new HexaServer(
                 "localhost",
-                25565
-                );
+                25565,
+                isHost
+        );
 
-        server.setDispatchTable(new Hashtable<PacketType, Delegate>(){{
-            put(PacketType.KEEPALIVE, new Delegate() {
-                @Override
-                public void invoke(Object... args) throws Exception {
-                    System.out.println("Received Keep Alive");
-                    PacketKeepAlive packet = (PacketKeepAlive)args[0];
-                    server.send(new PacketKeepAlive());
-                }
-            });
+        if (isHost) {
+            HexaServer.senderId = UUID.fromString("e84223f7-f8dd-4ea4-8494-25ef9d27a1a9");
+        } else {
+            HexaServer.senderId = UUID.fromString("525183d9-1a5a-40e1-a712-e3099282c341");
+        }
 
-            put(PacketType.JOIN, new Delegate() {
-                @Override
-                public void invoke(Object... args) throws Exception {
-                    System.out.println("Received JOIN");
-                    PacketJoin packet = (PacketJoin)args[0];
-                    server.getSessionData().addNewPlayer(packet.getLocalClientID(),packet.getUsername());
+        server.setDispatchTable(new Hashtable<PacketType, Delegate>() {{
+                put(PacketType.KEEPALIVE, new Delegate() {
+                    @Override
+                    public void invoke(Object... args) throws Exception {
+                        System.out.println("Received Keep Alive");
+                        PacketKeepAlive packet = (PacketKeepAlive) args[0];
+                        //server.send(new PacketKeepAlive());
+                    }
+                });
 
+                put(PacketType.JOIN, new Delegate() {
+                    @Override
+                    public void invoke(Object... args) throws Exception {
+                        System.out.println("Received JOIN");
+                        PacketJoin packet = (PacketJoin) args[0];
+                        if (server.isHost()) {
+                            server.getSessionData().addNewPlayer(packet.getSenderId(), packet.getUsername());
+                            System.out.println(packet.getUsername() + " has joined the game (I AM THE SERVER)");
+                            server.send(new PacketJoin(packet.getUsername(), packet.getSenderId(), packet.getVersion()));
+                        } else {
+                            System.out.println(packet.getUsername() + " has joined the game");
+                        }
 
-                }
-            });
+                    }
+                });
 
-            put(PacketType.LEAVE, new Delegate() {
-                @Override
-                public void invoke(Object... args) throws Exception {
-                    System.out.println("Received LEAVE");
+                put(PacketType.LEAVE, new Delegate() {
+                    @Override
+                    public void invoke(Object... args) throws Exception {
+                        System.out.println("Received LEAVE");
 
-                }
-            });
+                    }
+                });
 
-            put(PacketType.BUILD, new Delegate() {
-                @Override
-                public void invoke(Object... args) throws Exception {
-                    System.out.println("Received BUILD");
+                put(PacketType.BUILD, new Delegate() {
+                    @Override
+                    public void invoke(Object... args) throws Exception {
+                        System.out.println("Received BUILD");
 
-                }
-            });
+                    }
+                });
 
-            put(PacketType.DESTROY, new Delegate() {
-                @Override
-                public void invoke(Object... args) throws Exception {
-                    System.out.println("Received DESTROY");
+                put(PacketType.DESTROY, new Delegate() {
+                    @Override
+                    public void invoke(Object... args) throws Exception {
+                        System.out.println("Received DESTROY");
 
-                }
-            });
+                    }
+                });
 
-            put(PacketType.TRADE, new Delegate() {
-                @Override
-                public void invoke(Object... args) throws Exception {
-                    System.out.println("Received TRADE");
+                put(PacketType.TRADE, new Delegate() {
+                    @Override
+                    public void invoke(Object... args) throws Exception {
+                        System.out.println("Received TRADE");
 
-                }
-            });
+                    }
+                });
 
-            put(PacketType.TERMINATE, new Delegate() {
-                @Override
-                public void invoke(Object... args) throws Exception {
-                    System.out.println("Received TERMINATE");
+                put(PacketType.TERMINATE, new Delegate() {
+                    @Override
+                    public void invoke(Object... args) throws Exception {
+                        System.out.println("Received TERMINATE");
 
-                }
-            });
+                    }
+                });
 
-            put(PacketType.MAPUPDATE, new Delegate() {
-                @Override
-                public void invoke(Object... args) throws Exception {
-                    System.out.println("Received MAPUPDATE");
+                put(PacketType.MAPUPDATE, new Delegate() {
+                    @Override
+                    public void invoke(Object... args) throws Exception {
+                        System.out.println("Received MAPUPDATE");
 
-                }
-            });
-        }}
+                    }
+                });
+            }}
         );
 
         try {
@@ -212,6 +230,16 @@ public class GameManager {
 
         game.getWindowManager().getWindowList().add(standardWindow);
 
+    }
+
+
+
+    public ScreenGame getGame() {
+        return game;
+    }
+
+    public void setGame(ScreenGame game) {
+        this.game = game;
     }
 
 

@@ -353,11 +353,23 @@ public class ScreenGame extends HexagonScreen {
         batch.end();
     }
 
+    private float callEventsTime = 0;
+    private void update(float delta) {
+        inputGame.update(delta);
+        if (gameManager.server != null) {
+
+            callEventsTime += delta;
+            if (callEventsTime >= 1.0) {
+                gameManager.server.callEvents();
+                callEventsTime = 0;
+            }
+        }
+    }
+
     @Override
     public void create() {
 
-
-        gameManager = new GameManager(this);
+        gameManager = GameManager.instance;
         setupModels();
         setupCamera(new Point(0,6,0),new Point(0,0, -3),67,1,300);
         setupEnvironment(
@@ -385,7 +397,7 @@ public class ScreenGame extends HexagonScreen {
 
     @Override
     public void render(float delta) {
-        inputGame.update(delta);
+        this.update(delta);
 
         ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);
         Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
@@ -393,10 +405,10 @@ public class ScreenGame extends HexagonScreen {
         Gdx.gl.glEnable(GL20.GL_BLEND);
 
 
-        renderShadow();
-        renderModels();
+        //renderShadow();
+        //renderModels();
         renderUI();
-        renderDEBUGMETA();
+        //renderDEBUGMETA();
 
         //Main.engine.run(delta);
 
