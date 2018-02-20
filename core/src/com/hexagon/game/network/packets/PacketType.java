@@ -6,19 +6,29 @@ package com.hexagon.game.network.packets;
 
 public enum PacketType {
 
-    KEEPALIVE((byte)(1<<0)),
-    JOIN((byte)(1<<1)),
-    LEAVE((byte)(1<<2)),
-    BUILD((byte)(1<<3)),
-    DESTROY((byte)(1<<4)),
-    TRADE((byte)(1<<5)),
-    MAPUPDATE((byte)(1<<6)),
-    TERMINATE((byte) (1<<7));
+    KEEPALIVE((byte) 0x00),
+    REGISTER((byte) 0x01),
+    JOIN((byte) 0x02),
+    LEAVE((byte) 0x03),
+    BUILD((byte) 0x04),
+    DESTROY((byte) 0x04),
+    TRADE((byte) 0x05),
+    MAPUPDATE((byte) 0x06),
+    TERMINATE((byte) 0x07);
 
     public byte ID;
 
     PacketType(byte id){
         this.ID = id;
+    }
+
+    public static PacketType valueOf(byte b) {
+        for (int i=0; i<values().length; i++) {
+            if (values()[i].ID == b) {
+                return values()[i];
+            }
+        }
+        return null;
     }
 
 

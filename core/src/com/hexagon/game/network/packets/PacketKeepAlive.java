@@ -10,13 +10,13 @@ public class PacketKeepAlive extends Packet {
 
     private int sessionID;
 
-    public PacketKeepAlive(PacketType type, int sessionID) {
-        super(type);
+    public PacketKeepAlive(int sessionID) {
+        super(PacketType.KEEPALIVE);
         this.sessionID = sessionID;
     }
 
-    public PacketKeepAlive(PacketType type, UUID clientID,int sessionID) {
-        super(type, clientID);
+    public PacketKeepAlive(UUID clientID, int sessionID) {
+        super(PacketType.KEEPALIVE, clientID);
         this.sessionID = sessionID;
     }
 
@@ -28,5 +28,8 @@ public class PacketKeepAlive extends Packet {
         this.sessionID = sessionID;
     }
 
-
+    @Override
+    public String serialize() {
+        return super.serialize() + sessionID + ";";
+    }
 }

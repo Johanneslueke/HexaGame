@@ -13,15 +13,13 @@ import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.graphics.ui.windows.Window;
 import com.hexagon.game.network.HexaServer;
-import com.hexagon.game.network.SessionData;
 import com.hexagon.game.network.packets.PacketJoin;
-import com.hexagon.game.network.packets.PacketListener;
+import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketType;
 import com.hexagon.game.util.MenuUtil;
 
 import java.io.IOException;
 import java.util.Hashtable;
-import java.util.concurrent.Callable;
 
 import de.svdragster.logica.util.Delegate;
 
@@ -40,7 +38,6 @@ public class GameManager {
 
 
     HexaServer                  server;
-    private final SessionData   sessionData = new SessionData();
 
     public GameManager(ScreenGame game) {
         this.game = game;
@@ -51,75 +48,80 @@ public class GameManager {
 
         server = new HexaServer(
                 "localhost",
-                25565,
-                new Hashtable<PacketType, Delegate>(){{
-                    put(PacketType.KEEPALIVE, new Delegate() {
-                        @Override
-                        public void invoke(Object... args) throws Exception {
-                            System.out.println("Received Keep Alive");
-                        }
-                    });
-
-                    put(PacketType.JOIN, new Delegate() {
-                        @Override
-                        public void invoke(Object... args) throws Exception {
-                            System.out.println("Received JOIN");
-                            PacketJoin packet = (PacketJoin)args[0];
-                            sessionData.addNewPlayer(packet.getLocalClientID(),packet.getUsername());
-
-
-                        }
-                    });
-
-                    put(PacketType.LEAVE, new Delegate() {
-                        @Override
-                        public void invoke(Object... args) throws Exception {
-                            System.out.println("Received LEAVE");
-
-                        }
-                    });
-
-                    put(PacketType.BUILD, new Delegate() {
-                        @Override
-                        public void invoke(Object... args) throws Exception {
-                            System.out.println("Received BUILD");
-
-                        }
-                    });
-
-                    put(PacketType.DESTROY, new Delegate() {
-                        @Override
-                        public void invoke(Object... args) throws Exception {
-                            System.out.println("Received DESTROY");
-
-                        }
-                    });
-
-                    put(PacketType.TRADE, new Delegate() {
-                        @Override
-                        public void invoke(Object... args) throws Exception {
-                            System.out.println("Received TRADE");
-
-                        }
-                    });
-
-                    put(PacketType.TERMINATE, new Delegate() {
-                        @Override
-                        public void invoke(Object... args) throws Exception {
-                            System.out.println("Received TERMINATE");
-
-                        }
-                    });
-
-                    put(PacketType.MAPUPDATE, new Delegate() {
-                        @Override
-                        public void invoke(Object... args) throws Exception {
-                            System.out.println("Received MAPUPDATE");
-
-                        }
-                    });
-                }}
+                25565
                 );
+
+        server.setDispatchTable(new Hashtable<PacketType, Delegate>(){{
+            put(PacketType.KEEPALIVE, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    System.out.println("Received Keep Alive");
+                    PacketKeepAlive packet = (PacketKeepAlive)args[0];
+                    server.send(new PacketKeepAlive());
+                }
+            });
+
+            put(PacketType.JOIN, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    System.out.println("Received JOIN");
+                    PacketJoin packet = (PacketJoin)args[0];
+                    server.getSessionData().addNewPlayer(packet.getLocalClientID(),packet.getUsername());
+
+
+                }
+            });
+
+            put(PacketType.LEAVE, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    System.out.println("Received LEAVE");
+
+                }
+            });
+
+            put(PacketType.BUILD, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    System.out.println("Received BUILD");
+
+                }
+            });
+
+            put(PacketType.DESTROY, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    System.out.println("Received DESTROY");
+
+                }
+            });
+
+            put(PacketType.TRADE, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    System.out.println("Received TRADE");
+
+                }
+            });
+
+            put(PacketType.TERMINATE, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    System.out.println("Received TERMINATE");
+
+                }
+            });
+
+            put(PacketType.MAPUPDATE, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    System.out.println("Received MAPUPDATE");
+
+                }
+            });
+        }}
+        );
+
         try {
             server.connect(1000);
         } catch (IOException e) {

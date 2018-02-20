@@ -16,12 +16,14 @@ import com.hexagon.game.map.Point;
 import com.hexagon.game.map.TileLocation;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
-import com.hexagon.game.network.packets.PacketKeepAlive;
-import com.hexagon.game.network.packets.PacketType;
+import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.packets.PacketJoin;
+import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.util.CameraHelper;
 import com.hexagon.game.util.HexagonUtil;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import de.svdragster.logica.components.Component;
 import de.svdragster.logica.components.ComponentProducer;
@@ -93,7 +95,14 @@ public class InputGame extends HexInput {
         if (keycode == Input.Keys.ENTER) {
             //System.out.println("Enter");
             //Main.engine.BroadcastMessage(123);
-            screenGame.gameManager.server.send(new PacketKeepAlive(PacketType.KEEPALIVE, 1234));
+            screenGame.gameManager.server.send(new PacketRegister(
+                    UUID.fromString("e84223f7-f8dd-4ea4-8494-25ef9d27a1a9"),
+                    "Raum 9"));
+        }
+        if (keycode == Input.Keys.P) {
+            //System.out.println("Enter");
+            //Main.engine.BroadcastMessage(123);
+            screenGame.gameManager.server.send(new PacketJoin("Sven", HexaServer.clientID,"1.0"));
         }
         return false;
     }

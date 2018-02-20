@@ -1,7 +1,6 @@
 package com.hexagon.game.network.packets;
 
 import com.hexagon.game.map.Point;
-import com.hexagon.game.map.structures.Structure;
 import com.hexagon.game.map.structures.StructureType;
 
 import java.util.UUID;
@@ -10,7 +9,7 @@ import java.util.UUID;
  * Created by Johannes on 19.02.2018.
  */
 
-public class PacketBuild extends Packet {
+public class PacketBuild extends Packet{
 
     private Point           PositionOnMap;
     private StructureType   Structure;

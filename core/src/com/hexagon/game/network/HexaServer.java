@@ -1,6 +1,7 @@
 package com.hexagon.game.network;
 
 import com.hexagon.game.network.packets.Packet;
+import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketListener;
 import com.hexagon.game.network.packets.PacketType;
 
@@ -10,11 +11,9 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 
 import de.svdragster.logica.util.Delegate;
 
@@ -24,10 +23,12 @@ import de.svdragster.logica.util.Delegate;
 
 public class HexaServer {
 
-    private static final int TIMEOUT = 30_000;
+    private static final int    TIMEOUT = 30_000;
+
+    public static UUID          clientID = UUID.fromString("525183d9-1a5a-40e1-a712-e3099282c341");
 
     /**
-     * connection stuff by Sven ;)
+     * connection stuff
      */
     private Socket              socket;
     private InetSocketAddress   address;
@@ -44,20 +45,23 @@ public class HexaServer {
     private PacketListener      packetListener;
     private UUID                LocalClientID = UUID.randomUUID();
 
+    private long                lastKeepAliveSent = System.currentTimeMillis();
+
+
+    private final SessionData   sessionData = new SessionData();
+
     /**
      * Acts on Events
      */
     private PacketListener listener;
 
 
-    public HexaServer(String address, int port, Map<PacketType,Delegate> DispatchTable) {
-        this(DispatchTable);
+    public HexaServer(String address, int port) {
         this.address =   new InetSocketAddress(address, port);
     }
 
-    public HexaServer(Map<PacketType,Delegate> DispatchTable) {
-        socket = new Socket();
-        packetListener = new PacketListener(DispatchTable);
+    public void setDispatchTable(Map<PacketType, Delegate> dispatchTable) {
+        packetListener = new PacketListener(dispatchTable);
     }
 
     public void connect(int timeout) throws IOException {
@@ -121,10 +125,14 @@ public class HexaServer {
                         //ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
                         for (int i = 0; i < sendBuffer.size(); i++) {
-                            System.out.println("Sending " + sendBuffer.get(i).getClass().getName());
 
-                            out.println();
+                            Packet packet = sendBuffer.get(i);
+
+                            System.out.println("Sending " + packet.getClass().getName());
+                            System.out.println("--> '" + packet.serialize() + "'");
+                            out.println(packet.serialize());
                             out.flush();
+
                             System.out.println("done");
                         }
                     } catch (IOException e) {
@@ -195,5 +203,17 @@ public class HexaServer {
 
     public UUID getLocalClientID() {
         return LocalClientID;
+    }
+
+    public void broadcastKeepAlive() {
+        if (System.currentTimeMillis() - lastKeepAliveSent <= 5_000) {
+            return;
+        }
+        lastKeepAliveSent = System.currentTimeMillis();
+        send(new PacketKeepAlive(clientID, 1));
+    }
+
+    public SessionData getSessionData() {
+        return sessionData;
     }
 }

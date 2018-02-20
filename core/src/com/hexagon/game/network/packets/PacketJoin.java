@@ -25,19 +25,11 @@ public class PacketJoin extends Packet {
     private String Version;
 
 
-    public PacketJoin(PacketType type, String username,UUID clientID,String version) {
-        super(type);
+    public PacketJoin(String username,UUID clientID,String version) {
+        super(PacketType.JOIN);
 
         this.localClientID = clientID;
         this.Username = username;
-        this.Version = version;
-    }
-
-    public PacketJoin(PacketType type, UUID globalClientID, String username,UUID clientID,String version) {
-        super(type, globalClientID);
-
-        this.Username = username;
-        this.localClientID = clientID;
         this.Version = version;
     }
 
