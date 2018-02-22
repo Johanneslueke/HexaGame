@@ -1,6 +1,7 @@
 package com.hexagon.game.graphics.ui;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.hexagon.game.graphics.ui.UpdateEvent;
 
 /**
  * Created by Sven on 19.12.2017.

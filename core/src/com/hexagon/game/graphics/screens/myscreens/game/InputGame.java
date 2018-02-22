@@ -17,6 +17,7 @@ import com.hexagon.game.map.TileLocation;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.packets.Packet;
 import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.util.CameraHelper;
@@ -102,6 +103,10 @@ public class InputGame extends HexInput {
                 screenGame.gameManager.server.send(new PacketRegister(
                         HexaServer.senderId, // This is the host id
                         "Raum 8"));
+                Packet packet = screenGame.gameManager.server.receive();
+
+                if(packet != null)
+                    System.out.println(packet.serialize());
             }
         }
         if (keycode == Input.Keys.P) {

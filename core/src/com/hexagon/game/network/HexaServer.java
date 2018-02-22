@@ -99,8 +99,11 @@ public class HexaServer {
         });
          */
         synchronized (receivingLock){
-            return toCall.remove(toCall.size());
+            if(!toCall.isEmpty())
+                return toCall.remove(toCall.size());
         }
+
+        return null;
     }
 
     public void send(Packet packet) {
