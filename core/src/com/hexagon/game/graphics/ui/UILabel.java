@@ -53,6 +53,11 @@ public class UILabel extends UiElement {
     }
 
     @Override
+    public void removeFromStage(Stage stage) {
+        stage.getActors().removeValue(this.Label, false);
+    }
+
+    @Override
     public void show(Stage stage) {
         this.Label.setVisible(true);
     }

@@ -2,18 +2,25 @@ package com.hexagon.game.graphics.screens.myscreens.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.hexagon.game.graphics.screens.ScreenManager;
+import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
 import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.UpdateEvent;
 import com.hexagon.game.graphics.ui.WindowManager;
+import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.graphics.ui.windows.Window;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
+import com.hexagon.game.network.packets.PacketServerList;
 import com.hexagon.game.network.packets.PacketType;
 import com.hexagon.game.util.MenuUtil;
 
@@ -39,7 +46,7 @@ public class GameManager {
     FadeWindow              spaceWindow;
 
 
-    HexaServer                  server;
+    public HexaServer                  server;
 
     public GameManager() {
         instance = this;
@@ -85,9 +92,19 @@ public class GameManager {
                         if (server.isHost()) {
                             server.getSessionData().addNewPlayer(packet.getSenderId(), packet.getUsername());
                             System.out.println(packet.getUsername() + " has joined the game (I AM THE SERVER)");
+
+                            // I'm the host, so I have to broadcast to my players that a new player has joined the game
                             server.send(new PacketJoin(packet.getUsername(), packet.getSenderId(), packet.getVersion()));
                         } else {
-                            System.out.println(packet.getUsername() + " has joined the game");
+
+                            // I'm not the host, so either a new player has joined the game or I have joined the game
+                            System.out.println(HexaServer.senderId.toString() + " ////// " + packet.getHostId().toString());
+                            if (packet.getHostId().equals(HexaServer.senderId)) {
+                                System.out.println("==== YOU HAVE JOINED THE GAME!! (Username: " + packet.getUsername() + ")");
+                                ScreenManager.getInstance().setCurrentScreen(ScreenType.LOBBY);
+                            } else {
+                                System.out.println(packet.getUsername() + " has joined the game");
+                            }
                         }
 
                     }
@@ -138,6 +155,35 @@ public class GameManager {
                     public void invoke(Object... args) throws Exception {
                         System.out.println("Received MAPUPDATE");
 
+                    }
+                });
+
+                put(PacketType.SERVER_LIST, new Delegate() {
+                    @Override
+                    public void invoke(Object... args) throws Exception {
+                        PacketServerList packetServerList = (PacketServerList) args[0];
+                        System.out.println("Received SERVER_LIST " + packetServerList.entries.size());
+                        if (ScreenManager.getInstance().getCurrentScreen().getScreenType() == ScreenType.JOIN) {
+                            final ScreenJoin screenJoin = (ScreenJoin) ScreenManager.getInstance().getCurrentScreen();
+
+                            screenJoin.subwindowServers.removeButtons(screenJoin.getStage());
+
+                            for (final PacketServerList.Entry entry : packetServerList.entries) {
+                                screenJoin.subwindowServers.add(new UiButton(entry.room,
+                                        30, 0, 100, 40,
+                                        screenJoin.getStage(),
+                                        new ChangeListener() {
+                                            @Override
+                                            public void changed(ChangeEvent event, Actor actor) {
+                                                System.out.println("Clicked room " + entry.room);
+                                                screenJoin.joinRoom(entry.host, entry.room);
+                                            }
+                                        }), screenJoin.getStage());
+                            }
+
+                            screenJoin.subwindowServers.orderAllNeatly(1);
+                            screenJoin.subwindowServers.updateElements();
+                        }
                     }
                 });
             }}
@@ -239,5 +285,11 @@ public class GameManager {
         return game;
     }
 
+    public Stage getStage() {
+        return stage;
+    }
 
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
 }

@@ -2,7 +2,9 @@ package com.hexagon.game.graphics.ui.windows;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.graphics.ui.UiElement;
+import com.hexagon.game.graphics.ui.buttons.UiButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +42,7 @@ public class Window {
             elementList.get(i).update();
         }
         renderer.set(ShapeRenderer.ShapeType.Filled);
-        renderer.setColor(0f, 0f, 0.0f, 0.5f);
+        renderer.setColor(0f, 0f, 0.0f, 0.6f);
         renderer.rect(x, y, width, height);
     }
 
@@ -56,6 +58,35 @@ public class Window {
         for (UiElement element : elementList) {
             element.hide(stage);
         }
+    }
+
+    public void removeButtons(Stage stage) {
+        List<UiElement> toRemove = new ArrayList<>();
+        for (UiElement element : elementList) {
+            if (element instanceof UiButton) {
+                element.removeFromStage(stage);
+                toRemove.add(element);
+            }
+        }
+        elementList.removeAll(toRemove);
+    }
+
+    public void removeLabels(Stage stage) {
+        List<UiElement> toRemove = new ArrayList<>();
+        for (UiElement element : elementList) {
+            if (element instanceof UILabel) {
+                element.removeFromStage(stage);
+                toRemove.add(element);
+            }
+        }
+        elementList.removeAll(toRemove);
+    }
+
+    public void removeAll(Stage stage) {
+        for (UiElement element : elementList) {
+            element.removeFromStage(stage);
+        }
+        elementList.clear();
     }
 
     public void add(UiElement element, Stage stage) {

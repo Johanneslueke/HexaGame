@@ -24,6 +24,7 @@ import de.svdragster.logica.util.Delegate;
 public class HexaServer {
 
     private static final int    TIMEOUT = 30_000;
+    public static final String  VERSION = "0.1";
 
     public static UUID          senderId = UUID.fromString("525183d9-1a5a-40e1-a712-e3099282c341");
 
@@ -52,8 +53,8 @@ public class HexaServer {
 
 
     public HexaServer(String address, int port) {
-        this.address =   new InetSocketAddress(address, port);
-        this.socket = new Socket();
+        this.address    = new InetSocketAddress(address, port);
+        this.socket     = new Socket();
     }
 
     public HexaServer(String address, int port, boolean isHost) {
@@ -195,6 +196,10 @@ public class HexaServer {
     }
 
     public void callEvents() {
+        if (System.currentTimeMillis() - lastKeepAliveSent >= 5_000) {
+            broadcastKeepAlive();
+        }
+
         synchronized (receivingLock) {
             for (int i=0; i<toCall.size(); i++) {
                 try {
@@ -222,9 +227,7 @@ public class HexaServer {
     }
 
     public void broadcastKeepAlive() {
-        if (System.currentTimeMillis() - lastKeepAliveSent <= 5_000) {
-            return;
-        }
+
         lastKeepAliveSent = System.currentTimeMillis();
         send(new PacketKeepAlive(senderId, 1));
     }

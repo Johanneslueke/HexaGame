@@ -30,6 +30,8 @@ public abstract class UiElement {
 
     public abstract void addToStage(Stage stage);
 
+    public abstract void removeFromStage(Stage stage);
+
     public abstract void show(Stage stage);
 
     public abstract void hide(Stage stage);
@@ -83,7 +85,9 @@ public abstract class UiElement {
     }
 
     public void update() {
-        updateEvent.onUpdate();
+        if (updateEvent != null) {
+            updateEvent.onUpdate();
+        }
     }
 
     public void setUpdateEvent(UpdateEvent updateEvent) {

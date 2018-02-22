@@ -10,6 +10,7 @@ public enum ScreenType {
     MAIN_MENU,
     HOST,
     JOIN,
+    LOBBY, // when you joined a game but not actually playing yet
     GAME,
 
     DEMOJoJo,

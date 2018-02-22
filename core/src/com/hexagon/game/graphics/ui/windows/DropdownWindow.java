@@ -27,7 +27,9 @@ public class DropdownWindow extends Window {
             int row = i / columns;
             int col = i % columns;
 
-            element.setX(col * element.getWidth() + 10);
+            if (columns > 1) {
+                element.setX(col * element.getWidth() + 10);
+            }
             element.setY(row * element.getHeight() + 10);
 
             element.setDisplayX(getX() + element.getX());

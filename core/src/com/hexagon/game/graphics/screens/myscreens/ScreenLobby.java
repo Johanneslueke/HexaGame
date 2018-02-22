@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
-import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
+import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
@@ -23,16 +23,21 @@ import com.hexagon.game.util.MenuUtil;
 /**
  * Allows you to create a server that other players can join to
  */
-public class ScreenHost extends HexagonScreen {
+public class ScreenLobby extends HexagonScreen {
+
+    public static String roomName = "Room";
 
     private SpriteBatch batch;
     private BitmapFont font;
 
-    public ScreenHost() {
-        super(ScreenType.HOST);
+    public ScreenLobby() {
+        super(ScreenType.LOBBY);
     }
 
     private void setupUserInterface(){
+        windowManager.removeAll(getStage());
+
+        UILabel header = new UILabel(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY() + 40, 100, 40, ScreenLobby.roomName);
 
         UiButton button = new UiButton("Back", 50, Gdx.graphics.getHeight() - 50, 100, 50);
         button.addToStage(stage);
@@ -53,8 +58,8 @@ public class ScreenHost extends HexagonScreen {
         fadeWindow.add(new UiImage(0, 0, 224, 600, "sidebar.png"), stage);
 
 
-
         standardWindow.getWindowList().add(fadeWindow);
+        standardWindow.add(header, stage);
 
         /*
          * Subwindow 1: Players
@@ -62,7 +67,7 @@ public class ScreenHost extends HexagonScreen {
         final DropdownScrollableWindow subwindowPlayers = new DropdownScrollableWindow(fadeWindow.getX() + fadeWindow.getWidth() + 10, fadeWindow.getY(), 800 - fadeWindow.getWidth(), 600, 5, 5, 6);
         subwindowPlayers.add(new UiImage(0, 0, 558, 600, "window_small.png"), stage);
 
-        UiButton playersText = new UiButton("You (Host)", 0, 0, 100, 40);
+        UiButton playersText = new UiButton("You", 0, 0, 100, 40);
         UiButton playersText2 = new UiButton("Player2", 0, 0, 100, 40);
         UiButton playersText3 = new UiButton("Player3", 0, 0, 100, 40);
 
@@ -81,7 +86,7 @@ public class ScreenHost extends HexagonScreen {
          */
 
         UiButton buttonPlay = new UiButton("Players", 20, fadeWindow.getHeight() - 60, 50, 40);
-        UiButton buttonGenerateWorld = new UiButton("Generate\nWorld", 20, buttonPlay.getY() - 80, 50, 40);
+        //UiButton buttonGenerateWorld = new UiButton("Generate\nWorld", 20, buttonPlay.getY() - 80, 50, 40);
 
         buttonPlay.addListener(new ChangeListener() {
             @Override
@@ -94,15 +99,15 @@ public class ScreenHost extends HexagonScreen {
             }
         });
 
-        buttonGenerateWorld.addListener(new ChangeListener() {
+        /*buttonGenerateWorld.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ScreenManager.getInstance().setCurrentScreen(ScreenType.GENERATOR);
             }
-        });
+        });*/
 
         fadeWindow.add(buttonPlay, stage);
-        fadeWindow.add(buttonGenerateWorld, stage);
+        //fadeWindow.add(buttonGenerateWorld, stage);
 
         fadeWindow.updateElements();
 
@@ -114,25 +119,20 @@ public class ScreenHost extends HexagonScreen {
         batch = new SpriteBatch();
         font = new BitmapFont();
 
-        GameManager gameManager = GameManager.instance;
-        gameManager.connect(true);
-
-        setupUserInterface();
-
     }
 
     @Override
     public void show() {
         super.show();
 
-
+        setupUserInterface();
     }
 
     @Override
     public void render(float delta) {
         ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);
         batch.begin();
-        font.draw(batch, "Host a game", 20, 20);
+        font.draw(batch, "Room Lobby - Waiting for host to start the game", 20, 20);
         batch.end();
         stage.draw();
     }
