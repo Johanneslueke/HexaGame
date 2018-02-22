@@ -9,27 +9,39 @@ import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
+import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
+import com.hexagon.game.graphics.ui.windows.Window;
+import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.packets.PacketJoin;
+import com.hexagon.game.network.packets.PacketServerList;
 import com.hexagon.game.util.MenuUtil;
+
+import java.util.UUID;
 
 /**
  * Created by Sven on 14.12.2017.
  */
 
 /**
- * Allows you to create a server that other players can join to
+ * Displays a list of servers
  */
-public class ScreenHost extends HexagonScreen {
+public class ScreenJoin extends HexagonScreen {
+
+    public DropdownScrollableWindow subwindowServers;
+
+    public boolean joining = false;
+    public Window messageBox;
 
     private SpriteBatch batch;
     private BitmapFont font;
 
-    public ScreenHost() {
-        super(ScreenType.HOST);
+    public ScreenJoin() {
+        super(ScreenType.JOIN);
     }
 
     private void setupUserInterface(){
@@ -57,52 +69,52 @@ public class ScreenHost extends HexagonScreen {
         standardWindow.getWindowList().add(fadeWindow);
 
         /*
-         * Subwindow 1: Players
+         * Subwindow 1: Servers
          */
-        final DropdownScrollableWindow subwindowPlayers = new DropdownScrollableWindow(fadeWindow.getX() + fadeWindow.getWidth() + 10, fadeWindow.getY(), 800 - fadeWindow.getWidth(), 600, 5, 5, 6);
-        subwindowPlayers.add(new UiImage(0, 0, 558, 600, "window_small.png"), stage);
+        subwindowServers = new DropdownScrollableWindow(fadeWindow.getX() + fadeWindow.getWidth() + 10, fadeWindow.getY(), 800 - fadeWindow.getWidth(), 600, 5, 5, 6);
+        subwindowServers.add(new UiImage(0, 0, 558, 600, "window_small.png"), stage);
 
-        UiButton playersText = new UiButton("You (Host)", 0, 0, 100, 40);
-        UiButton playersText2 = new UiButton("Player2", 0, 0, 100, 40);
-        UiButton playersText3 = new UiButton("Player3", 0, 0, 100, 40);
+        UiButton playersText    = new UiButton("Loading Rooms", 50, 0, 100, 40);
 
 
-        subwindowPlayers.add(playersText, stage);
-        subwindowPlayers.add(playersText2, stage);
-        subwindowPlayers.add(playersText3, stage);
+        subwindowServers.add(playersText, stage);
 
-        subwindowPlayers.orderAllNeatly(1);
+        subwindowServers.orderAllNeatly(1);
 
-        subwindowPlayers.updateElements();
-        standardWindow.getWindowList().add(subwindowPlayers);
+        subwindowServers.updateElements();
+        standardWindow.getWindowList().add(subwindowServers);
 
         /*
          * Sidebar Buttons
          */
 
-        UiButton buttonPlay = new UiButton("Players", 20, fadeWindow.getHeight() - 60, 50, 40);
-        UiButton buttonGenerateWorld = new UiButton("Generate\nWorld", 20, buttonPlay.getY() - 80, 50, 40);
+        UiButton buttonServers = new UiButton("Servers", 20, fadeWindow.getHeight() - 60, 50, 40);
+        UiButton buttonHostGame = new UiButton("Host Game", 20, buttonServers.getY() - 80, 50, 40);
 
-        buttonPlay.addListener(new ChangeListener() {
+        buttonServers.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (subwindowPlayers.isVisible()) {
-                    standardWindow.hide(subwindowPlayers, stage);
+                if (subwindowServers.isVisible()) {
+                    standardWindow.hide(subwindowServers, stage);
+
                 } else {
-                    standardWindow.show(subwindowPlayers, stage);
+                    standardWindow.show(subwindowServers, stage);
+                    GameManager.instance.server.send(
+                            new PacketServerList() // Requests a list of servers
+                    );
                 }
             }
         });
 
-        buttonGenerateWorld.addListener(new ChangeListener() {
+        buttonHostGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ScreenManager.getInstance().setCurrentScreen(ScreenType.GENERATOR);
+                ScreenManager.getInstance().setCurrentScreen(ScreenType.HOST);
             }
         });
 
-        fadeWindow.add(buttonPlay, stage);
-        fadeWindow.add(buttonGenerateWorld, stage);
+        fadeWindow.add(buttonServers, stage);
+        fadeWindow.add(buttonHostGame, stage);
 
         fadeWindow.updateElements();
 
@@ -115,7 +127,7 @@ public class ScreenHost extends HexagonScreen {
         font = new BitmapFont();
 
         GameManager gameManager = GameManager.instance;
-        gameManager.connect(true);
+        gameManager.connect(false);
 
         setupUserInterface();
 
@@ -125,16 +137,28 @@ public class ScreenHost extends HexagonScreen {
     public void show() {
         super.show();
 
-
     }
 
     @Override
     public void render(float delta) {
+        GameManager.instance.server.callEvents();
+
         ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);
         batch.begin();
-        font.draw(batch, "Host a game", 20, 20);
+        font.draw(batch, "Join a game", 20, 20);
         batch.end();
+
+        if (!joining && messageBox != null && messageBox.isVisible()) {
+            messageBox.hide(getStage());
+        }
+
         stage.draw();
+
+        if (joining) {
+            shapeRenderer.begin();
+            windowManager.render(shapeRenderer);
+            shapeRenderer.end();
+        }
     }
 
     @Override
@@ -158,5 +182,27 @@ public class ScreenHost extends HexagonScreen {
         font.dispose();
         stage.dispose();
         batch.dispose();
+    }
+
+    public void joinRoom(UUID hostUuid, String roomName) {
+        if (joining) {
+            return;
+        }
+        joining = true;
+        if (messageBox != null) {
+            messageBox.removeLabels(getStage());
+        } else {
+            messageBox = new Window(MenuUtil.getInstance().getX() + 50, MenuUtil.getInstance().getY() + 50, 800 - 100, 600 - 100);
+            windowManager.getWindowList().add(messageBox);
+        }
+
+        UILabel label = new UILabel(50, 50, 300, 100, "Joining room " + roomName + "...");
+        messageBox.add(label, getStage());
+
+        messageBox.show(getStage());
+
+        GameManager.instance.server.send(
+                new PacketJoin("MyUsername", hostUuid, HexaServer.VERSION)
+        );
     }
 }

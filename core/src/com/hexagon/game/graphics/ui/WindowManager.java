@@ -2,6 +2,7 @@ package com.hexagon.game.graphics.ui;
 
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 import com.hexagon.game.graphics.ui.windows.Window;
 
@@ -31,13 +32,10 @@ public class WindowManager implements InputProcessor {
         }
     }
 
-    public void registerInput() {
-
-
-    }
-
-    public void unregisterInput() {
-
+    public void removeAll(Stage stage) {
+        for (Window window : windowList) {
+            window.removeAll(stage);
+        }
     }
 
     @Override

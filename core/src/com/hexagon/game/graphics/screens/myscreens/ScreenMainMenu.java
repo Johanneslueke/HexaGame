@@ -109,8 +109,16 @@ public class ScreenMainMenu extends HexagonScreen {
             }
         });
 
+        playJoin.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ScreenManager.getInstance().setCurrentScreen(ScreenType.JOIN);
+            }
+        });
+
         subwindowPlay.add(playText, stage);
         subwindowPlay.add(playHost, stage);
+        subwindowPlay.add(playJoin, stage);
 
         subwindowPlay.updateElements();
         standardWindow.getWindowList().add(subwindowPlay);

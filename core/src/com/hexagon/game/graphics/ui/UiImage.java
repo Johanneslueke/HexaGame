@@ -28,6 +28,11 @@ public class UiImage extends UiElement {
     }
 
     @Override
+    public void removeFromStage(Stage stage) {
+        stage.getActors().removeValue(this.image, false);
+    }
+
+    @Override
     public void show(Stage stage) {
         image.setVisible(true);
     }

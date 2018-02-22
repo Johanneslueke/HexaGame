@@ -28,6 +28,7 @@ public class Main extends Game {
 	public void create () {
 	    instance = this;
 
+		new GameManager();
 	    new MenuUtil();
         new InputManager();
         new MapManager();
@@ -55,7 +56,7 @@ public class Main extends Game {
         );
 
 
-		new GameManager(); // Init GameManager last because it depends on windows
+
 
     }
 

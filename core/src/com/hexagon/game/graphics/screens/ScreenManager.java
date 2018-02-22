@@ -6,6 +6,9 @@ import com.hexagon.game.Main;
 
 import com.hexagon.game.graphics.screens.myscreens.DemoScreen;
 import com.hexagon.game.graphics.screens.myscreens.ScreenHost;
+import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
+import com.hexagon.game.graphics.screens.myscreens.ScreenLobby;
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.screens.myscreens.game.ScreenGame;
 
 import com.hexagon.game.graphics.screens.myscreens.ScreenGenerator;
@@ -47,12 +50,16 @@ public class ScreenManager {
         screenList = new ArrayList<>();
         screenList.add(new ScreenLoading());
         screenList.add(new ScreenMainMenu());
+
         screenList.add(new ScreenHost());
+        screenList.add(new ScreenJoin());
+        screenList.add(new ScreenLobby());
+        screenList.add(new ScreenGenerator());
+
         screenList.add(new ScreenGame());
 
         screenList.add(new DemoScreen());
 
-        screenList.add(new ScreenGenerator());
 
 
         this.currentScreen = screenList.get(0); // loading screen
@@ -68,6 +75,7 @@ public class ScreenManager {
         for (HexagonScreen screen : screenList) {
             if (screen.getScreenType() == type) {
                 this.currentScreen = screen;
+                GameManager.instance.setStage(screen.getStage());
                 Main.getInstance().setScreen(screen);
                 return screen;
             }

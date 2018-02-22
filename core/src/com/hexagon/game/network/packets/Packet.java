@@ -86,10 +86,21 @@ public abstract class Packet {
                  int sessionId = Integer.parseInt(arr[offset]);
                  return new PacketKeepAlive(senderId, sessionId);
              case JOIN:
-                 UUID hostId = UUID.fromString(arr[3]);
-                 String username = arr[4];
-                 String version = arr[5];
+                 UUID hostId = UUID.fromString(arr[offset]);
+                 String username = arr[offset+1];
+                 String version = arr[offset+2];
                  return new PacketJoin(senderId, username, hostId, version);
+             case SERVER_LIST:
+                 PacketServerList packetServerList = new PacketServerList(senderId);
+                 for (int i=offset; i<arr.length; i++) {
+                     String[] strEntry = arr[i].split(",");
+                     PacketServerList.Entry entry = new PacketServerList.Entry(
+                             UUID.fromString(strEntry[0]),
+                             strEntry[1]
+                     );
+                     packetServerList.entries.add(entry);
+                 }
+                 return packetServerList;
          }
 
          return null;

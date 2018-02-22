@@ -14,7 +14,8 @@ public enum PacketType {
     DESTROY((byte) 0x04),
     TRADE((byte) 0x05),
     MAPUPDATE((byte) 0x06),
-    TERMINATE((byte) 0x07);
+    TERMINATE((byte) 0x07),
+    SERVER_LIST((byte) 0x08);
 
     public byte ID;
 

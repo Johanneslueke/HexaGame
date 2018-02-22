@@ -67,6 +67,11 @@ public class UiSkinButton extends UiElement {
     }
 
     @Override
+    public void removeFromStage(Stage stage) {
+        stage.getActors().removeValue(this.textButton, false);
+    }
+
+    @Override
     public void show(Stage stage) {
         this.textButton.setVisible(true);
     }
