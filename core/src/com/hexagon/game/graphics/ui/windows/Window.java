@@ -36,6 +36,9 @@ public class Window {
         if (!visible) {
             return;
         }
+        for (int i=0; i<elementList.size(); i++) {
+            elementList.get(i).update();
+        }
         renderer.set(ShapeRenderer.ShapeType.Filled);
         renderer.setColor(0f, 0f, 0.0f, 0.5f);
         renderer.rect(x, y, width, height);
