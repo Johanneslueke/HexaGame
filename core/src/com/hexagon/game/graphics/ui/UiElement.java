@@ -17,6 +17,8 @@ public abstract class UiElement {
     private float width;
     private float height;
 
+    private UpdateEvent updateEvent;
+
     public UiElement(float x, float y, float width, float height) {
         this.x = x;
         this.y = y;
@@ -78,5 +80,13 @@ public abstract class UiElement {
 
     public void setDisplayY(float displayY) {
         this.displayY = displayY;
+    }
+
+    public void update() {
+        updateEvent.onUpdate();
+    }
+
+    public void setUpdateEvent(UpdateEvent updateEvent) {
+        this.updateEvent = updateEvent;
     }
 }

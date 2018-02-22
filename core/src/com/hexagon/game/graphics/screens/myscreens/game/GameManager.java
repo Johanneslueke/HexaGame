@@ -2,12 +2,11 @@ package com.hexagon.game.graphics.screens.myscreens.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.graphics.ui.UiImage;
+import com.hexagon.game.graphics.ui.UpdateEvent;
 import com.hexagon.game.graphics.ui.WindowManager;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
@@ -214,13 +213,11 @@ public class GameManager {
         Window LeftSideBar = new Window(10,Gdx.graphics.getHeight()-400-20,200,400);
 
         final UILabel StatusInfos = new UILabel(10,LeftSideBar.getHeight()-50,200,50,"Test");
-        StatusInfos.addListener(new ChangeListener(){
+        StatusInfos.setUpdateEvent(new UpdateEvent(){
 
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-
+            public void onUpdate() {
                 StatusInfos.getLabel().setText("" + Gdx.graphics.getFramesPerSecond() + " FPS, " + ScreenGame.renderedTiles + " Tiles");
-
             }
         });
 

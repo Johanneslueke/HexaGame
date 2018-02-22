@@ -81,7 +81,7 @@ public class ScreenHost extends HexagonScreen {
          */
 
         UiButton buttonPlay = new UiButton("Players", 20, fadeWindow.getHeight() - 60, 50, 40);
-        UiButton buttonGenerateWorld = new UiButton("Generate World", 20, buttonPlay.getY() - 50, 50, 40);
+        UiButton buttonGenerateWorld = new UiButton("Generate\nWorld", 20, buttonPlay.getY() - 80, 50, 40);
 
         buttonPlay.addListener(new ChangeListener() {
             @Override
