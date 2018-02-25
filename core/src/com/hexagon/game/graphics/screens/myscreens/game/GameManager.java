@@ -17,6 +17,7 @@ import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.graphics.ui.windows.Window;
+import com.hexagon.game.graphics.ui.windows.WindowNotification;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
@@ -193,7 +194,11 @@ public class GameManager {
             server.connect(1000);
         } catch (IOException e) {
             System.out.println("Could not connect!");
-            //e.printStackTrace();
+            e.printStackTrace();
+            ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
+            new WindowNotification("Could not connect to the Server",
+                    ScreenManager.getInstance().getCurrentScreen().getStage(),
+                    ScreenManager.getInstance().getCurrentScreen().getWindowManager());
         }
     }
 
@@ -207,7 +212,7 @@ public class GameManager {
         /*UiButton button = new UiButton("Hello World", 50, Gdx.graphics.getHeight() - 50, 100, 50);
 
         final DropdownScrollableWindow window = new DropdownScrollableWindow(20, 0, 0, 0, 0, 0, 15);
-        windowManager.getWindowList().add(window);
+        windowManager.addWindow(window);
 
         for (int i=0; i<20; i++) {
             UiButton buttonWindow = new UiButton(String.valueOf(i), 0, 0, 50, 25);
@@ -250,7 +255,7 @@ public class GameManager {
     public void createSpaceWindow() {
         spaceWindow = new FadeWindow(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY(), 800, 600, stage);
         spaceWindow.add(new UiImage(0, 0, 800, 600, "window.png"), stage);
-        windowManager.getWindowList().add(spaceWindow);
+        windowManager.addWindow(spaceWindow);
         //standardWindow.getWindowList().add(spaceWindow);
     }
 
@@ -275,7 +280,7 @@ public class GameManager {
         standardWindow.getWindowList().add(LeftSideBar);
         standardWindow.show(stage);
 
-        windowManager.getWindowList().add(standardWindow);
+        windowManager.addWindow(standardWindow);
 
     }
 

@@ -3,18 +3,16 @@ package com.hexagon.game.graphics.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.hexagon.game.Main;
-
 import com.hexagon.game.graphics.screens.myscreens.DemoScreen;
+import com.hexagon.game.graphics.screens.myscreens.ScreenGenerator;
 import com.hexagon.game.graphics.screens.myscreens.ScreenHost;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
+import com.hexagon.game.graphics.screens.myscreens.ScreenLoading;
 import com.hexagon.game.graphics.screens.myscreens.ScreenLobby;
+import com.hexagon.game.graphics.screens.myscreens.ScreenMainMenu;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.screens.myscreens.game.ScreenGame;
-
-import com.hexagon.game.graphics.screens.myscreens.ScreenGenerator;
-
-import com.hexagon.game.graphics.screens.myscreens.ScreenLoading;
-import com.hexagon.game.graphics.screens.myscreens.ScreenMainMenu;
+import com.hexagon.game.graphics.ui.windows.WindowNotification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +82,23 @@ public class ScreenManager {
         Gdx.app.error("Hexagon", "Screen null");
         Gdx.app.exit();
         return null;
+    }
+
+    public void checkLogout(ScreenType screenType) {
+        if (GameManager.instance == null
+                || GameManager.instance.server == null) {
+            return;
+        }
+        switch (screenType) {
+            case MAIN_MENU:
+            case JOIN:
+                if (GameManager.instance.server.disconnect()) {
+                    new WindowNotification("You have disconnected from the server",
+                            getCurrentScreen().getStage(),
+                            getCurrentScreen().windowManager);
+                }
+                break;
+        }
     }
 
     /**

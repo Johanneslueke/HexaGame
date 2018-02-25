@@ -118,16 +118,13 @@ public class ScreenJoin extends HexagonScreen {
 
         fadeWindow.updateElements();
 
-        this.windowManager.getWindowList().add(standardWindow);
+        this.windowManager.addWindow(standardWindow);
     }
 
     @Override
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-
-        GameManager gameManager = GameManager.instance;
-        gameManager.connect(false);
 
         setupUserInterface();
 
@@ -137,6 +134,8 @@ public class ScreenJoin extends HexagonScreen {
     public void show() {
         super.show();
 
+        GameManager gameManager = GameManager.instance;
+        gameManager.connect(false);
     }
 
     @Override
@@ -193,7 +192,7 @@ public class ScreenJoin extends HexagonScreen {
             messageBox.removeLabels(getStage());
         } else {
             messageBox = new Window(MenuUtil.getInstance().getX() + 50, MenuUtil.getInstance().getY() + 50, 800 - 100, 600 - 100);
-            windowManager.getWindowList().add(messageBox);
+            windowManager.addWindow(messageBox);
         }
 
         UILabel label = new UILabel(50, 50, 300, 100, "Joining room " + roomName + "...");

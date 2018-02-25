@@ -47,7 +47,7 @@ public class ScreenMainMenu extends HexagonScreen {
         UiButton button = new UiButton("Hello World", 50, Gdx.graphics.getHeight() - 50, 100, 50);
 
         final DropdownScrollableWindow window = new DropdownScrollableWindow(20, 0, 0, 0, 0, 0, 15);
-        windowManager.getWindowList().add(window);
+        windowManager.addWindow(window);
 
         /*for (int i=0; i<400; i++) {
             UiButton buttonWindow = new UiButton(String.valueOf(i), 0, 0, 50, 20);
@@ -169,7 +169,7 @@ public class ScreenMainMenu extends HexagonScreen {
 
         fadeWindow.updateElements();
 
-        this.windowManager.getWindowList().add(standardWindow);
+        this.windowManager.addWindow(standardWindow);
 
     }
 
@@ -191,12 +191,12 @@ public class ScreenMainMenu extends HexagonScreen {
         batch.end();
 
 
+        stage.draw();
+
         Gdx.gl.glEnable(GL20.GL_BLEND); // allows transparent drawing
         shapeRenderer.begin();
         windowManager.render(shapeRenderer);
         shapeRenderer.end();
-
-        stage.draw();
     }
 
     @Override

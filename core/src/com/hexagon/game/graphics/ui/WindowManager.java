@@ -7,6 +7,7 @@ import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 import com.hexagon.game.graphics.ui.windows.Window;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,6 +23,11 @@ public class WindowManager implements InputProcessor {
     }
 
 
+    public void addWindow(Window window) {
+        windowList.add(window);
+        sortAll();
+    }
+
     public List<Window> getWindowList() {
         return windowList;
     }
@@ -35,6 +41,22 @@ public class WindowManager implements InputProcessor {
     public void removeAll(Stage stage) {
         for (Window window : windowList) {
             window.removeAll(stage);
+        }
+    }
+
+    public void remove(Stage stage, Window window) {
+        window.removeAll(stage);
+        windowList.remove(window);
+    }
+
+    public void sortAll() {
+        for (int i=0; i<windowList.size(); i++) {
+            System.out.println(i + " -> " + windowList.get(i).getPriority());
+        }
+        Collections.sort(windowList);
+
+        for (int i=0; i<windowList.size(); i++) {
+            System.out.println(i + " -> " + windowList.get(i).getPriority());
         }
     }
 

@@ -111,7 +111,7 @@ public class ScreenLobby extends HexagonScreen {
 
         fadeWindow.updateElements();
 
-        this.windowManager.getWindowList().add(standardWindow);
+        this.windowManager.addWindow(standardWindow);
     }
 
     @Override

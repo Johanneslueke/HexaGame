@@ -13,7 +13,9 @@ import java.util.List;
  * Created by Sven on 19.12.2017.
  */
 
-public class Window {
+public class Window implements Comparable<Window> {
+
+    private int priority = 1;
 
     private float x;
     private float y;
@@ -150,5 +152,24 @@ public class Window {
 
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    /**
+     * Windows with the highest priority will be drawn LAST!
+     * (drawn last == drawn on top of everything else)
+     * @param window The window to compare to
+     * @return priority diff
+     */
+    @Override
+    public int compareTo(Window window) {
+        return this.getPriority() - window.getPriority();
     }
 }

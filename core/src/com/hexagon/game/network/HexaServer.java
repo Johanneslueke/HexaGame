@@ -1,7 +1,12 @@
 package com.hexagon.game.network;
 
+import com.badlogic.gdx.Gdx;
+import com.hexagon.game.graphics.screens.ScreenManager;
+import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.graphics.ui.windows.WindowNotification;
 import com.hexagon.game.network.packets.Packet;
 import com.hexagon.game.network.packets.PacketKeepAlive;
+import com.hexagon.game.network.packets.PacketLeave;
 import com.hexagon.game.network.packets.PacketListener;
 import com.hexagon.game.network.packets.PacketType;
 
@@ -9,6 +14,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +29,7 @@ import de.svdragster.logica.util.Delegate;
 
 public class HexaServer {
 
-    private static final int    TIMEOUT = 30_000;
+    private static final int    TIMEOUT = 20_000;
     public static final String  VERSION = "0.1";
 
     public static UUID          senderId = UUID.fromString("525183d9-1a5a-40e1-a712-e3099282c341");
@@ -73,6 +79,7 @@ public class HexaServer {
         running = true;
         startSendingThread();
         startReceivingThread();
+        System.out.println("=======   Connected to Router   =======");
         //serverSocket = new ServerSocket(this.address.getPort());
         //serverSocket.setSoTimeout(TIMEOUT);
 
@@ -121,6 +128,11 @@ public class HexaServer {
                         toSend.clear();
                     }
                     if (sendBuffer.isEmpty()) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         continue;
                     }
                     try {
@@ -146,6 +158,11 @@ public class HexaServer {
                     }
 
                 }
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
     }
@@ -158,6 +175,7 @@ public class HexaServer {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                String disconnectReason = "Disconnected: Unknown Reason";
                 while (running) {
                     receiveBuffer.clear();
 
@@ -165,7 +183,13 @@ public class HexaServer {
                         Scanner in = new Scanner(socket.getInputStream());
                         //ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
+                        int readAmount = 0;
+
+                        socket.setSoTimeout(TIMEOUT);
+
                         while (in.hasNext()) {
+                            socket.setSoTimeout(TIMEOUT);
+                            readAmount++;
                             String stringPacket = in.nextLine();
                             System.out.println("I received a packet! " + stringPacket);
                             Packet packet = Packet.deserialize(stringPacket);
@@ -180,6 +204,16 @@ public class HexaServer {
                             }
                         }
 
+                        if (readAmount == 0) {
+                            running = false;
+                            //System.out.println("Connection lost: Server closed connection");
+                            disconnectReason = "Disconnected: Server closed connection";
+                        }
+
+                    } catch (SocketTimeoutException e) {
+                        running = false;
+                        //System.out.println("Connection to the Server lost: Timeout (" + TIMEOUT + ")");
+                        disconnectReason = "Disconnected: Timeout (" + TIMEOUT + ")";
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -188,6 +222,24 @@ public class HexaServer {
 
                     receiveBuffer.clear();
                 }
+
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                final String finalDisconnectReason = disconnectReason;
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println(finalDisconnectReason);
+                        ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
+                        new WindowNotification(finalDisconnectReason,
+                                ScreenManager.getInstance().getCurrentScreen().getStage(),
+                                ScreenManager.getInstance().getCurrentScreen().getWindowManager());
+                    }
+                });
             }
         }).start();
     }
@@ -210,8 +262,14 @@ public class HexaServer {
     }
 
     public boolean disconnect() {
+        if (socket.isClosed()) {
+            System.out.println("Could not disconnect because the socket is already closed");
+            return false;
+        }
+        send(new PacketLeave());
         try {
             socket.close();
+            System.out.println("You have disconnected from the game");
         } catch (IOException e) {
             e.printStackTrace();
             return false;
