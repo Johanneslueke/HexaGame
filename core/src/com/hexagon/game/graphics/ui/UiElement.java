@@ -15,6 +15,7 @@ public abstract class UiElement {
     private float displayX;
     private float displayY;
 
+    //TODO: Sven can these be removed? they do not have actual use in our code base. SceneUI does not utilize them
     private float width;
     private float height;
 
