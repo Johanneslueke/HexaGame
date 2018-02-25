@@ -9,6 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
+import com.hexagon.game.graphics.screens.myscreens.game.GameUI.IngameMenu;
+import com.hexagon.game.graphics.screens.myscreens.game.GameUI.StatusBar;
 import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.UpdateEvent;
@@ -256,75 +258,10 @@ public class GameManager {
     }
 
     public void createStatusbar() {
-        Window TopSideBar           = new Window(0,Gdx.graphics.getHeight()-50,Gdx.graphics.getWidth(),50);
-
-        float level = TopSideBar.getHeight()-50+10;
-        float rightEnd = TopSideBar.getWidth();
-        float ScreenWidth = Gdx.graphics.getWidth();
-        float ScreenHeight = Gdx.graphics.getHeight();
-
-        float MenuWidth = 200;
-        float MenuHeight = 200;
-        float StatusHeight = 50;
-
-
-        final UILabel           StatusInfos     = new UILabel(10,level,200,StatusHeight,"Test");
-        final UiButton          MenuButton      = new UiButton("Menu",rightEnd-100,level,20,50);
-        final UiButton          Exit            = new UiButton("EXIT",0,0,20,50);
-        final DropdownWindow    DropDownMenu    = new DropdownWindow(
-                (ScreenWidth/2)-(MenuWidth/2),
-                ScreenHeight-StatusHeight-MenuHeight-10,
-                MenuWidth,
-                MenuHeight,
-                0,
-                10);
-
-
-
-        StatusInfos.setUpdateEvent(new UpdateEvent(){
-
-            @Override
-            public void onUpdate() {
-                StatusInfos.getLabel().setText("" + Gdx.graphics.getFramesPerSecond() + " FPS, " + ScreenGame.renderedTiles + " Tiles");
-            }
-        });
-
-        MenuButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if(DropDownMenu.isVisible()) {
-                    DropDownMenu.hide(stage);
-                }
-                else{
-                    DropDownMenu.show(stage);
-                }
-
-            }
-        });
-
-        Exit.addListener(new ChangeListener() {
-            boolean hasClicked = false;
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
-            }
-        });
-
-
-        TopSideBar.add(StatusInfos,stage);
-        TopSideBar.add(MenuButton,stage);
-        TopSideBar.updateElements();
-
-        DropDownMenu.add(Exit,stage);
-        DropDownMenu.updateElements();
-
-
-        standardWindow.getWindowList().add(TopSideBar);
-        standardWindow.getWindowList().add(DropDownMenu);
-        standardWindow.show(stage);
+        StatusBar statusBar = new StatusBar(stage,standardWindow);
 
         windowManager.getWindowList().add(standardWindow);
-        DropDownMenu.hide(stage);
+        statusBar.MainMenu.MenuContent.hide(stage);
 
     }
 
