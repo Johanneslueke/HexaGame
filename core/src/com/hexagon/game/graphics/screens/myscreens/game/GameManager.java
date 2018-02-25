@@ -10,7 +10,9 @@ import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.IngameMenu;
+import com.hexagon.game.graphics.screens.myscreens.game.GameUI.PlayerStatus;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.StatusBar;
+import com.hexagon.game.graphics.screens.myscreens.game.GameUI.TileInfoField;
 import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.UpdateEvent;
@@ -259,6 +261,11 @@ public class GameManager {
 
     public void createStatusbar() {
         StatusBar statusBar = new StatusBar(stage,standardWindow);
+        PlayerStatus playerStatus = new PlayerStatus(standardWindow);
+        TileInfoField tileInfoField = new TileInfoField(standardWindow,stage);
+
+        playerStatus.StatusWindow.show(stage);
+        tileInfoField.StatusWindow.show(stage);
 
         windowManager.getWindowList().add(standardWindow);
         statusBar.MainMenu.MenuContent.hide(stage);
