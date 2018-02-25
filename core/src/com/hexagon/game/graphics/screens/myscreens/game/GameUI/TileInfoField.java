@@ -18,7 +18,7 @@ public class TileInfoField {
     public TileInfoField(GroupWindow window,Stage stage){
 
         StatusWindow = new Window(Gdx.graphics.getWidth()-255, 5,250, 200);
-        Title = new UILabel(0,StatusWindow.getHeight(),StatusWindow.getWidth(),20,"TileInfo: ");
+        Title = new UILabel(0,StatusWindow.getHeight(),StatusWindow.getWidth(),20,20,"TileInfo: ");
 
         StatusWindow.add(Title,stage);
         window.getWindowList().add(StatusWindow);

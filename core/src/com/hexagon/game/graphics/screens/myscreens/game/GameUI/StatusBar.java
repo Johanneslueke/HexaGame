@@ -26,7 +26,7 @@ public class StatusBar {
     public float StatusHeight = 50;
 
 
-    public UILabel StatusInfos     = new UILabel(10,level,200,StatusHeight,"Test");
+    public UILabel StatusInfos     = new UILabel(10,level,200,StatusHeight,32,"Test");
     public IngameMenu  MainMenu;
 
 

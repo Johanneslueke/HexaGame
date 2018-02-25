@@ -21,13 +21,13 @@ public class UILabel extends UiElement {
     private Label       Label;
     private LabelStyle  style;
 
-    public UILabel(float x, float y, float width, float height, String text){
+    public UILabel(float x, float y, float width, float height,int fontsize, String text){
         super(x,y,width,height);
 
         long start = System.currentTimeMillis();
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(FontManager.handlePiximisa);
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 32;
+        parameter.size = fontsize;
         BitmapFont font32 = generator.generateFont(parameter);
         generator.dispose(); // don't forget to dispose to avoid memory leaks!
 
@@ -39,8 +39,8 @@ public class UILabel extends UiElement {
         Label.setY(y);
     }
 
-    public UILabel( float x, float y, float width, float height, Stage stage,String text, ChangeListener changeListener) {
-        this( x, y, width, height,text);
+    public UILabel( float x, float y, float width, float height,int fontsize, Stage stage,String text, ChangeListener changeListener) {
+        this( x, y, width, height,fontsize,text);
 
         addToStage(stage);
         addListener(changeListener);

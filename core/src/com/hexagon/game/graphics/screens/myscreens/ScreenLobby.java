@@ -37,7 +37,7 @@ public class ScreenLobby extends HexagonScreen {
     private void setupUserInterface(){
         windowManager.removeAll(getStage());
 
-        UILabel header = new UILabel(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY() + 40, 100, 40, ScreenLobby.roomName);
+        UILabel header = new UILabel(MenuUtil.getInstance().getX(), MenuUtil.getInstance().getY() + 40, 100, 40, 32,ScreenLobby.roomName);
 
         UiButton button = new UiButton("Back", 50, Gdx.graphics.getHeight() - 50, 100, 50);
         button.addToStage(stage);
