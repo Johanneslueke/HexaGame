@@ -25,4 +25,5 @@ public class MapManager {
     public static MapManager getInstance() {
         return instance;
     }
+
 }

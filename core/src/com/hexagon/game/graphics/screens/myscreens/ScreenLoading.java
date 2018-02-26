@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.hexagon.game.graphics.ModelManager;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
@@ -76,6 +77,8 @@ public class ScreenLoading extends HexagonScreen {
                     loadedIndividual = 1;
                     loaded = ((float) i) / ScreenManager.getInstance().getScreenList().size();
                     if (i == ScreenManager.getInstance().getScreenList().size() - 1) {
+                        // Load Graphics
+                        new ModelManager();
                         // done loading
                         // run this on the render thread to prevent two threads accessing the same list at the same time
                         Gdx.app.postRunnable(new Runnable() {

@@ -1,5 +1,6 @@
 package com.hexagon.game.map;
 
+import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.tiles.Chunk;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.RenderTile;
@@ -90,5 +91,13 @@ public class HexMap {
 
     public Chunk[][] getChunks() {
         return chunks;
+    }
+
+    public void build(Point location, StructureType structureType) {
+        // TODO
+    }
+
+    public void deconstruct(Point location) {
+        // TODO
     }
 }

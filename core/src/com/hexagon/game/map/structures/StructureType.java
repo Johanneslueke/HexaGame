@@ -6,9 +6,18 @@ package com.hexagon.game.map.structures;
 
 public enum StructureType {
 
-    FOREST,
-    CITY,
-    STREET,
-    RESOURCE
+    FOREST(new String[]{"tree2.g3db"}),
+    CITY(null),
+    STREET(new String[]{"street.g3db"}),
+    RESOURCE(null);
 
+    private String[] paths;
+
+    StructureType(String[] paths) {
+        this.paths = paths;
+    }
+
+    public String[] getPaths() {
+        return paths;
+    }
 }

@@ -11,25 +11,25 @@ import java.util.UUID;
 
 public class PacketBuild extends Packet{
 
-    private Point           PositionOnMap;
-    private StructureType   Structure;
+    private Point           arrayPosition;
+    private StructureType   structureType;
 
 
-    PacketBuild(PacketType type, Point positionOnMap,StructureType structure) {
+    public PacketBuild(PacketType type, Point arrayPosition, StructureType structureType) {
         super(type);
-        this.PositionOnMap = positionOnMap;
-        this.Structure = structure;
+        this.arrayPosition = arrayPosition;
+        this.structureType = structureType;
     }
 
-    PacketBuild(PacketType type, UUID clientID, Point positionOnMap,StructureType structure) {
+    public PacketBuild(PacketType type, UUID clientID, Point arrayPosition, StructureType structureType) {
         super(type, clientID);
     }
 
-    public Point getPositionOnMap() {
-        return PositionOnMap;
+    public Point getArrayPosition() {
+        return arrayPosition;
     }
 
-    public void setPositionOnMap(Point positionOnMap) {
-        PositionOnMap = positionOnMap;
+    public void setArrayPosition(Point arrayPosition) {
+        this.arrayPosition = arrayPosition;
     }
 }

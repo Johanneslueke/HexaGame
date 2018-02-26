@@ -4,11 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.ui.windows.WindowNotification;
+import com.hexagon.game.network.listener.ClientListener;
+import com.hexagon.game.network.listener.ServerListener;
 import com.hexagon.game.network.packets.Packet;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketLeave;
-import com.hexagon.game.network.packets.PacketListener;
-import com.hexagon.game.network.packets.PacketType;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,11 +17,8 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
-
-import de.svdragster.logica.util.Delegate;
 
 /**
  * Created by Johannes on 19.02.2018.
@@ -49,7 +46,8 @@ public class HexaServer {
 
     private boolean             running = false;
 
-    private PacketListener      packetListener;
+    private ServerListener      hostListener;
+    private ClientListener      clientListener;
     private UUID                LocalClientID = UUID.randomUUID();
 
     private long                lastKeepAliveSent = System.currentTimeMillis();
@@ -70,10 +68,6 @@ public class HexaServer {
         }
     }
 
-    public void setDispatchTable(Map<PacketType, Delegate> dispatchTable) {
-        packetListener = new PacketListener(dispatchTable);
-    }
-
     public void connect(int timeout) throws IOException {
         socket.connect(address, timeout);
         running = true;
@@ -82,6 +76,13 @@ public class HexaServer {
         System.out.println("=======   Connected to Router   =======");
         //serverSocket = new ServerSocket(this.address.getPort());
         //serverSocket.setSoTimeout(TIMEOUT);
+
+        if (isHost()) {
+            hostListener = new ServerListener(this);
+            hostListener.registerAll();
+        }
+        clientListener = new ClientListener(this);
+        clientListener.registerAll();
 
     }
 
@@ -224,8 +225,6 @@ public class HexaServer {
                         e.printStackTrace();
                     }
 
-
-
                     receiveBuffer.clear();
                 }
 
@@ -258,7 +257,12 @@ public class HexaServer {
         synchronized (receivingLock) {
             for (int i=0; i<toCall.size(); i++) {
                 try {
-                    packetListener.call(toCall.get(i));
+                    //packetListener.call(toCall.get(i));
+                    if (isHost()) {
+                        hostListener.call(toCall.get(i));
+                    } else {
+                        clientListener.call(toCall.get(i));
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -299,5 +303,13 @@ public class HexaServer {
 
     public boolean isHost() {
         return sessionData != null;
+    }
+
+    public ServerListener getHostListener() {
+        return hostListener;
+    }
+
+    public ClientListener getClientListener() {
+        return clientListener;
     }
 }

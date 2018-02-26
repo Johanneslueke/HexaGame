@@ -1,7 +1,6 @@
 package com.hexagon.game.network.packets;
 
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import de.svdragster.logica.util.Delegate;
 
@@ -9,16 +8,16 @@ import de.svdragster.logica.util.Delegate;
  * Created by Johannes on 19.02.2018.
  */
 
-public class PacketListener {
+public class OldPacketListener {
 
     Map<PacketType,Delegate>    DispatchTable;
 
 
     @Deprecated
-    public PacketListener(){
+    public OldPacketListener(){
     }
 
-    public PacketListener(Map<PacketType,Delegate> dispatchTable){
+    public OldPacketListener(Map<PacketType,Delegate> dispatchTable){
 
         this.DispatchTable = dispatchTable;
     }
