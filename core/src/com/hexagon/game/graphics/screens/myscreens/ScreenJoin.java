@@ -195,7 +195,7 @@ public class ScreenJoin extends HexagonScreen {
             windowManager.addWindow(messageBox);
         }
 
-        UILabel label = new UILabel(50, 50, 300, 100, "Joining room " + roomName + "...");
+        UILabel label = new UILabel(50, 50, 300, 100,32, "Joining room " + roomName + "...");
         messageBox.add(label, getStage());
 
         messageBox.show(getStage());

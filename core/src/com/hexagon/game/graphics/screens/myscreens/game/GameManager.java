@@ -9,11 +9,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
+import com.hexagon.game.graphics.screens.myscreens.game.GameUI.IngameMenu;
+import com.hexagon.game.graphics.screens.myscreens.game.GameUI.PlayerStatus;
+import com.hexagon.game.graphics.screens.myscreens.game.GameUI.StatusBar;
+import com.hexagon.game.graphics.screens.myscreens.game.GameUI.TileInfoField;
 import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.UpdateEvent;
 import com.hexagon.game.graphics.ui.WindowManager;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
+import com.hexagon.game.graphics.ui.windows.DropdownWindow;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.graphics.ui.windows.Window;
@@ -260,26 +265,14 @@ public class GameManager {
     }
 
     public void createStatusbar() {
+        StatusBar statusBar = new StatusBar(stage,standardWindow);
+        PlayerStatus playerStatus = new PlayerStatus(standardWindow);
+        TileInfoField tileInfoField = new TileInfoField(standardWindow,stage);
 
-        Window LeftSideBar = new Window(10,Gdx.graphics.getHeight()-400-20,200,400);
+        playerStatus.StatusWindow.show(stage);
+        tileInfoField.StatusWindow.show(stage);
 
-        final UILabel StatusInfos = new UILabel(10,LeftSideBar.getHeight()-50,200,50,"Test");
-        StatusInfos.setUpdateEvent(new UpdateEvent(){
-
-            @Override
-            public void onUpdate() {
-                StatusInfos.getLabel().setText("" + Gdx.graphics.getFramesPerSecond() + " FPS, " + ScreenGame.renderedTiles + " Tiles");
-            }
-        });
-
-        StatusInfos.getLabel().fire(new Event());
-        LeftSideBar.add(StatusInfos,stage);
-        LeftSideBar.updateElements();
-
-
-        standardWindow.getWindowList().add(LeftSideBar);
-        standardWindow.show(stage);
-
+        statusBar.MainMenu.MenuContent.hide(stage);
         windowManager.addWindow(standardWindow);
 
     }

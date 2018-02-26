@@ -85,7 +85,7 @@ public class HexaServer {
 
     }
 
-    public void receive() {
+    public Packet receive() {
         /*
         new Thread(new Runnable() {
             @Override
@@ -105,6 +105,12 @@ public class HexaServer {
             }
         });
          */
+        synchronized (receivingLock){
+            if(!toCall.isEmpty())
+                return toCall.remove(toCall.size());
+        }
+
+        return null;
     }
 
     public void send(Packet packet) {

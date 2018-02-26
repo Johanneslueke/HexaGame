@@ -1,6 +1,7 @@
 package com.hexagon.game.graphics.ui;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.hexagon.game.graphics.ui.UpdateEvent;
 
 /**
  * Created by Sven on 19.12.2017.
@@ -14,6 +15,7 @@ public abstract class UiElement {
     private float displayX;
     private float displayY;
 
+    //TODO: Sven can these be removed? they do not have actual use in our code base. SceneUI does not utilize them
     private float width;
     private float height;
 

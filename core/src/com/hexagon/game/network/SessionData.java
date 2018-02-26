@@ -25,6 +25,7 @@ public class SessionData {
                             .createID(
                                     new HexaComponentOwner(Name)
                             ));
-        }
+        }else
+            throw new RuntimeException("User already in Game");
     }
 }
