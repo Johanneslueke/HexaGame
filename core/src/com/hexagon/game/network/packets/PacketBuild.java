@@ -32,4 +32,12 @@ public class PacketBuild extends Packet{
     public void setArrayPosition(Point arrayPosition) {
         this.arrayPosition = arrayPosition;
     }
+
+    public StructureType getStructureType() {
+        return structureType;
+    }
+
+    public void setStructureType(StructureType structureType) {
+        this.structureType = structureType;
+    }
 }

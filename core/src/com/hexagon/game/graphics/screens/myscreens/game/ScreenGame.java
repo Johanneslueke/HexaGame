@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.UBJsonReader;
+import com.hexagon.game.graphics.ModelManager;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
@@ -125,8 +126,8 @@ public class ScreenGame extends HexagonScreen {
             biomeModelMap.put(biome, modelLoader.loadModel(Gdx.files.getFileHandle(biome.getModel(), Files.FileType.Internal)));
         }
 
-        tree = modelLoader.loadModel(Gdx.files.getFileHandle("tree2.g3db", Files.FileType.Internal));
-        treeInstance = new ModelInstance(tree);
+        //tree = modelLoader.loadModel(Gdx.files.getFileHandle("tree2.g3db", Files.FileType.Internal));
+        treeInstance = new ModelInstance(ModelManager.getInstance().getStructureModels(StructureType.FOREST).get(0));
         treeInstance.transform.translate(0.5f, 1, 0.5f);
 
         selectedModel = modelLoader.loadModel(Gdx.files.getFileHandle("selection_all_anim.g3db", Files.FileType.Internal));
@@ -182,22 +183,23 @@ public class ScreenGame extends HexagonScreen {
                 if (tile.getStructure() != null) {
                     StructureType type = tile.getStructure().getType();
                     if (type == StructureType.FOREST) {
+                        Model treeModel = ModelManager.getInstance().getStructureModels(StructureType.FOREST).get(0);
                         boolean placedTrees = false;
                         if (Math.random() < 0.6) {
-                            HexModel model1 = new HexModel(new ModelInstance(tree));
+                            HexModel model1 = new HexModel(new ModelInstance(treeModel));
                             model1.move((float) loc.getX() + 0.3f, height, (float) loc.getY() + 0.2f);
                             renderTile.getStructures().add(model1);
                             placedTrees = true;
                         }
                         if (Math.random() < 0.6) {
-                            HexModel model2 = new HexModel(new ModelInstance(tree));
+                            HexModel model2 = new HexModel(new ModelInstance(treeModel));
                             model2.move((float) loc.getX() - 0.3f, height, (float) loc.getY());
                             renderTile.getStructures().add(model2);
                             placedTrees = true;
 
                         }
                         if (Math.random() < 0.6) {
-                            HexModel model3 = new HexModel(new ModelInstance(tree));
+                            HexModel model3 = new HexModel(new ModelInstance(treeModel));
                             model3.move((float) loc.getX() + 0.3f, height, (float) loc.getY() - 0.3f);
                             renderTile.getStructures().add(model3);
                             placedTrees = true;

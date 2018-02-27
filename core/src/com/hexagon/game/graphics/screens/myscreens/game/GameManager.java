@@ -52,7 +52,7 @@ public class GameManager {
 
     public void connect(boolean isHost) {
         server = new HexaServer(
-                "localhost",
+                "svdragster.dtdns.net",
                 25565,
                 isHost
         );
@@ -66,7 +66,7 @@ public class GameManager {
 
 
         try {
-            server.connect(1000);
+            server.connect(10_000);
         } catch (IOException e) {
             System.out.println("Could not connect!");
             e.printStackTrace();

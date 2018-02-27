@@ -44,6 +44,9 @@ public class ScreenLoading extends HexagonScreen {
         font = generator.generateFont(parameter);
         generator.dispose(); // don't forget to dispose to avoid memory leaks!
 
+        // Load Models
+        new ModelManager().loadAllModels();
+
         // Start loading thread
         final Thread loadThread = new Thread(new Runnable() {
             @Override
@@ -77,8 +80,6 @@ public class ScreenLoading extends HexagonScreen {
                     loadedIndividual = 1;
                     loaded = ((float) i) / ScreenManager.getInstance().getScreenList().size();
                     if (i == ScreenManager.getInstance().getScreenList().size() - 1) {
-                        // Load Graphics
-                        new ModelManager();
                         // done loading
                         // run this on the render thread to prevent two threads accessing the same list at the same time
                         Gdx.app.postRunnable(new Runnable() {

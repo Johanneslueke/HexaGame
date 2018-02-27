@@ -50,8 +50,7 @@ public class HexaServer {
     private ClientListener      clientListener;
     private UUID                LocalClientID = UUID.randomUUID();
 
-    private long                lastKeepAliveSent = System.currentTimeMillis();
-
+    public long                lastKeepAliveSent = System.currentTimeMillis();
 
     private SessionData         sessionData;
 

@@ -7,6 +7,7 @@ import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketLeave;
@@ -71,7 +72,9 @@ public class ClientListener extends PacketListener {
             put(PacketType.BUILD, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    System.out.println("Received BUILD");
+                    PacketBuild packetBuild = (PacketBuild) args[0];
+                    System.out.println("Received BUILD " + packetBuild.getArrayPosition().getX() + ", " + packetBuild.getArrayPosition().getY()
+                        + " -> " + packetBuild.getStructureType().name());
 
                 }
             });

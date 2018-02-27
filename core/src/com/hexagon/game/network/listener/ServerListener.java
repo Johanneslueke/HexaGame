@@ -24,6 +24,8 @@ import de.svdragster.logica.util.Delegate;
 
 public class ServerListener extends PacketListener {
 
+    public long keepAliveSent = 0;
+
     public ServerListener(HexaServer server) {
         super(server);
     }
@@ -34,7 +36,8 @@ public class ServerListener extends PacketListener {
             put(PacketType.KEEPALIVE, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    System.out.println("Received Keep Alive");
+                    long diff = System.currentTimeMillis() - server.lastKeepAliveSent;
+                    System.out.println("Received Keep Alive (" + diff + " ms)");
                     PacketKeepAlive packet = (PacketKeepAlive) args[0];
                     //server.send(new PacketKeepAlive());
                 }
