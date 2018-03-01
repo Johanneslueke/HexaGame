@@ -56,4 +56,13 @@ public class Point {
                 ", z=" + z +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Point)) {
+            return false;
+        }
+        Point p = (Point) o;
+        return p.x == x && p.y == y && p.z == z;
+    }
 }

@@ -11,11 +11,11 @@ public enum PacketType {
     JOIN((byte) 0x02),
     LEAVE((byte) 0x03),
     BUILD((byte) 0x04),
-    DESTROY((byte) 0x04),
-    TRADE((byte) 0x05),
-    MAPUPDATE((byte) 0x06),
-    TERMINATE((byte) 0x07),
-    SERVER_LIST((byte) 0x08);
+    DESTROY((byte) 0x05),
+    TRADE((byte) 0x06),
+    MAPUPDATE((byte) 0x07),
+    TERMINATE((byte) 0x08),
+    SERVER_LIST((byte) 0x09);
 
     public byte ID;
 

@@ -17,24 +17,30 @@ public class UiButton extends UiElement {
     private TextButton textButton;
     private TextButton.TextButtonStyle style;
 
-    public UiButton(String text, float x, float y, float width, float height) {
+    public UiButton(String text, float x, float y, float width, float height, int fontSize) {
         super(x, y, width, height);
 
-
-        long start = System.currentTimeMillis();
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(FontManager.handlePiximisa);
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 32;
+        parameter.size = fontSize;
         BitmapFont font32 = generator.generateFont(parameter);
         generator.dispose(); // don't forget to dispose to avoid memory leaks!
 
         style = new TextButton.TextButtonStyle();
         style.font = font32;
 
+        if (height <= 0) {
+            setHeight(font32.getLineHeight());
+        }
+
         textButton = new TextButton(text, style);
         textButton.setX(x);
         textButton.setY(y);
-        System.out.println("Time: " + (System.currentTimeMillis() - start));
+
+    }
+
+    public UiButton(String text, float x, float y, float width, float height) {
+        this(text, x, y, width, height, 32);
     }
 
     public UiButton(String text, float x, float y, float width, float height, Stage stage, ChangeListener changeListener) {
@@ -65,6 +71,7 @@ public class UiButton extends UiElement {
 
     @Override
     public void hide(Stage stage) {
+        System.out.println("Hiding button " + textButton.getText());
         this.textButton.setVisible(false);
     }
 
@@ -82,5 +89,9 @@ public class UiButton extends UiElement {
     public void setDisplayY(float y) {
         super.setDisplayX(y);
         textButton.setY(y);
+    }
+
+    public float getFontHeight() {
+        return textButton.getStyle().font.getLineHeight();
     }
 }

@@ -13,6 +13,8 @@ public class DropdownWindow extends Window {
 
     boolean autoSize = false;
 
+    private int defaultColumns = 0;
+
     public DropdownWindow(float windowX, float windowY, float width, float height, float marginLeftRight, float marginTopBottom) {
         super(windowX, windowY, width, height); // width and height will be set later
         if (width == 0 && height == 0) {
@@ -20,7 +22,15 @@ public class DropdownWindow extends Window {
         }
     }
 
+    public void orderAllNeatly() {
+        if (defaultColumns == 0) {
+            return;
+        }
+        orderAllNeatly(defaultColumns);
+    }
+
     public void orderAllNeatly(int columns) {
+        defaultColumns = columns;
         float maxX = 0;
         for (int i=0; i<elementList.size(); i++) {
             UiElement element = elementList.get(i);
@@ -33,7 +43,7 @@ public class DropdownWindow extends Window {
             element.setY(row * element.getHeight() + 10);
 
             element.setDisplayX(getX() + element.getX());
-            element.setDisplayY(getY() + element.getY());
+            element.setDisplayY(getHeight() - getY() - element.getY() - element.getHeight());
 
             maxX = Math.max(maxX, element.getX());
         }

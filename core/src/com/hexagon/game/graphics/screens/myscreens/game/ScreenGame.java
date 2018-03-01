@@ -64,7 +64,7 @@ public class ScreenGame extends HexagonScreen {
     private PerspectiveCamera       camera;
     private ModelBatch              modelBatch;
     private Map<Biome, Model>       biomeModelMap = new HashMap<>();
-    private Model                   box;
+    public Model                    box;
     private Model                   tree;
     private ModelInstance           bigBox;
     private ModelInstance           treeInstance;
@@ -84,7 +84,7 @@ public class ScreenGame extends HexagonScreen {
 
     //Map<RenderTile>                  modelInstanceMap = new HashMap<>();
     List<ModelInstance>             debugModels = new ArrayList<>();
-    ModelInstance                   selectedInstance;
+    ModelInstance                   hoverInstance;
     private boolean                 selectedGrow = true;
     AnimationController             animationController;
     Model                           selectedModel;
@@ -179,43 +179,12 @@ public class ScreenGame extends HexagonScreen {
                 }*/
 
                 RenderTile renderTile = new RenderTile(loc, hexModel);
+                tile.setRenderTile(renderTile);
                 if (tile.getStructure() != null) {
                     StructureType type = tile.getStructure().getType();
-                    if (type == StructureType.FOREST) {
-                        Model treeModel = ModelManager.getInstance().getStructureModels(StructureType.FOREST).get(0);
-                        boolean placedTrees = false;
-                        if (Math.random() < 0.6) {
-                            HexModel model1 = new HexModel(new ModelInstance(treeModel));
-                            model1.move((float) loc.getX() + 0.3f, height, (float) loc.getY() + 0.2f);
-                            renderTile.getStructures().add(model1);
-                            placedTrees = true;
-                        }
-                        if (Math.random() < 0.6) {
-                            HexModel model2 = new HexModel(new ModelInstance(treeModel));
-                            model2.move((float) loc.getX() - 0.3f, height, (float) loc.getY());
-                            renderTile.getStructures().add(model2);
-                            placedTrees = true;
-
-                        }
-                        if (Math.random() < 0.6) {
-                            HexModel model3 = new HexModel(new ModelInstance(treeModel));
-                            model3.move((float) loc.getX() + 0.3f, height, (float) loc.getY() - 0.3f);
-                            renderTile.getStructures().add(model3);
-                            placedTrees = true;
-                        }
-                        if (!placedTrees) {
-                            tile.setStructure(null);
-                        }
-
-                    } else if (type == StructureType.RESOURCE) {
-                        //StructureResource resource = (StructureResource) tile.getStructure();
-                        HexModel model = new HexModel(new ModelInstance(box));
-                        model.move((float) loc.getX() + 0.5f, 0.3f, (float) loc.getY() - 0.5f);
-                        renderTile.getStructures().add(model);
-                    }
+                    hexMap.build(x, y, type);
                 }
 
-                tile.setRenderTile(renderTile);
                 /*modelCache.add(hexModel.getModelInstance());
                 for (HexModel structure : renderTile.getStructures()) {
                     modelCache.add(structure.getModelInstance());
@@ -250,7 +219,7 @@ public class ScreenGame extends HexagonScreen {
             }
         }*/
 
-        shadowBatch.render(selectedInstance, environment);
+        shadowBatch.render(hoverInstance, environment);
 
         shadowBatch.end();
         shadowLight.end();
@@ -312,27 +281,27 @@ public class ScreenGame extends HexagonScreen {
             modelBatch.render(car.getInstance(), environment);
         }
 
-        if (selectedInstance.transform.getScaleX() > 1.05f) {
+        if (hoverInstance.transform.getScaleX() > 1.05f) {
             selectedGrow = false;
-        } else if (selectedInstance.transform.getScaleX() < 0.95f) {
+        } else if (hoverInstance.transform.getScaleX() < 0.95f) {
             selectedGrow = true;
         }
         if (selectedGrow) {
-            float x = selectedInstance.transform.getScaleX();
-            float z = selectedInstance.transform.getScaleZ();
-            selectedInstance.transform.setToTranslationAndScaling(
-                    selectedInstance.transform.getTranslation(Vector3.Zero),
+            float x = hoverInstance.transform.getScaleX();
+            float z = hoverInstance.transform.getScaleZ();
+            hoverInstance.transform.setToTranslationAndScaling(
+                    hoverInstance.transform.getTranslation(Vector3.Zero),
                     new Vector3(x + 0.0025f, 1, z + 0.0025f)
             );
         } else {
-            float x = selectedInstance.transform.getScaleX();
-            float z = selectedInstance.transform.getScaleZ();
-            selectedInstance.transform.setToTranslationAndScaling(
-                    selectedInstance.transform.getTranslation(Vector3.Zero),
+            float x = hoverInstance.transform.getScaleX();
+            float z = hoverInstance.transform.getScaleZ();
+            hoverInstance.transform.setToTranslationAndScaling(
+                    hoverInstance.transform.getTranslation(Vector3.Zero),
                     new Vector3(x - 0.0025f, 1, z - 0.0025f)
             );
         }
-        modelBatch.render(selectedInstance, environment);
+        modelBatch.render(hoverInstance, environment);
 
 
         //modelBatch.render(modelCache, environment);
@@ -391,7 +360,7 @@ public class ScreenGame extends HexagonScreen {
 
         createMap(MapManager.getInstance().getCurrentHexMap());
 
-        selectedInstance = new ModelInstance(selectedModel);
+        hoverInstance = new ModelInstance(selectedModel);
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 

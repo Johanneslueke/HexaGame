@@ -1,5 +1,7 @@
 package com.hexagon.game.network.packets;
 
+import com.hexagon.game.map.Point;
+import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.network.HexaServer;
 
 import java.util.UUID;
@@ -103,6 +105,22 @@ public abstract class Packet {
                  return packetServerList;
              case MAPUPDATE:
                  return new PacketMapUpdate(senderId, arr[offset]);
+             case BUILD:
+                 String[] strPoint = arr[offset].split(",");
+                 Point point = new Point(
+                         Integer.parseInt(strPoint[0]),
+                         Integer.parseInt(strPoint[1])
+                 );
+                 StructureType structureType = StructureType.valueOf(arr[offset+1]);
+                 UUID owner = UUID.fromString(arr[offset+2]);
+                 return new PacketBuild(senderId, point, structureType, owner);
+             case DESTROY:
+                 strPoint = arr[offset].split(",");
+                 point = new Point(
+                         Integer.parseInt(strPoint[0]),
+                         Integer.parseInt(strPoint[1])
+                 );
+                 return new PacketDestroy(senderId, point);
          }
 
          return null;

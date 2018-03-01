@@ -5,9 +5,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
-import com.hexagon.game.graphics.screens.myscreens.game.GameUI.PlayerStatus;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.StatusBar;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.TileInfoField;
+import com.hexagon.game.graphics.screens.myscreens.game.GameUI.sidebar.SidebarBuild;
 import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.WindowManager;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
@@ -34,7 +34,7 @@ public class GameManager {
     GroupWindow             standardWindow ;
     FadeWindow              spaceWindow;
 
-    PlayerStatus            playerStatusWindow;
+    SidebarBuild            sidebarBuildWindow;
 
 
     public HexaServer                  server;
@@ -147,16 +147,16 @@ public class GameManager {
 
     public void createStatusbar() {
         StatusBar statusBar = new StatusBar(stage,standardWindow);
-        PlayerStatus playerStatus = new PlayerStatus(standardWindow, stage);
+        SidebarBuild sidebar = new SidebarBuild(standardWindow, stage);
         TileInfoField tileInfoField = new TileInfoField(standardWindow,stage);
 
-        playerStatus.StatusWindow.show(stage);
+        sidebar.statusWindow.show(stage);
         tileInfoField.StatusWindow.show(stage);
 
         statusBar.MainMenu.MenuContent.hide(stage);
         windowManager.addWindow(standardWindow);
 
-        playerStatusWindow = playerStatus;
+        sidebarBuildWindow = sidebar;
     }
 
 

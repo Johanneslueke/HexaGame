@@ -125,7 +125,7 @@ public class HexaServer {
     }
 
     public void send(Packet packet) {
-        if (packet.getSenderId().equals(HexaServer.senderId)) {
+        if (isHost() && packet.getSenderId().equals(HexaServer.senderId)) {
             try {
                 clientListener.call(packet);
             } catch (Exception e) {

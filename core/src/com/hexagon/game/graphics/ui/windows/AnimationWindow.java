@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
  * Created by Sven on 20.12.2017.
  */
 
-public class AnimationWindow extends Window {
+public class AnimationWindow extends DropdownWindow {
 
     private static final float SPEED = 5f;
 
@@ -29,7 +29,7 @@ public class AnimationWindow extends Window {
      * @param stage
      */
     public AnimationWindow(float x, float y, float x2, float y2, float width, float height, Stage stage) {
-        super(x, y, width, height);
+        super(x, y, width, height, 5, 5);
 
         this.stage = stage;
         this.x1 = x;
@@ -52,13 +52,13 @@ public class AnimationWindow extends Window {
         }
     }
 
-    /*private float function(float x) {
-        return (float) (-0.15f*(Math.pow(x-0.5f, 2))+0.0415f);
-    }*/
-
     private float function(float x) {
-        return (float) (-0.09f*(Math.pow(x, 2))+0.1);
+        return (float) (-0.15f*(Math.pow(x-0.5f, 2))+0.042f);
     }
+
+    /*private float function(float x) {
+        return (float) (-0.09f*(Math.pow(x, 2))+0.1);
+    }*/
 
     @Override
     public void render(ShapeRenderer renderer) {
@@ -79,9 +79,10 @@ public class AnimationWindow extends Window {
             }
 
             pos -= function(pos);
+
             if (pos < 0.0f) {
                 pos = 0;
-                hide(stage);
+                super.hide(stage);
                 retracting = false;
             }
         }
@@ -89,15 +90,17 @@ public class AnimationWindow extends Window {
         x = x1 * (1 - pos) + x2 * pos;
         y = y1 * (1 - pos) + y2 * pos;
         super.updateElements();
+        super.orderAllNeatly();
     }
 
     @Override
     public void show(Stage stage) {
         super.show(stage);
+        retracting = false;
     }
 
     @Override
     public void hide(Stage stage) {
-        setVisible(false);
+        retracting = true;
     }
 }

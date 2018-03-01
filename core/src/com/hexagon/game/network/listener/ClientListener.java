@@ -5,12 +5,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.JsonHexMap;
 import com.hexagon.game.map.MapManager;
+import com.hexagon.game.map.Point;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketBuild;
+import com.hexagon.game.network.packets.PacketDestroy;
 import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketLeave;
@@ -39,7 +42,6 @@ public class ClientListener extends PacketListener {
             put(PacketType.KEEPALIVE, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    System.out.println("Received Keep Alive");
                     PacketKeepAlive packet = (PacketKeepAlive) args[0];
                     //server.send(new PacketKeepAlive());
                 }
@@ -48,7 +50,7 @@ public class ClientListener extends PacketListener {
             put(PacketType.JOIN, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    System.out.println("Received JOIN");
+                    System.out.println("Client Received JOIN");
                     PacketJoin packet = (PacketJoin) args[0];
 
                     // I'm not the host, so either a new player has joined the game or I have joined the game
@@ -77,8 +79,14 @@ public class ClientListener extends PacketListener {
                 @Override
                 public void invoke(Object... args) throws Exception {
                     PacketBuild packetBuild = (PacketBuild) args[0];
-                    System.out.println("Received BUILD " + packetBuild.getArrayPosition().getX() + ", " + packetBuild.getArrayPosition().getY()
+                    System.out.println("Client Received BUILD " + packetBuild.getArrayPosition().getX() + ", " + packetBuild.getArrayPosition().getY()
                         + " -> " + packetBuild.getStructureType().name());
+
+                    PacketBuild destroy = (PacketBuild) args[0];
+                    Point pos = destroy.getArrayPosition();
+                    HexMap map = GameManager.instance.getGame().getCurrentMap();
+
+                    map.build(pos.getX(), pos.getY(), packetBuild.getStructureType());
 
                 }
             });
@@ -86,15 +94,20 @@ public class ClientListener extends PacketListener {
             put(PacketType.DESTROY, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    System.out.println("Received DESTROY");
+                    System.out.println("Client Received DESTROY");
 
+                    PacketDestroy destroy = (PacketDestroy) args[0];
+                    Point pos = destroy.getArrayPosition();
+                    HexMap map = GameManager.instance.getGame().getCurrentMap();
+
+                    map.deconstruct(pos.getX(), pos.getY());
                 }
             });
 
             put(PacketType.TRADE, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    System.out.println("Received TRADE");
+                    System.out.println("Client Received TRADE");
 
                 }
             });
@@ -102,7 +115,7 @@ public class ClientListener extends PacketListener {
             put(PacketType.TERMINATE, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    System.out.println("Received TERMINATE");
+                    System.out.println("Client Received TERMINATE");
 
                 }
             });
@@ -110,7 +123,7 @@ public class ClientListener extends PacketListener {
             put(PacketType.MAPUPDATE, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    System.out.println("Received MAPUPDATE");
+                    System.out.println("Client Received MAPUPDATE");
                     PacketMapUpdate packetMapUpdate = (PacketMapUpdate) args[0];
                     HexMap hexMap;
 
@@ -147,7 +160,7 @@ public class ClientListener extends PacketListener {
                 @Override
                 public void invoke(Object... args) throws Exception {
                     PacketServerList packetServerList = (PacketServerList) args[0];
-                    System.out.println("Received SERVER_LIST " + packetServerList.entries.size());
+                    System.out.println("Client Received SERVER_LIST " + packetServerList.entries.size());
                     if (ScreenManager.getInstance().getCurrentScreen().getScreenType() == ScreenType.JOIN) {
                         final ScreenJoin screenJoin = (ScreenJoin) ScreenManager.getInstance().getCurrentScreen();
 

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.ui.WindowManager;
 import com.hexagon.game.input.InputManager;
+import com.hexagon.game.util.MenuUtil;
 
 /**
  * Created by Sven on 18.12.2017.
@@ -95,6 +96,7 @@ public abstract class HexagonScreen implements Screen {
      */
     @Override
     public void resize(int width, int height) {
+        new MenuUtil();
         stage.getViewport().update(width, height, true);
     }
 }

@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.Logic.Components.HexaComponentPosition;
 import com.hexagon.game.Logic.Components.HexaComponentTest;
-import com.hexagon.game.graphics.screens.myscreens.game.GameUI.PlayerStatus;
+import com.hexagon.game.graphics.screens.myscreens.game.GameUI.sidebar.Sidebar;
 import com.hexagon.game.input.HexInput;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.Point;
@@ -57,6 +57,8 @@ public class InputGame extends HexInput {
 
     private ScreenGame      screenGame;
 
+    private Point           selectedTile;
+
     public InputGame(ScreenGame screenGame) {
         this.screenGame     = screenGame;
         this.cameraHelper   = new CameraHelper(screenGame.getCamera());
@@ -87,8 +89,6 @@ public class InputGame extends HexInput {
                 cameraHelper.moveTo(cameraLockOnTile, true);
                 cameraLockOnTile = null;
             }*/
-            PlayerStatus window = screenGame.gameManager.playerStatusWindow;
-            window.StatusWindow.toggleVisibility();
 
         }
         if (keycode == Input.Keys.H) {
@@ -132,15 +132,21 @@ public class InputGame extends HexInput {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        
+        if (button == 1) {
+            deselect();
+        }
         HexModel model = getObject(screenX, screenY);
         if (model != null) {
-            select(model);
+            System.out.println("Down " + button);
+            if (button == 0) {
+                selectedTile = null;
+                select(
+                        hover(model)
+                );
+            }
         }
         downX = screenX;
         downY = screenY;
-
-        System.out.println("MÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖP\n");
 
         //TODO: This needs to be multiplexed to the right System for the correct player!!!!!!!!!
         Engine.getInstance().BroadcastMessage(new NotificationNewEntity(
@@ -264,7 +270,7 @@ public class InputGame extends HexInput {
     public void updateSelected(int x, int y) {
         HexModel model = getObject(x, y);
         if (model != null) {
-            select(model);
+            hover(model);
         }
     }
 
@@ -297,12 +303,17 @@ public class InputGame extends HexInput {
 
     //private boolean flanke = false;
 
-    public void select(HexModel model) {
+    public Point hover(HexModel model) {
+
         Vector3 pos = model.getModelInstance().transform.getTranslation(Vector3.Zero);
-        pos.y += 0.02f;
-        screenGame.selectedInstance.transform.setTranslation(pos);
 
         Point p = HexagonUtil.getArrayLocation(new TileLocation(Math.abs(pos.x) + 1, pos.z + 1));
+        if (selectedTile != null) {
+            return selectedTile;
+        }
+        pos.y += 0.02f;
+        screenGame.hoverInstance.transform.setTranslation(pos);
+        return p;
         //System.out.println((Math.abs(pos.x) + 1) + ", " + (pos.z + 1) + " ---> " + p.getX() + ", " + p.getY());
 
         /*if (Gdx.input.isTouched() && !flanke) {
@@ -328,4 +339,20 @@ public class InputGame extends HexInput {
             flanke = false;
         }*/
     }
+
+    public void select(Point p) {
+        if (p.equals(selectedTile)) {
+            return;
+        }
+        selectedTile = p;
+        Sidebar window = screenGame.gameManager.sidebarBuildWindow;
+        window.select(screenGame.getCurrentMap(), p, screenGame.getStage());
+    }
+
+    public void deselect() {
+        selectedTile = null;
+        Sidebar window = screenGame.gameManager.sidebarBuildWindow;
+        window.deselect(screenGame.getStage());
+    }
+
 }

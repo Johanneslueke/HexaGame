@@ -1,8 +1,14 @@
 package com.hexagon.game.map;
 
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.hexagon.game.graphics.ModelManager;
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
+import com.hexagon.game.map.structures.Structure;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.tiles.Chunk;
 import com.hexagon.game.map.tiles.Tile;
+import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
 
 /**
@@ -93,11 +99,53 @@ public class HexMap {
         return chunks;
     }
 
-    public void build(Point location, StructureType structureType) {
-        // TODO
+    public void build(int x, int y, StructureType type) {
+        Tile tile = GameManager.instance.getGame().getCurrentMap().getTileAt(x, y);
+        RenderTile renderTile = tile.getRenderTile();
+        TileLocation loc = tile.getTileLocation();
+
+        if (type == StructureType.FOREST) {
+            Model treeModel = ModelManager.getInstance().getStructureModels(StructureType.FOREST).get(0);
+            boolean placedTrees = false;
+            if (Math.random() < 0.6) {
+                HexModel model1 = new HexModel(new ModelInstance(treeModel));
+                model1.move((float) loc.getX() + 0.3f, 0, (float) loc.getY() + 0.2f);
+                renderTile.getStructures().add(model1);
+                placedTrees = true;
+            }
+            if (Math.random() < 0.6) {
+                HexModel model2 = new HexModel(new ModelInstance(treeModel));
+                model2.move((float) loc.getX() - 0.3f, 0, (float) loc.getY());
+                renderTile.getStructures().add(model2);
+                placedTrees = true;
+
+            }
+            if (Math.random() < 0.6) {
+                HexModel model3 = new HexModel(new ModelInstance(treeModel));
+                model3.move((float) loc.getX() + 0.3f, 0, (float) loc.getY() - 0.3f);
+                renderTile.getStructures().add(model3);
+                placedTrees = true;
+            }
+            if (!placedTrees) {
+                tile.setStructure(null);
+            } else {
+                if (tile.getStructure() == null) {
+                    tile.setStructure(new Structure(StructureType.FOREST));
+                }
+            }
+
+        } else if (type == StructureType.RESOURCE) {
+            //StructureResource resource = (StructureResource) tile.getStructure();
+            HexModel model = new HexModel(new ModelInstance(GameManager.instance.getGame().box));
+            model.move((float) loc.getX() + 0.5f, 0.3f, (float) loc.getY() - 0.5f);
+            renderTile.getStructures().add(model);
+        }
     }
 
-    public void deconstruct(Point location) {
-        // TODO
+    public void deconstruct(int x, int y) {
+        Tile tile = GameManager.instance.getGame().getCurrentMap().getTileAt(x, y);
+        RenderTile renderTile = tile.getRenderTile();
+        tile.setStructure(null);
+        renderTile.getStructures().clear();
     }
 }

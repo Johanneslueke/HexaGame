@@ -8,6 +8,7 @@ import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketBuild;
+import com.hexagon.game.network.packets.PacketDestroy;
 import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketLeave;
@@ -86,8 +87,15 @@ public class ServerListener extends PacketListener {
                     // -> Validate Data to prevent crashes (e.g. when someone sends a corrupted packet)
 
                     // Let the ClientListener handle the clientsided logic for building
-                    server.getClientListener().call(packetBuild);
+                    //server.getClientListener().call(packetBuild);
 
+                    // Respond
+                    server.send(new PacketBuild(
+                            packetBuild.getArrayPosition(),
+                            packetBuild.getStructureType(),
+                            packetBuild.getOwner()
+                            )
+                    );
 
                 }
             });
@@ -96,6 +104,18 @@ public class ServerListener extends PacketListener {
                 @Override
                 public void invoke(Object... args) throws Exception {
                     System.out.println("Received DESTROY");
+
+                    PacketDestroy packetDestroy = (PacketDestroy) args[0];
+
+                    // TODO: Check if the player who wants to build has enough resources to build
+                    // TODO: Check if the player can build at that location
+                    // -> Validate Data to prevent crashes (e.g. when someone sends a corrupted packet)
+
+                    // Let the ClientListener handle the clientsided logic for building
+                    //server.getClientListener().call(packetDestroy);
+
+                    // Respond
+                    server.send(new PacketDestroy(packetDestroy.getArrayPosition()));
 
                 }
             });

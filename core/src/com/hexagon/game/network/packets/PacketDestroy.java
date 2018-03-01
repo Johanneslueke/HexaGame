@@ -10,24 +10,29 @@ import java.util.UUID;
 
 public class PacketDestroy extends Packet {
 
-    private Point   PositionOfStructure;
+    private Point arrayPosition;
 
 
-    PacketDestroy(PacketType type, Point positionOfStructure) {
-        super(type);
-        this.PositionOfStructure = positionOfStructure;
+    public PacketDestroy(Point arrayPosition) {
+        super(PacketType.DESTROY);
+        this.arrayPosition = arrayPosition;
     }
 
-    PacketDestroy(PacketType type, UUID clientID,Point positionOfStructure ) {
-        super(type, clientID);
-        this.PositionOfStructure = positionOfStructure;
+    public PacketDestroy(UUID clientID,Point arrayPosition) {
+        super(PacketType.DESTROY, clientID);
+        this.arrayPosition = arrayPosition;
     }
 
-    public Point getPositionOfStructure() {
-        return PositionOfStructure;
+    public Point getArrayPosition() {
+        return arrayPosition;
     }
 
-    public void setPositionOfStructure(Point positionOfStructure) {
-        PositionOfStructure = positionOfStructure;
+    public void setArrayPosition(Point arrayPosition) {
+        this.arrayPosition = arrayPosition;
+    }
+
+    @Override
+    public String serialize() {
+        return super.serialize() + arrayPosition.getX() + "," + arrayPosition.getY() + ";";
     }
 }
