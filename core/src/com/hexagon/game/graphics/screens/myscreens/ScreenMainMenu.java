@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
@@ -98,9 +99,10 @@ public class ScreenMainMenu extends HexagonScreen {
         final FadeWindow subwindowPlay = new FadeWindow(fadeWindow.getX() + fadeWindow.getWidth() + 10, fadeWindow.getY(), 800 - fadeWindow.getWidth(), 600, stage);
         subwindowPlay.add(new UiImage(0, 0, 558, 600, "window_small.png"), stage);
 
-        UiButton playText = new UiButton("> Play", 20, subwindowPlay.getHeight() - 60, 100, 40);
+        UILabel playText = new UILabel(20, subwindowPlay.getHeight() - 60, 100, 40, 40, "Play");
         UiButton playHost = new UiButton("Host Game", 40, subwindowPlay.getHeight() - 100, 200, 40);
         UiButton playJoin = new UiButton("Join Game", 40, subwindowPlay.getHeight() - 140, 200, 40);
+        UiButton playSingleplayer = new UiButton("Play Offline", 40, subwindowPlay.getHeight() - 180, 200, 40);
 
         playHost.addListener(new ChangeListener() {
             @Override
@@ -116,9 +118,17 @@ public class ScreenMainMenu extends HexagonScreen {
             }
         });
 
+        playSingleplayer.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ScreenManager.getInstance().setCurrentScreen(ScreenType.GENERATOR);
+            }
+        });
+
         subwindowPlay.add(playText, stage);
         subwindowPlay.add(playHost, stage);
         subwindowPlay.add(playJoin, stage);
+        subwindowPlay.add(playSingleplayer, stage);
 
         subwindowPlay.updateElements();
         standardWindow.getWindowList().add(subwindowPlay);
@@ -170,6 +180,14 @@ public class ScreenMainMenu extends HexagonScreen {
         fadeWindow.updateElements();
 
         this.windowManager.addWindow(standardWindow);
+
+        /*HexaServer hexaServer = new HexaServer("localhost", 25565, true);
+        try {
+            hexaServer.connect(1000);
+            hexaServer.send(new PacketKeepAlive(1234));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
 
     }
 

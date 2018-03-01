@@ -5,8 +5,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
+import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.map.HexMap;
-import com.hexagon.game.map.MapManager;
+import com.hexagon.game.map.JsonHexMap;
 import com.hexagon.game.map.generator.GeneratorCallback;
 import com.hexagon.game.map.generator.MapGenerator;
 import com.hexagon.game.map.generator.TileGenerator;
@@ -16,6 +18,7 @@ import com.hexagon.game.map.structures.resources.ResourceType;
 import com.hexagon.game.map.structures.resources.StructureResource;
 import com.hexagon.game.map.tiles.Biome;
 import com.hexagon.game.map.tiles.Tile;
+import com.hexagon.game.network.packets.PacketMapUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,18 +138,22 @@ public class ScreenGenerator extends HexagonScreen {
         return res;
     }
 
-    private void setupUserInterface(){
+    private void setupUserInterface() {
+        stage.getActors().clear();
 
+        UILabel label;
+        if (GameManager.instance.server.isHost()) {
+            label = new UILabel(50, 100, 300, 300, 32, "Generating the Map...");
+        } else {
+            label = new UILabel(50, 100, 300, 300, 32, "The Host is generating the Map...");
+        }
+        stage.addActor(label.getLabel());
     }
 
     @Override
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-
-
-        setupUserInterface();
-
     }
 
     @Override
@@ -154,6 +161,16 @@ public class ScreenGenerator extends HexagonScreen {
         super.show();
 
         System.out.println("Showing generator");
+
+        if (GameManager.instance.server == null) {
+            GameManager.instance.playOffline();
+        }
+
+        setupUserInterface();
+
+        if (!GameManager.instance.server.isHost()) {
+            return;
+        }
 
         /*
          * Start creating the world
@@ -168,12 +185,23 @@ public class ScreenGenerator extends HexagonScreen {
             @Override
             public void generatorFinished() {
 
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
                 final HexMap hexMap = new HexMap(mapGenerator.getSizeX(), mapGenerator.getSizeY());
                 hexMap.setTiles(mapGenerator.getGeneratedTiles());
 
-                MapManager.getInstance().setCurrentHexMap(hexMap);
+                JsonHexMap jsonHexMap = new JsonHexMap(hexMap.getTiles());
+                PacketMapUpdate packetMapUpdate = new PacketMapUpdate(jsonHexMap.toJson());
+                System.out.println("sending mapupdate " + packetMapUpdate.getRawMapData());
+                GameManager.instance.server.send(packetMapUpdate);
 
-                ScreenManager.getInstance().setCurrentScreen(ScreenType.GAME);
+                //MapManager.getInstance().setCurrentHexMap(hexMap);
+
+                //ScreenManager.getInstance().setCurrentScreen(ScreenType.GAME);
             }
         });
 

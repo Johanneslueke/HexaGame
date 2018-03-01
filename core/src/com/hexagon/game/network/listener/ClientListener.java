@@ -6,11 +6,15 @@ import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
+import com.hexagon.game.map.HexMap;
+import com.hexagon.game.map.JsonHexMap;
+import com.hexagon.game.map.MapManager;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketLeave;
+import com.hexagon.game.network.packets.PacketMapUpdate;
 import com.hexagon.game.network.packets.PacketServerList;
 import com.hexagon.game.network.packets.PacketType;
 
@@ -107,6 +111,34 @@ public class ClientListener extends PacketListener {
                 @Override
                 public void invoke(Object... args) throws Exception {
                     System.out.println("Received MAPUPDATE");
+                    PacketMapUpdate packetMapUpdate = (PacketMapUpdate) args[0];
+                    HexMap hexMap;
+
+                    // If the player is playing offline, the packet contains a list of tiles
+                    // If the player is connected to the server it will only contain the raw json
+                    if (packetMapUpdate.getTiles() != null) {
+                        hexMap = new HexMap(
+                                packetMapUpdate.getTiles().length,
+                                (packetMapUpdate.getTiles().length == 0) ? (0) : (packetMapUpdate.getTiles()[0].length)
+                        );
+                        hexMap.setTiles(packetMapUpdate.getTiles());
+                    } else {
+                        String json = packetMapUpdate.getRawMapData();
+
+                        JsonHexMap jsonHexMap = JsonHexMap.fromJson(json);
+
+                        hexMap = new HexMap(
+                                jsonHexMap.getTiles().length,
+                                (jsonHexMap.getTiles().length == 0) ? (0) : (jsonHexMap.getTiles()[0].length)
+                        );
+                        System.out.println("HEX MAP " + hexMap.getTiles().length);
+                        hexMap.setTiles(jsonHexMap.getTiles());
+                    }
+                    MapManager.getInstance().setCurrentHexMap(hexMap);
+
+                    if (ScreenManager.getInstance().getCurrentScreen().getScreenType() != ScreenType.GAME) {
+                        ScreenManager.getInstance().setCurrentScreen(ScreenType.GAME);
+                    }
 
                 }
             });

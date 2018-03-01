@@ -48,6 +48,16 @@ public class GroupWindow extends Window {
         }
     }
 
+    @Override
+    public void removeAll(Stage stage) {
+        for (Window window : windowList) {
+            window.removeAll(stage);
+        }
+        windowList.clear();
+
+        super.removeAll(stage);
+    }
+
     public void show(int index, Stage stage) {
         // start at 1 so we don't hide the main window
         for (int i=1; i<windowList.size(); i++) {

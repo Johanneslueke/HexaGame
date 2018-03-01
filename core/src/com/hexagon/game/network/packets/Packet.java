@@ -101,6 +101,8 @@ public abstract class Packet {
                      packetServerList.entries.add(entry);
                  }
                  return packetServerList;
+             case MAPUPDATE:
+                 return new PacketMapUpdate(senderId, arr[offset]);
          }
 
          return null;

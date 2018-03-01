@@ -20,19 +20,23 @@ import java.util.List;
 
 public class Tile {
 
-    private RenderTile      renderTile; // RenderTile stores rendering data
-    private TileLocation    tileLocation;
+    private transient RenderTile      renderTile; // RenderTile stores rendering data
+    private transient TileLocation    tileLocation;
     private int             arrayX;
     private int             arrayY;
 
     private Biome           biome = Biome.ICE;
     private Structure       structure;
 
-    private List<Car>       cars = new ArrayList<>();
+    private transient List<Car>       cars = new ArrayList<>();
 
 
     public TileLocation getTileLocation() {
         return tileLocation;
+    }
+
+    public Tile() {
+        // Gson requires this constructor
     }
 
     public Tile(int arrayX, int arrayY) {
@@ -83,5 +87,9 @@ public class Tile {
 
     public List<Car> getCars() {
         return cars;
+    }
+
+    public void updateTileLocation() {
+        this.tileLocation = HexagonUtil.getTileLocation(arrayX, arrayY);
     }
 }

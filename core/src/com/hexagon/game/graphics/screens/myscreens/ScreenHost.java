@@ -132,8 +132,22 @@ public class ScreenHost extends HexagonScreen {
         ));
     }
 
+    private float callEventsTime = 0;
+    private void update(float delta) {
+        if (GameManager.instance.server != null) {
+
+            callEventsTime += delta;
+            if (callEventsTime >= 1.0) {
+                GameManager.instance.server.callEvents();
+                callEventsTime = 0;
+            }
+        }
+    }
+
     @Override
     public void render(float delta) {
+        this.update(delta);
+
         ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);
         batch.begin();
         font.draw(batch, "Host a game", 20, 20);

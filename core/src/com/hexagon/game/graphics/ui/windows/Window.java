@@ -17,8 +17,8 @@ public class Window implements Comparable<Window> {
 
     private int priority = 1;
 
-    private float x;
-    private float y;
+    float x;
+    float y;
 
     private float width;
     private float height;

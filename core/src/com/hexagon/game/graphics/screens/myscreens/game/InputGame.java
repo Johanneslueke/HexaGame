@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.Logic.Components.HexaComponentPosition;
 import com.hexagon.game.Logic.Components.HexaComponentTest;
-import com.hexagon.game.graphics.ui.windows.FadeWindow;
+import com.hexagon.game.graphics.screens.myscreens.game.GameUI.PlayerStatus;
 import com.hexagon.game.input.HexInput;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.Point;
@@ -87,9 +87,8 @@ public class InputGame extends HexInput {
                 cameraHelper.moveTo(cameraLockOnTile, true);
                 cameraLockOnTile = null;
             }*/
-            FadeWindow window = screenGame.gameManager.spaceWindow;
-            window.toggleVisibility(this);
-            setDisableMouse(!isDisableMouse());
+            PlayerStatus window = screenGame.gameManager.playerStatusWindow;
+            window.StatusWindow.toggleVisibility();
 
         }
         if (keycode == Input.Keys.H) {

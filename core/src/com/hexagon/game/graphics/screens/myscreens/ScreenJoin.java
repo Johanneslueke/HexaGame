@@ -138,9 +138,21 @@ public class ScreenJoin extends HexagonScreen {
         gameManager.connect(false);
     }
 
+    private float callEventsTime = 0;
+    private void update(float delta) {
+        if (GameManager.instance.server != null) {
+
+            callEventsTime += delta;
+            if (callEventsTime >= 1.0) {
+                GameManager.instance.server.callEvents();
+                callEventsTime = 0;
+            }
+        }
+    }
+
     @Override
     public void render(float delta) {
-        GameManager.instance.server.callEvents();
+        this.update(delta);
 
         ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);
         batch.begin();

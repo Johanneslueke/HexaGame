@@ -36,7 +36,6 @@ import com.hexagon.game.map.Point;
 import com.hexagon.game.map.TileLocation;
 import com.hexagon.game.map.detail.Car;
 import com.hexagon.game.map.structures.StructureType;
-import com.hexagon.game.map.structures.resources.StructureResource;
 import com.hexagon.game.map.tiles.Biome;
 import com.hexagon.game.map.tiles.Chunk;
 import com.hexagon.game.map.tiles.Tile;
@@ -114,7 +113,7 @@ public class ScreenGame extends HexagonScreen {
         camera.update();
     }
 
-    private void setupModels(){
+    private void setupModels() {
         batch = new SpriteBatch();
         font = new BitmapFont();
         // Model loader needs a binary json reader to decode
@@ -209,7 +208,7 @@ public class ScreenGame extends HexagonScreen {
                         }
 
                     } else if (type == StructureType.RESOURCE) {
-                        StructureResource resource = (StructureResource) tile.getStructure();
+                        //StructureResource resource = (StructureResource) tile.getStructure();
                         HexModel model = new HexModel(new ModelInstance(box));
                         model.move((float) loc.getX() + 0.5f, 0.3f, (float) loc.getY() - 0.5f);
                         renderTile.getStructures().add(model);
@@ -388,7 +387,7 @@ public class ScreenGame extends HexagonScreen {
         );
 
         gameManager.startGame(this);
-        gameManager.createAll();
+        gameManager.createUserInterface();
 
         createMap(MapManager.getInstance().getCurrentHexMap());
 
@@ -433,6 +432,7 @@ public class ScreenGame extends HexagonScreen {
     public void hide() {
         super.hide();
         InputManager.getInstance().unregister(this.inputGame);
+        resetAll();
     }
 
     @Override
@@ -453,7 +453,15 @@ public class ScreenGame extends HexagonScreen {
         }
 
         streetModel.dispose();
+        ModelManager.getInstance().disposeModels();
     }
+
+    public void resetAll() {
+        System.out.println("Resetting all");
+        currentMap = null;
+        windowManager.removeAll(stage);
+    }
+
 
     public PerspectiveCamera getCamera() {
         return camera;

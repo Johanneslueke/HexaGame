@@ -40,7 +40,7 @@ public class UILabel extends UiElement {
     }
 
     public UILabel( float x, float y, float width, float height,int fontsize, Stage stage,String text, ChangeListener changeListener) {
-        this( x, y, width, height,fontsize,text);
+        this(x, y, width, height, fontsize, text);
 
         addToStage(stage);
         addListener(changeListener);
@@ -54,6 +54,7 @@ public class UILabel extends UiElement {
 
     @Override
     public void removeFromStage(Stage stage) {
+        System.out.println("Removing label " + Label.getText());
         stage.getActors().removeValue(this.Label, false);
     }
 

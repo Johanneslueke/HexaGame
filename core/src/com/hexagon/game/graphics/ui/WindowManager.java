@@ -25,6 +25,7 @@ public class WindowManager implements InputProcessor {
 
     public void addWindow(Window window) {
         windowList.add(window);
+        System.out.println("Added window " + windowList.size());
         sortAll();
     }
 
@@ -39,9 +40,11 @@ public class WindowManager implements InputProcessor {
     }
 
     public void removeAll(Stage stage) {
+        System.out.println("WindowList size: " + windowList.size());
         for (Window window : windowList) {
             window.removeAll(stage);
         }
+        windowList.clear();
     }
 
     public void remove(Stage stage, Window window) {

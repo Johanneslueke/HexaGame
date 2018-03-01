@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
@@ -128,8 +129,22 @@ public class ScreenLobby extends HexagonScreen {
         setupUserInterface();
     }
 
+    private float callEventsTime = 0;
+    private void update(float delta) {
+        if (GameManager.instance.server != null) {
+
+            callEventsTime += delta;
+            if (callEventsTime >= 1.0) {
+                GameManager.instance.server.callEvents();
+                callEventsTime = 0;
+            }
+        }
+    }
+
     @Override
     public void render(float delta) {
+        this.update(delta);
+
         ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);
         batch.begin();
         font.draw(batch, "Room Lobby - Waiting for host to start the game", 20, 20);

@@ -34,6 +34,8 @@ public class GameManager {
     GroupWindow             standardWindow ;
     FadeWindow              spaceWindow;
 
+    PlayerStatus            playerStatusWindow;
+
 
     public HexaServer                  server;
 
@@ -50,9 +52,18 @@ public class GameManager {
         this.stage = game.getStage();
     }
 
+    public void playOffline() {
+        server = new HexaServer(
+                null
+                , 0
+        );
+        server.hostOffline();
+    }
+
     public void connect(boolean isHost) {
         server = new HexaServer(
-                "svdragster.dtdns.net",
+                //"svdragster.dtdns.net",
+                "localhost",
                 25565,
                 isHost
         );
@@ -77,7 +88,7 @@ public class GameManager {
         }
     }
 
-    public void createAll() {
+    public void createUserInterface() {
         shapeRenderer = new ShapeRenderer();
         createButtons();
         createWindows();
@@ -136,7 +147,7 @@ public class GameManager {
 
     public void createStatusbar() {
         StatusBar statusBar = new StatusBar(stage,standardWindow);
-        PlayerStatus playerStatus = new PlayerStatus(standardWindow);
+        PlayerStatus playerStatus = new PlayerStatus(standardWindow, stage);
         TileInfoField tileInfoField = new TileInfoField(standardWindow,stage);
 
         playerStatus.StatusWindow.show(stage);
@@ -145,6 +156,7 @@ public class GameManager {
         statusBar.MainMenu.MenuContent.hide(stage);
         windowManager.addWindow(standardWindow);
 
+        playerStatusWindow = playerStatus;
     }
 
 

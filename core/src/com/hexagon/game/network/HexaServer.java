@@ -50,12 +50,13 @@ public class HexaServer {
     private ClientListener      clientListener;
     private UUID                LocalClientID = UUID.randomUUID();
 
-    public long                lastKeepAliveSent = System.currentTimeMillis();
+    public long                 lastKeepAliveSent = System.currentTimeMillis();
 
     private SessionData         sessionData;
 
 
     public HexaServer(String address, int port) {
+        if (address == null) return; // If the address is null, the player wants to play offline
         this.address    = new InetSocketAddress(address, port);
         this.socket     = new Socket();
     }
@@ -65,6 +66,16 @@ public class HexaServer {
         if (isHost) {
             sessionData = new SessionData();
         }
+    }
+
+    public void hostOffline() {
+        System.out.println("=== Hosting offline game ===");
+        hostListener = new ServerListener(this);
+        hostListener.registerAll();
+        clientListener = new ClientListener(this);
+        clientListener.registerAll();
+        sessionData = new SessionData();
+        socket = new Socket(); // Just an empty socket instance to prevent nullpointers
     }
 
     public void connect(int timeout) throws IOException {
@@ -114,6 +125,16 @@ public class HexaServer {
     }
 
     public void send(Packet packet) {
+        if (packet.getSenderId().equals(HexaServer.senderId)) {
+            try {
+                clientListener.call(packet);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (socket == null || !socket.isConnected()) {
+            return;
+        }
         synchronized (sendingLock) {
             toSend.add(packet);
         }
@@ -149,12 +170,9 @@ public class HexaServer {
 
                             Packet packet = sendBuffer.get(i);
 
-                            System.out.println("Sending " + packet.getClass().getName());
-                            System.out.println("--> '" + packet.serialize() + "'");
+                            System.out.println("(" + isHost() + ") Sending " + packet.getClass().getName() + " --> '" + packet.serialize() + "'");
                             out.println(packet.serialize());
                             out.flush();
-
-                            System.out.println("done");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -197,16 +215,18 @@ public class HexaServer {
                             socket.setSoTimeout(TIMEOUT);
                             readAmount++;
                             String stringPacket = in.nextLine();
-                            System.out.println("I received a packet! " + stringPacket);
-                            Packet packet = Packet.deserialize(stringPacket);
-                            if (packet == null) {
-                                System.out.println("Packet is null :(");
+                            if (stringPacket.equals("")) {
+                                System.out.println("I received an empty packet.");
                             } else {
-                                //System.out.println(packet.getType().name() + " -> " + packet.getClass().getName());
-                            }
-                            //receiveBuffer.add(packet);
-                            synchronized (receivingLock) {
-                                toCall.add(packet);
+                                System.out.println("I received a packet! " + stringPacket);
+                                Packet packet = Packet.deserialize(stringPacket);
+                                if (packet == null) {
+                                    System.out.println("Packet is null :(");
+                                } else {
+                                    synchronized (receivingLock) {
+                                        toCall.add(packet);
+                                    }
+                                }
                             }
                         }
 
@@ -249,8 +269,10 @@ public class HexaServer {
     }
 
     public void callEvents() {
-        if (System.currentTimeMillis() - lastKeepAliveSent >= 5_000) {
-            broadcastKeepAlive();
+        if (socket.isConnected()) {
+            if (System.currentTimeMillis() - lastKeepAliveSent >= 5_000) {
+                broadcastKeepAlive();
+            }
         }
 
         synchronized (receivingLock) {
@@ -291,7 +313,6 @@ public class HexaServer {
     }
 
     public void broadcastKeepAlive() {
-
         lastKeepAliveSent = System.currentTimeMillis();
         send(new PacketKeepAlive(senderId, 1));
     }
