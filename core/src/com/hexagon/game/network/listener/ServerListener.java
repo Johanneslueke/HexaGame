@@ -116,8 +116,8 @@ public class ServerListener extends PacketListener {
                     //server.getClientListener().call(packetBuild);
                     Tile tile = server.getSessionData().currentMap().getTileAt(packetBuild.getArrayPosition());
 
-                    tile.
-                    server.getSessionData().buildStructure(packetBuild.getOwner(),);
+                    //tile.
+                    //server.getSessionData().buildStructure(packetBuild.getOwner(),);
                     // Respond
                     server.send(new PacketBuild(
                             packetBuild.getArrayPosition(),
