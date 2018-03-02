@@ -39,6 +39,7 @@ public class SidebarBuild extends Sidebar {
                     destroyForestButton(p, stage);
                     break;
                 case RESOURCE:
+                    destroyMine(p,stage);
                     break;
                 case CITY:
                     // TODO: Open City Information Window
@@ -49,6 +50,7 @@ public class SidebarBuild extends Sidebar {
             System.out.println("Biome " + tile.getBiome().name());
             if (tile.getBiome() == Biome.PLAINS) {
                 addForestButton(p, stage);
+                addMine(p,stage);
             }
         }
         System.out.println("Ordering all neatly");
@@ -78,9 +80,40 @@ public class SidebarBuild extends Sidebar {
                 GameManager.instance.server.send(
                         new PacketBuild(p, StructureType.FOREST, HexaServer.senderId)
                 );
+
                 select(GameManager.instance.getGame().getCurrentMap(), p, stage);
             }
         });
         statusWindow.add(buttonForest, stage);
+    }
+
+    private void destroyMine(final Point p, final Stage stage) {
+        UiButton Mine = new UiButton("Remove Mine", 5, 0, 50, 0, 26);
+        Mine.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketDestroy(p)
+                );
+                select(GameManager.instance.getGame().getCurrentMap(), p, stage);
+            }
+        });
+        statusWindow.add(Mine, stage);
+
+    }
+
+    private void addMine(final Point p, final Stage stage) {
+        UiButton Mine = new UiButton("Add Mine", 5, 0, 50, 0, 26);
+        Mine.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketBuild(p, StructureType.RESOURCE, HexaServer.senderId)
+                );
+                select(GameManager.instance.getGame().getCurrentMap(), p, stage);
+
+            }
+        });
+        statusWindow.add(Mine, stage);
     }
 }

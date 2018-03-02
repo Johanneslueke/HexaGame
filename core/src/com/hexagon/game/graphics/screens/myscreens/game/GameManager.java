@@ -62,16 +62,16 @@ public class GameManager {
 
     public void connect(boolean isHost) {
         server = new HexaServer(
-                //"svdragster.dtdns.net",
-                "localhost",
+                "svdragster.dtdns.net",
+                //"localhost",
                 25565,
                 isHost
         );
 
         if (isHost) {
-            HexaServer.senderId = UUID.fromString("e84223f7-f8dd-4ea4-8494-25ef9d27a1a9");
+            HexaServer.senderId = UUID.fromString("e84223f7-f8dd-4ea4-8494-25ef9d27a1a1");
         } else {
-            HexaServer.senderId = UUID.fromString("525183d9-1a5a-40e1-a712-e3099282c341");
+            HexaServer.senderId = UUID.fromString("525183d9-1a5a-40e1-a712-e3099282c349");
         }
 
 
