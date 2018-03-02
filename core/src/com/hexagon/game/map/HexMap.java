@@ -95,6 +95,15 @@ public class HexMap {
         return tiles[x][y];
     }
 
+    public Tile getTileAt(Point point) {
+        if (point.getX() < 0 || point.getY() < 0
+                || point.getX() > tiles.length
+                || point.getY() > tiles[point.getX()].length) {
+            return null;
+        }
+        return tiles[point.getX()][point.getY()];
+    }
+
     public Chunk[][] getChunks() {
         return chunks;
     }
@@ -134,7 +143,7 @@ public class HexMap {
                 }
             }
 
-        } else if (type == StructureType.RESOURCE) {
+        } else if (type == StructureType.ORE) {
             //StructureResource resource = (StructureResource) tile.getStructure();
             HexModel model = new HexModel(new ModelInstance(GameManager.instance.getGame().box));
             model.move((float) loc.getX() + 0.5f, 0.3f, (float) loc.getY() - 0.5f);

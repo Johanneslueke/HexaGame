@@ -9,7 +9,9 @@ public enum StructureType {
     FOREST(new String[]{"tree2.g3db"}),
     CITY(null),
     STREET(new String[]{"street.g3db"}),
-    RESOURCE(null);
+    RESOURCE(null),
+    ORE(null),
+    CROPS(null);
 
     private String[] paths;
 

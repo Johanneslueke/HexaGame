@@ -38,7 +38,7 @@ public class SidebarBuild extends Sidebar {
                 case FOREST:
                     destroyForestButton(p, stage);
                     break;
-                case RESOURCE:
+                case ORE:
                     destroyMine(p,stage);
                     break;
                 case CITY:
@@ -108,7 +108,7 @@ public class SidebarBuild extends Sidebar {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 GameManager.instance.server.send(
-                        new PacketBuild(p, StructureType.RESOURCE, HexaServer.senderId)
+                        new PacketBuild(p, StructureType.ORE, HexaServer.senderId)
                 );
                 select(GameManager.instance.getGame().getCurrentMap(), p, stage);
 

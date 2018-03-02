@@ -12,7 +12,7 @@ public class StructureResource extends Structure {
     private ResourceType resourceType;
 
     public StructureResource(ResourceType resourceType) {
-        super(StructureType.RESOURCE);
+        super(StructureType.ORE);
         this.resourceType = resourceType;
     }
 

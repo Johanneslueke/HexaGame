@@ -6,6 +6,8 @@ import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
+import com.hexagon.game.map.structures.StructureType;
+import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketDestroy;
@@ -29,6 +31,25 @@ public class ServerListener extends PacketListener {
 
     public ServerListener(HexaServer server) {
         super(server);
+    }
+
+    public boolean isBuildableTile(PacketBuild build){
+        switch (build.getStructureType()){
+            case ORE:{
+
+            }break;
+            case CROPS:{
+
+            }break;
+            case FOREST:{
+
+            }break;
+            default:{
+
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -72,6 +93,8 @@ public class ServerListener extends PacketListener {
                     // e.g. print to console that a player left the game
                     server.getClientListener().call(leave);
 
+                    server.getSessionData().removePlayer(leave.getSenderId());
+
                 }
             });
 
@@ -82,13 +105,19 @@ public class ServerListener extends PacketListener {
 
                     PacketBuild packetBuild = (PacketBuild) args[0];
 
-                    // TODO: Check if the player who wants to build has enough resources to build
-                    // TODO: Check if the player can build at that location
+
+
+                    // TODO: Check if the player who wants to buildStructure has enough resources to buildStructure
+                    // TODO: Check if the player can buildStructure at that location
+
                     // -> Validate Data to prevent crashes (e.g. when someone sends a corrupted packet)
 
                     // Let the ClientListener handle the clientsided logic for building
                     //server.getClientListener().call(packetBuild);
+                    Tile tile = server.getSessionData().currentMap().getTileAt(packetBuild.getArrayPosition());
 
+                    tile.
+                    server.getSessionData().buildStructure(packetBuild.getOwner(),);
                     // Respond
                     server.send(new PacketBuild(
                             packetBuild.getArrayPosition(),
@@ -107,8 +136,8 @@ public class ServerListener extends PacketListener {
 
                     PacketDestroy packetDestroy = (PacketDestroy) args[0];
 
-                    // TODO: Check if the player who wants to build has enough resources to build
-                    // TODO: Check if the player can build at that location
+                    // TODO: Check if the player who wants to buildStructure has enough resources to buildStructure
+                    // TODO: Check if the player can buildStructure at that location
                     // -> Validate Data to prevent crashes (e.g. when someone sends a corrupted packet)
 
                     // Let the ClientListener handle the clientsided logic for building
