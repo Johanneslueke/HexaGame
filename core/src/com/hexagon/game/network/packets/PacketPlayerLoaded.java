@@ -13,7 +13,7 @@ public class PacketPlayerLoaded extends Packet {
         super(PacketType.PLAYER_LOADED);
     }
 
-    public PacketPlayerLoaded(UUID clientID, int sessionID) {
+    public PacketPlayerLoaded(UUID clientID) {
         super(PacketType.PLAYER_LOADED, clientID);
     }
 

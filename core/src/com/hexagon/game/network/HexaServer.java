@@ -198,7 +198,7 @@ public class HexaServer {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String disconnectReason = "Disconnected: Unknown Reason";
+                String disconnectReason = "Disconnected";
                 while (running) {
                     receiveBuffer.clear();
 
@@ -222,6 +222,7 @@ public class HexaServer {
                                 if (packet == null) {
                                     System.out.println("Packet is null :(");
                                 } else {
+                                    System.out.println(packet.getType().name());
                                     synchronized (receivingLock) {
                                         toCall.add(packet);
                                     }
@@ -269,7 +270,7 @@ public class HexaServer {
 
     public void callEvents() {
         if (socket.isConnected()) {
-            if (System.currentTimeMillis() - lastKeepAliveSent >= 5_000) {
+            if (System.currentTimeMillis() - lastKeepAliveSent >= 8_000) {
                 broadcastKeepAlive();
             }
         }
@@ -279,8 +280,10 @@ public class HexaServer {
                 try {
                     //packetListener.call(toCall.get(i));
                     if (isHost()) {
+                        System.out.println("calling host " + toCall.get(i).getType().name());
                         hostListener.call(toCall.get(i));
                     } else {
+                        System.out.println("calling client " + toCall.get(i).getType().name());
                         clientListener.call(toCall.get(i));
                     }
                 } catch (Exception e) {

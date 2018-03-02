@@ -134,7 +134,7 @@ public class ScreenLobby extends HexagonScreen {
         if (GameManager.instance.server != null) {
 
             callEventsTime += delta;
-            if (callEventsTime >= 1.0) {
+            if (callEventsTime >= 0.1) {
                 GameManager.instance.server.callEvents();
                 callEventsTime = 0;
             }

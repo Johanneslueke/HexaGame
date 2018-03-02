@@ -5,13 +5,18 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
+import com.hexagon.game.graphics.screens.myscreens.ScreenMainMenu;
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
+import com.hexagon.game.graphics.ui.windows.WindowNotification;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketDestroy;
 import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketLeave;
+import com.hexagon.game.network.packets.PacketPlayerLoaded;
+import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.network.packets.PacketServerList;
 import com.hexagon.game.network.packets.PacketType;
 
@@ -44,6 +49,23 @@ public class ServerListener extends PacketListener {
                 }
             });
 
+            put(PacketType.REGISTER, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    PacketRegister packet = (PacketRegister) args[0];
+                    System.out.println("==== RECEIVED REGISTER ==== " + packet.isCancelled());
+                    if (ScreenManager.getInstance().getCurrentScreen().getScreenType() == ScreenType.MAIN_MENU) {
+                        ScreenMainMenu mainMenu = (ScreenMainMenu) ScreenManager.getInstance().getCurrentScreen();
+                        mainMenu.getWindowManager().removeNotifications(mainMenu.getStage());
+                        if (packet.isCancelled()) {
+                            new WindowNotification("You are already registered.\n(Please wait a few seconds)", mainMenu.getStage(), mainMenu.getWindowManager());
+                        } else {
+                            ScreenManager.getInstance().setCurrentScreen(ScreenType.HOST);
+                        }
+                    }
+                }
+            });
+
             put(PacketType.JOIN, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
@@ -67,7 +89,6 @@ public class ServerListener extends PacketListener {
                     // Confirm the Leave Packet by sending it to the router
                     // (The router sends it to all clients)
                     server.send(new PacketLeave(leave.getLeaverUuid(), leave.isKick()));
-
                 }
             });
 
@@ -166,6 +187,25 @@ public class ServerListener extends PacketListener {
                         screenJoin.subwindowServers.orderAllNeatly(1);
                         screenJoin.subwindowServers.updateElements();
                     }
+                }
+            });
+
+            put(PacketType.PLAYER_LOADED, new Delegate() {
+
+                private int amount = 0;
+
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    PacketPlayerLoaded packet = (PacketPlayerLoaded) args[0];
+                    amount++;
+                    System.out.println("Received PLAYER_LOADED ---> " + amount);
+
+                    if (amount >= 1) {
+                        GameManager.instance.server.send(
+                                new PacketPlayerLoaded()
+                        );
+                    }
+
                 }
             });
         }};

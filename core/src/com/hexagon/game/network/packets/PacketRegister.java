@@ -11,16 +11,18 @@ public class PacketRegister extends Packet {
     private String roomName;
     private boolean success;
 
-    public PacketRegister(String roomName) {
+    public PacketRegister(String roomName, boolean cancelled) {
         super(PacketType.REGISTER);
         roomName = roomName.replace(";", "");
         this.roomName = roomName;
+        setCancelled(cancelled);
     }
 
-    public PacketRegister(UUID clientID, String roomName) {
+    public PacketRegister(UUID clientID, String roomName, boolean cancelled) {
         super(PacketType.REGISTER, clientID);
         roomName = roomName.replace(";", "");
         this.roomName = roomName;
+        setCancelled(cancelled);
     }
 
     public String getRoomName() {

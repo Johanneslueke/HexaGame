@@ -14,6 +14,9 @@ import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
+import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.packets.PacketHostGenerating;
+import com.hexagon.game.network.packets.PacketLeave;
 import com.hexagon.game.util.MenuUtil;
 
 /**
@@ -42,7 +45,11 @@ public class ScreenHost extends HexagonScreen {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
+                if (GameManager.instance.server != null) {
+                    GameManager.instance.server.send(
+                            new PacketLeave(HexaServer.senderId, false)
+                    );
+                }
             }
         });
 
@@ -99,7 +106,8 @@ public class ScreenHost extends HexagonScreen {
         buttonGenerateWorld.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ScreenManager.getInstance().setCurrentScreen(ScreenType.GENERATOR);
+                //ScreenManager.getInstance().setCurrentScreen(ScreenType.GENERATOR);
+                GameManager.instance.server.send(new PacketHostGenerating());
             }
         });
 
@@ -132,7 +140,7 @@ public class ScreenHost extends HexagonScreen {
         if (GameManager.instance.server != null) {
 
             callEventsTime += delta;
-            if (callEventsTime >= 1.0) {
+            if (callEventsTime >= 1.0f) {
                 GameManager.instance.server.callEvents();
                 callEventsTime = 0;
             }

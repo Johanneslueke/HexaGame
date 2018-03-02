@@ -14,11 +14,12 @@ import com.hexagon.game.map.Point;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketDestroy;
+import com.hexagon.game.network.packets.PacketHostGenerating;
 import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketLeave;
 import com.hexagon.game.network.packets.PacketMapUpdate;
-import com.hexagon.game.network.packets.PacketRegister;
+import com.hexagon.game.network.packets.PacketPlayerLoaded;
 import com.hexagon.game.network.packets.PacketServerList;
 import com.hexagon.game.network.packets.PacketType;
 
@@ -45,17 +46,6 @@ public class ClientListener extends PacketListener {
                 public void invoke(Object... args) throws Exception {
                     PacketKeepAlive packet = (PacketKeepAlive) args[0];
                     //server.send(new PacketKeepAlive());
-                }
-            });
-
-            put(PacketType.REGISTER, new Delegate() {
-                @Override
-                public void invoke(Object... args) throws Exception {
-                    PacketRegister packet = (PacketRegister) args[0];
-                    if (ScreenManager.getInstance().getCurrentScreen().getScreenType() == ScreenType.MAIN_MENU) {
-                        
-                        ScreenManager.getInstance().setCurrentScreen(ScreenType.HOST);
-                    }
                 }
             });
 
@@ -176,9 +166,10 @@ public class ClientListener extends PacketListener {
                     }
                     MapManager.getInstance().setCurrentHexMap(hexMap);
 
-                    if (ScreenManager.getInstance().getCurrentScreen().getScreenType() != ScreenType.GAME) {
-                        ScreenManager.getInstance().setCurrentScreen(ScreenType.GAME);
+                    if (!GameManager.instance.server.isHost()) {
+                        GameManager.instance.server.send(new PacketPlayerLoaded());
                     }
+
                     GameManager.instance.getInputGame().updateSelectedInfo();
                 }
             });
@@ -209,6 +200,28 @@ public class ClientListener extends PacketListener {
                         screenJoin.subwindowServers.orderAllNeatly(1);
                         screenJoin.subwindowServers.updateElements();
                     }
+                }
+            });
+
+            put(PacketType.HOST_GENERATING, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    PacketHostGenerating packet = (PacketHostGenerating) args[0];
+                    System.out.println("Received HOST_GENERATING");
+                    ScreenManager.getInstance().setCurrentScreen(ScreenType.GENERATOR);
+                }
+            });
+
+            put(PacketType.PLAYER_LOADED, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    PacketPlayerLoaded packet = (PacketPlayerLoaded) args[0];
+                    System.out.println("Received PLAYER_LOADED");
+
+                    if (ScreenManager.getInstance().getCurrentScreen().getScreenType() != ScreenType.GAME) {
+                        ScreenManager.getInstance().setCurrentScreen(ScreenType.GAME);
+                    }
+
                 }
             });
         }}

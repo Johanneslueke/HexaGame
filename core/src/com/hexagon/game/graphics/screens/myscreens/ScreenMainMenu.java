@@ -116,7 +116,8 @@ public class ScreenMainMenu extends HexagonScreen {
                 gameManager.connect(true);
                 gameManager.server.send(new PacketRegister(
                         HexaServer.senderId, // This is the host id
-                        "Raum " + ((int) (Math.random()*100)+1)
+                        "Raum " + ((int) (Math.random()*100)+1),
+                        false
                 ));
             }
         });
@@ -225,6 +226,10 @@ public class ScreenMainMenu extends HexagonScreen {
         shapeRenderer.begin();
         windowManager.render(shapeRenderer);
         shapeRenderer.end();
+
+        if (GameManager.instance.server != null) {
+            GameManager.instance.server.callEvents();
+        }
     }
 
     @Override
