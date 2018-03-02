@@ -334,7 +334,7 @@ public class ScreenGame extends HexagonScreen {
         if (gameManager.server != null) {
 
             callEventsTime += delta;
-            if (callEventsTime >= 1.0) {
+            if (callEventsTime >= 0.1f) {
                 gameManager.server.callEvents();
                 callEventsTime = 0;
             }

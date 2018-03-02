@@ -13,7 +13,7 @@ public class PacketHostGenerating extends Packet {
         super(PacketType.HOST_GENERATING);
     }
 
-    public PacketHostGenerating(UUID clientID, int sessionID) {
+    public PacketHostGenerating(UUID clientID) {
         super(PacketType.HOST_GENERATING, clientID);
     }
 

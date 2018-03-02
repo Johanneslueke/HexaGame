@@ -197,6 +197,12 @@ public class ScreenGenerator extends HexagonScreen {
                 JsonHexMap jsonHexMap = new JsonHexMap(hexMap.getTiles());
                 PacketMapUpdate packetMapUpdate = new PacketMapUpdate(jsonHexMap.toJson());
                 System.out.println("sending mapupdate " + packetMapUpdate.getRawMapData());
+
+                stage.getActors().clear();
+                stage.addActor(
+                        new UILabel(50, 100, 300, 300, 32, "Waiting for players...").getLabel()
+                );
+
                 GameManager.instance.server.send(packetMapUpdate);
 
                 //MapManager.getInstance().setCurrentHexMap(hexMap);
@@ -215,6 +221,8 @@ public class ScreenGenerator extends HexagonScreen {
         font.draw(batch, "Generator", 20, 20);
         batch.end();
         stage.draw();
+
+        GameManager.instance.server.callEvents();
     }
 
     @Override

@@ -74,12 +74,12 @@ public abstract class Packet {
 
          UUID senderId = UUID.fromString(arr[1]);
 
-         if (packetType == PacketType.REGISTER) {
+         boolean cancelled = arr[2].equals("1");
 
-             return new PacketRegister(senderId, arr[2]); // arr[2] is the room name
+         if (packetType == PacketType.REGISTER) {
+             return new PacketRegister(senderId, arr[3], cancelled); // arr[3] is the room name
          }
 
-         boolean cancelled = arr[2].equals("1");
 
          int offset = 3;
 
@@ -125,6 +125,10 @@ public abstract class Packet {
                  UUID leaverUuid = UUID.fromString(arr[offset]);
                  boolean kick = arr[offset+1].equals("true");
                  return new PacketLeave(senderId, leaverUuid, kick);
+             case HOST_GENERATING:
+                 return new PacketHostGenerating(senderId);
+             case PLAYER_LOADED:
+                 return new PacketPlayerLoaded(senderId);
          }
 
          return null;

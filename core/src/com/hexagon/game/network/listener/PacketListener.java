@@ -29,12 +29,19 @@ public abstract class PacketListener {
          * replaces All methods and will only invoke if the packet contains a type which is
          * implemented. Otherwise an exception is thrown
          */
-        dispatchTable
+        Delegate delegate = dispatchTable
                 .get(
                         packet.getType()
-                ).invoke(
-                        packet
                 );
+
+        if (delegate != null) {
+            delegate.invoke(
+                    packet
+            );
+        } else {
+            System.err.println("ERROR: No delegate found for " + packet.getType().name());
+            Thread.dumpStack();
+        }
 
     }
 
