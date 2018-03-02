@@ -18,6 +18,7 @@ import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketLeave;
 import com.hexagon.game.network.packets.PacketMapUpdate;
+import com.hexagon.game.network.packets.PacketPlayerStatus;
 import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.network.packets.PacketServerList;
 import com.hexagon.game.network.packets.PacketType;
@@ -128,6 +129,19 @@ public class ClientListener extends PacketListener {
 
                     map.deconstruct(pos.getX(), pos.getY());
                     GameManager.instance.getInputGame().updateSelectedInfo();
+                }
+            });
+
+
+            put(PacketType.PLAYER_STATUS, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    System.out.println("Client Received Player_Status");
+                    PacketPlayerStatus player = (PacketPlayerStatus)args[0];
+
+
+
+
                 }
             });
 

@@ -10,4 +10,7 @@ public enum HexaComponents implements ComponentType {
     OWNER,
     POSITION,
     TEST,
+    WOOD,
+    ORE,
+    STONE
 }

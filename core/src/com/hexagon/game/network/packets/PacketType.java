@@ -17,7 +17,8 @@ public enum PacketType {
     TERMINATE((byte) 0x08),
     SERVER_LIST((byte) 0x09),
     PLAYER_LOADED((byte) 0x0A),
-    HOST_GENERATING((byte) 0x0B);
+    HOST_GENERATING((byte) 0x0B),
+    PLAYER_STATUS((byte)0x0C);
 
     public byte ID;
 

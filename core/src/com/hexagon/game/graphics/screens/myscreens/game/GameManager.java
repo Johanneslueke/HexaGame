@@ -17,6 +17,8 @@ import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.util.MenuUtil;
 
 import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -31,6 +33,13 @@ public class GameManager {
     private WindowManager   windowManager;
     private Stage           stage;
     private InputGame       inputGame;
+
+    private Map<String,Integer> PlayerResources = new Hashtable<String,Integer>() {{
+        put("Stone",0);
+        put("Wood",0);
+        put("Ore",0);
+    }};
+
     ShapeRenderer           shapeRenderer;
     GroupWindow             standardWindow ;
     FadeWindow              spaceWindow;
@@ -181,5 +190,10 @@ public class GameManager {
 
     public void setInputGame(InputGame inputGame) {
         this.inputGame = inputGame;
+    }
+
+
+    public Map<String, Integer> getPlayerResources() {
+        return PlayerResources;
     }
 }
