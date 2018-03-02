@@ -10,12 +10,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
+import com.hexagon.game.graphics.ui.windows.WindowNotification;
+import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.util.MenuUtil;
 
 /**
@@ -29,7 +33,6 @@ import com.hexagon.game.util.MenuUtil;
 /**
  * Concrete implementation of an Screen.
  * according to the constructor of type >MAIN_MENU<
- *
  */
 public class ScreenMainMenu extends HexagonScreen {
 
@@ -107,7 +110,14 @@ public class ScreenMainMenu extends HexagonScreen {
         playHost.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ScreenManager.getInstance().setCurrentScreen(ScreenType.HOST);
+                new WindowNotification("Registering you as a Host...", stage, windowManager);
+
+                GameManager gameManager = GameManager.instance;
+                gameManager.connect(true);
+                gameManager.server.send(new PacketRegister(
+                        HexaServer.senderId, // This is the host id
+                        "Raum " + ((int) (Math.random()*100)+1)
+                ));
             }
         });
 

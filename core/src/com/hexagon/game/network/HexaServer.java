@@ -8,7 +8,6 @@ import com.hexagon.game.network.listener.ClientListener;
 import com.hexagon.game.network.listener.ServerListener;
 import com.hexagon.game.network.packets.Packet;
 import com.hexagon.game.network.packets.PacketKeepAlive;
-import com.hexagon.game.network.packets.PacketLeave;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -297,7 +296,7 @@ public class HexaServer {
             System.out.println("Could not disconnect because the socket is already closed");
             return false;
         }
-        send(new PacketLeave());
+        running = false;
         try {
             socket.close();
             System.out.println("You have disconnected from the game");
@@ -331,5 +330,9 @@ public class HexaServer {
 
     public ClientListener getClientListener() {
         return clientListener;
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 }

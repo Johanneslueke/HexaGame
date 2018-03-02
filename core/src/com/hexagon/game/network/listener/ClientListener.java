@@ -18,6 +18,7 @@ import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketLeave;
 import com.hexagon.game.network.packets.PacketMapUpdate;
+import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.network.packets.PacketServerList;
 import com.hexagon.game.network.packets.PacketType;
 
@@ -47,6 +48,17 @@ public class ClientListener extends PacketListener {
                 }
             });
 
+            put(PacketType.REGISTER, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    PacketRegister packet = (PacketRegister) args[0];
+                    if (ScreenManager.getInstance().getCurrentScreen().getScreenType() == ScreenType.MAIN_MENU) {
+                        
+                        ScreenManager.getInstance().setCurrentScreen(ScreenType.HOST);
+                    }
+                }
+            });
+
             put(PacketType.JOIN, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
@@ -69,8 +81,22 @@ public class ClientListener extends PacketListener {
                 @Override
                 public void invoke(Object... args) throws Exception {
                     PacketLeave packetLeave = (PacketLeave) args[0];
-                    // TODO: Get username somehow
-                    System.out.println("USER has left the game");
+
+                    String message;
+                    if (packetLeave.isKick()) {
+                        message = "(" + packetLeave.getLeaverUuid() + ") has been kicked";
+                    } else {
+                        message = "(" + packetLeave.getLeaverUuid() + ") has left the game";
+                    }
+
+                    if (packetLeave.getLeaverUuid().equals(HexaServer.senderId)) {
+                        System.out.println("##### YOU - " + message);
+                        server.disconnect();
+                        ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
+                    } else {
+                        System.out.println("##### Someone else - " + message);
+                    }
+
 
                 }
             });
@@ -87,7 +113,7 @@ public class ClientListener extends PacketListener {
                     HexMap map = GameManager.instance.getGame().getCurrentMap();
 
                     map.build(pos.getX(), pos.getY(), packetBuild.getStructureType());
-
+                    GameManager.instance.getInputGame().updateSelectedInfo();
                 }
             });
 
@@ -101,6 +127,7 @@ public class ClientListener extends PacketListener {
                     HexMap map = GameManager.instance.getGame().getCurrentMap();
 
                     map.deconstruct(pos.getX(), pos.getY());
+                    GameManager.instance.getInputGame().updateSelectedInfo();
                 }
             });
 
@@ -152,7 +179,7 @@ public class ClientListener extends PacketListener {
                     if (ScreenManager.getInstance().getCurrentScreen().getScreenType() != ScreenType.GAME) {
                         ScreenManager.getInstance().setCurrentScreen(ScreenType.GAME);
                     }
-
+                    GameManager.instance.getInputGame().updateSelectedInfo();
                 }
             });
 

@@ -121,6 +121,10 @@ public abstract class Packet {
                          Integer.parseInt(strPoint[1])
                  );
                  return new PacketDestroy(senderId, point);
+             case LEAVE:
+                 UUID leaverUuid = UUID.fromString(arr[offset]);
+                 boolean kick = arr[offset+1].equals("true");
+                 return new PacketLeave(senderId, leaverUuid, kick);
          }
 
          return null;

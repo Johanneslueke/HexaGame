@@ -46,6 +46,13 @@ public class ScreenJoin extends HexagonScreen {
 
     private void setupUserInterface(){
 
+        if (messageBox != null) {
+            messageBox.removeAll(stage);
+            messageBox = null;
+            joining = false;
+        }
+        windowManager.removeAll(stage);
+
         UiButton button = new UiButton("Back", 50, Gdx.graphics.getHeight() - 50, 100, 50);
         button.addToStage(stage);
 
@@ -125,14 +132,13 @@ public class ScreenJoin extends HexagonScreen {
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-
-        setupUserInterface();
-
     }
 
     @Override
     public void show() {
         super.show();
+
+        setupUserInterface();
 
         GameManager gameManager = GameManager.instance;
         gameManager.connect(false);
@@ -163,11 +169,16 @@ public class ScreenJoin extends HexagonScreen {
             messageBox.hide(getStage());
         }
 
-        stage.draw();
 
         if (joining) {
             shapeRenderer.begin();
             windowManager.render(shapeRenderer);
+            shapeRenderer.end();
+        }
+        stage.draw();
+        if (messageBox != null) {
+            shapeRenderer.begin();
+            messageBox.render(shapeRenderer);
             shapeRenderer.end();
         }
     }
@@ -197,9 +208,11 @@ public class ScreenJoin extends HexagonScreen {
         joining = true;
         if (messageBox != null) {
             messageBox.removeLabels(getStage());
+            //windowManager.remove(stage, messageBox);
         } else {
             messageBox = new Window(MenuUtil.getInstance().getX() + 50, MenuUtil.getInstance().getY() + 50, 800 - 100, 600 - 100);
-            windowManager.addWindow(messageBox);
+            messageBox.setPriority(100);
+            //windowManager.addWindow(messageBox);
         }
 
         UILabel label = new UILabel(50, 50, 300, 100,32, "Joining room " + roomName + "...");

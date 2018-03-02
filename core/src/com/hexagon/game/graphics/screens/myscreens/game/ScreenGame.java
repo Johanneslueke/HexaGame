@@ -227,11 +227,16 @@ public class ScreenGame extends HexagonScreen {
 
     private int renderedChunks = 0;
     public static int renderedTiles = 0;
-    private void renderModels(){
+
+    private void renderModels() {
         modelBatch.begin(camera);
 
         renderedChunks = 0;
         renderedTiles = 0;
+
+        if (currentMap == null) {
+            return;
+        }
 
         for (int x=0; x<currentMap.getChunks().length; x++) {
             for (int y=0; y<currentMap.getChunks()[x].length; y++) {
@@ -458,5 +463,9 @@ public class ScreenGame extends HexagonScreen {
 
     public Model getStreetModel() {
         return streetModel;
+    }
+
+    public InputGame getInputGame() {
+        return inputGame;
     }
 }

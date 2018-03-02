@@ -14,8 +14,6 @@ import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
-import com.hexagon.game.network.HexaServer;
-import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.util.MenuUtil;
 
 /**
@@ -34,7 +32,9 @@ public class ScreenHost extends HexagonScreen {
         super(ScreenType.HOST);
     }
 
-    private void setupUserInterface(){
+    private void setupUserInterface() {
+
+        windowManager.removeAll(stage);
 
         UiButton button = new UiButton("Back", 50, Gdx.graphics.getHeight() - 50, 100, 50);
         button.addToStage(stage);
@@ -116,7 +116,6 @@ public class ScreenHost extends HexagonScreen {
         batch = new SpriteBatch();
         font = new BitmapFont();
 
-        setupUserInterface();
 
     }
 
@@ -124,12 +123,8 @@ public class ScreenHost extends HexagonScreen {
     public void show() {
         super.show();
 
-        GameManager gameManager = GameManager.instance;
-        gameManager.connect(true);
-        gameManager.server.send(new PacketRegister(
-            HexaServer.senderId, // This is the host id
-            "Raum " + ((int) (Math.random()*100)+1)
-        ));
+        setupUserInterface();
+
     }
 
     private float callEventsTime = 0;
