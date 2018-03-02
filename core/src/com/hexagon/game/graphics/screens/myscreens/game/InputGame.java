@@ -355,4 +355,16 @@ public class InputGame extends HexInput {
         window.deselect(screenGame.getStage());
     }
 
+    /**
+     * Deselects and selects the currently selected tile in order to update UI
+     */
+    public void updateSelectedInfo() {
+        if (selectedTile != null) {
+            Point p = selectedTile;
+            Sidebar window = screenGame.gameManager.sidebarBuildWindow;
+            window.deselect(screenGame.getStage());
+            window.select(screenGame.getCurrentMap(), p, screenGame.getStage());
+        }
+    }
+
 }

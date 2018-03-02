@@ -87,11 +87,7 @@ public class ServerListener extends PacketListener {
 
                     // Confirm the Leave Packet by sending it to the router
                     // (The router sends it to all clients)
-                    server.send(new PacketLeave(leave.getSenderId()));
-
-                    // Let the ClientListener handle the clientsided leave logic
-                    // e.g. print to console that a player left the game
-                    server.getClientListener().call(leave);
+                    server.send(new PacketLeave(leave.getLeaverUuid(), leave.isKick()));
 
                     server.getSessionData().removePlayer(leave.getSenderId());
 

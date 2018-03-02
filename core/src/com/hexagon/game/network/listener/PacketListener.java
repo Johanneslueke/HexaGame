@@ -29,7 +29,12 @@ public abstract class PacketListener {
          * replaces All methods and will only invoke if the packet contains a type which is
          * implemented. Otherwise an exception is thrown
          */
-        dispatchTable.get(packet.getType()).invoke(packet);
+        dispatchTable
+                .get(
+                        packet.getType()
+                ).invoke(
+                        packet
+                );
 
     }
 

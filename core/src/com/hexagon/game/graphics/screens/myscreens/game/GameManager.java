@@ -30,6 +30,7 @@ public class GameManager {
     private ScreenGame      game;
     private WindowManager   windowManager;
     private Stage           stage;
+    private InputGame       inputGame;
     ShapeRenderer           shapeRenderer;
     GroupWindow             standardWindow ;
     FadeWindow              spaceWindow;
@@ -50,6 +51,7 @@ public class GameManager {
         this.game = game;
         this.windowManager = game.getWindowManager();
         this.stage = game.getStage();
+        this.inputGame = game.getInputGame();
     }
 
     public void playOffline() {
@@ -171,5 +173,13 @@ public class GameManager {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    public InputGame getInputGame() {
+        return inputGame;
+    }
+
+    public void setInputGame(InputGame inputGame) {
+        this.inputGame = inputGame;
     }
 }

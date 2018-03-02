@@ -5,9 +5,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
-import com.hexagon.game.graphics.screens.myscreens.game.InputGame;
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.DropdownWindow;
+import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.packets.PacketLeave;
 
 /**
  * Created by Johannes on 25.02.2018.
@@ -53,7 +55,12 @@ public class IngameMenu {
         ExitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
+                if (GameManager.instance.server != null && GameManager.instance.server.isRunning()) {
+                    GameManager.instance.server.send(new PacketLeave(HexaServer.senderId, false));
+                    System.out.println("Leaving the game...");
+                } else {
+                    ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
+                }
             }
         });
 

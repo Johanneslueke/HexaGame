@@ -71,7 +71,6 @@ public class UiButton extends UiElement {
 
     @Override
     public void hide(Stage stage) {
-        System.out.println("Hiding button " + textButton.getText());
         this.textButton.setVisible(false);
     }
 

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 import com.hexagon.game.graphics.ui.windows.Window;
+import com.hexagon.game.graphics.ui.windows.WindowNotification;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +37,19 @@ public class WindowManager implements InputProcessor {
     public void render(ShapeRenderer renderer) {
         for (Window window : windowList) {
             window.render(renderer);
+        }
+    }
+
+    public void removeNotifications(Stage stage) {
+        List<Window> toRemove = new ArrayList<>();
+        for (Window window : windowList) {
+            if (window instanceof WindowNotification) {
+                toRemove.add(window);
+            }
+        }
+        for (Window window : toRemove) {
+            window.removeAll(stage);
+            windowList.remove(window);
         }
     }
 
