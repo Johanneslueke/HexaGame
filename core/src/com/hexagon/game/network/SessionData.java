@@ -58,7 +58,7 @@ public class SessionData implements SessionActions {
 
     public void buildStructure(UUID playerID, StructureType type){
 
-        if(!PlayerList.containsKey(playerID)){#
+        if(!PlayerList.containsKey(playerID)){
 
             switch (type){
                 case ORE:{
