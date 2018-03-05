@@ -6,18 +6,23 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
+import com.hexagon.game.Logic.Components.HexaComponentOre;
 import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.Logic.Components.HexaComponentPosition;
+import com.hexagon.game.Logic.Components.HexaComponentStone;
 import com.hexagon.game.Logic.Components.HexaComponentTest;
+import com.hexagon.game.Logic.Components.HexaComponentWood;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.sidebar.Sidebar;
 import com.hexagon.game.input.HexInput;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.Point;
 import com.hexagon.game.map.TileLocation;
+import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.Packet;
+import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.util.CameraHelper;
@@ -144,30 +149,38 @@ public class InputGame extends HexInput {
                         hover(model)
                 );
             }
+
         }
         downX = screenX;
         downY = screenY;
 
+
         //TODO: This needs to be multiplexed to the right System for the correct player!!!!!!!!!
-        Engine.getInstance().BroadcastMessage(new NotificationNewEntity(
+        /*Engine.getInstance().BroadcastMessage(new NotificationNewEntity(
                 Engine.getInstance().getEntityManager().createID(
-                        new ComponentProducer(),
-                        new ComponentResource(
-                                0.2f,
-                                1,
-                                1,
-                                /*Create Signature for the requested resources produced by this system
-                                * But this inline Arraylist init is bit weird, nonetheless it makes
-                                * code more readable :D this is always an plus
-                                */
-                                new ArrayList<Component>() {{
-                                    add(new HexaComponentOwner("PLAYER"));
-                                    add(new HexaComponentPosition(new Point(downX,downY,0)));
-                                    add(new HexaComponentTest());
-                        }}
+                        new HexaComponentOwner("Player One",GameManager.instance.server.getLocalClientID()),
+                        new HexaComponentOre()
                         )
                 )
-        ));
+        );
+
+        Engine.getInstance().BroadcastMessage(new NotificationNewEntity(
+                        Engine.getInstance().getEntityManager().createID(
+                                new HexaComponentOwner("Player One",GameManager.instance.server.getLocalClientID()),
+                                new HexaComponentWood()
+                        )
+                )
+        );
+
+
+        Engine.getInstance().BroadcastMessage(new NotificationNewEntity(
+                        Engine.getInstance().getEntityManager().createID(
+                                new HexaComponentOwner("Player One",GameManager.instance.server.getLocalClientID()),
+                                new HexaComponentStone()
+                        )
+                )
+        );*/
+
 
         return false;
     }
@@ -347,6 +360,12 @@ public class InputGame extends HexInput {
         selectedTile = p;
         Sidebar window = screenGame.gameManager.sidebarBuildWindow;
         window.select(screenGame.getCurrentMap(), p, screenGame.getStage());
+
+        GameManager.instance.server.send(new PacketBuild(
+                p,
+                StructureType.ORE,
+                HexaServer.senderId
+        ));
     }
 
     public void deselect() {

@@ -2,6 +2,7 @@ package com.hexagon.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.Logic.Systems.HexaSystemGeneralConsumer;
 import com.hexagon.game.Logic.Systems.HexaSystemGeneralProducer;
 import com.hexagon.game.graphics.screens.ScreenManager;
@@ -14,7 +15,14 @@ import com.hexagon.game.map.MapManager;
 import com.hexagon.game.util.FontManager;
 import com.hexagon.game.util.MenuUtil;
 
+import java.util.Observable;
+
+import de.svdragster.logica.components.meta.ComponentType;
+import de.svdragster.logica.components.meta.StdComponents;
+import de.svdragster.logica.manager.Entity.Entity;
+import de.svdragster.logica.system.System;
 import de.svdragster.logica.system.SystemMessageDelivery;
+import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
 import de.svdragster.logica.world.Engine;
 
 
@@ -50,10 +58,31 @@ public class Main extends Game {
 
         engine = Engine.getInstance();
         engine.getSystemManager().addSystem(
-                new SystemMessageDelivery(),
-                new HexaSystemGeneralProducer(engine),
-                new HexaSystemGeneralConsumer(engine)
-        );
+				new SystemMessageDelivery(),
+				new System() {
+
+					@Override
+					public void process(double delta) {
+						for(Entity e: getLocalEntityCache())
+							java.lang.System.out.println("----------->Producer: " + e.toString());
+					}
+
+					@Override
+					public void update(Observable observable, Object o) {
+						setGlobalEntityContext(engine.getEntityManager());
+						if(o instanceof NotificationNewEntity){
+							NotificationNewEntity e = (NotificationNewEntity)o;
+
+							if(((NotificationNewEntity) o).isOfType(StdComponents.PRODUCER)){
+								this.getLocalEntityCache().add(e.getEntity());
+								//GameManager.instance.server.getSessionData().
+							}
+						}
+					}
+				},
+				new HexaSystemGeneralProducer(engine),
+				new HexaSystemGeneralConsumer(engine)
+		);
 
 
 
@@ -63,6 +92,7 @@ public class Main extends Game {
 	@Override
 	public void render() {
 		super.render();
+		//engine.run();
 	}
 	
 	@Override

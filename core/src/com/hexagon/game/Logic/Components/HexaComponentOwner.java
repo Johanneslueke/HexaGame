@@ -3,6 +3,7 @@ package com.hexagon.game.Logic.Components;
 import com.hexagon.game.Logic.HexaComponents;
 
 
+import java.util.UUID;
 
 import de.svdragster.logica.components.Component;
 import de.svdragster.logica.manager.Entity.Entity;
@@ -16,6 +17,13 @@ public class HexaComponentOwner extends Component {
     public String   name;
 
     public HexaComponentOwner(String Name){
+        super.setType(HexaComponents.OWNER);
+
+        name = Name;
+    }
+
+    public HexaComponentOwner(String Name,UUID id){
+        super(id);
         super.setType(HexaComponents.OWNER);
 
         name = Name;

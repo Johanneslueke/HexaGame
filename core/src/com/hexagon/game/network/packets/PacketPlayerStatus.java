@@ -1,5 +1,7 @@
 package com.hexagon.game.network.packets;
 
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -8,14 +10,29 @@ import java.util.UUID;
 
 public class PacketPlayerStatus extends Packet {
 
+    public Map<String,Integer> Stats = new Hashtable<>();
 
-    private UUID PlayerID;
+    public UUID PlayerID;
 
-    PacketPlayerStatus(PacketType type) {
-        super(type);
+    public PacketPlayerStatus() {
+        super(PacketType.PLAYER_STATUS);
     }
 
-    PacketPlayerStatus(PacketType type, UUID senderId) {
-        super(type, senderId);
+    public PacketPlayerStatus(UUID senderId,UUID playerID, Map<String,Integer> stats) {
+        super(PacketType.PLAYER_STATUS, senderId);
+        this.Stats = stats;
+        this.PlayerID = playerID;
+    }
+
+    @Override
+    public String serialize() {
+        StringBuilder   builder = new StringBuilder();
+        for(Map.Entry<String,Integer> entry : Stats.entrySet()){
+            builder.append(entry).append(",");
+        }
+        builder.append(";");
+        builder.append(PlayerID).append(";");
+        return super.serialize() + builder;
+
     }
 }

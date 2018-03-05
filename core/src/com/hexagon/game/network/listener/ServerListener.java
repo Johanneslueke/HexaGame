@@ -1,7 +1,10 @@
 package com.hexagon.game.network.listener;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.hexagon.game.Logic.Components.HexaComponentOre;
+import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
@@ -24,7 +27,14 @@ import com.hexagon.game.network.packets.PacketType;
 
 import java.util.Hashtable;
 
+import de.svdragster.logica.components.Component;
+import de.svdragster.logica.components.ComponentProducer;
+import de.svdragster.logica.components.ComponentResource;
 import de.svdragster.logica.util.Delegate;
+import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
+import de.svdragster.logica.world.Engine;
+
+import static java.util.Arrays.asList;
 
 /**
  * Created by Sven on 26.02.2018.
@@ -93,7 +103,7 @@ public class ServerListener extends PacketListener {
                     System.out.println("Received JOIN");
                     PacketJoin packet = (PacketJoin) args[0];
 
-                    server.getSessionData().addNewPlayer(packet.getSenderId(), packet.getUsername());
+                    server.getSessionData().addNewPlayer(packet.getSenderId(), packet.getUsername(), Color.GREEN);
                     System.out.println(packet.getUsername() + " has joined the game (I AM THE SERVER)");
 
                     // I'm the host, so I have to broadcast to my players that a new player has joined the game
@@ -123,6 +133,27 @@ public class ServerListener extends PacketListener {
 
                     PacketBuild packetBuild = (PacketBuild) args[0];
 
+                    if(packetBuild.getStructureType() == StructureType.ORE)
+                    {
+                        Engine.getInstance().BroadcastMessage(
+                                new NotificationNewEntity(
+                                        Engine.getInstance().getEntityManager().createID(
+                                                new HexaComponentOwner(packetBuild.getOwner().toString(),packetBuild.getOwner()),
+                                                new ComponentProducer(),
+                                                new ComponentResource(
+                                                        0.002f,
+                                                        10.0f,
+                                                        1.0f,
+                                                        asList(
+                                                                new Component[]  {
+                                                                        new HexaComponentOre()
+                                                                }
+                                                        )
+                                                )
+                                        )
+                                )
+                        );
+                    }
 
 
                     // TODO: Check if the player who wants to buildStructure has enough resources to buildStructure

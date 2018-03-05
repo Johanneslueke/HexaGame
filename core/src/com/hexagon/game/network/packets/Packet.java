@@ -4,6 +4,8 @@ import com.hexagon.game.map.Point;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.network.HexaServer;
 
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -129,6 +131,16 @@ public abstract class Packet {
                  return new PacketHostGenerating(senderId);
              case PLAYER_LOADED:
                  return new PacketPlayerLoaded(senderId);
+             case PLAYER_STATUS:{
+                 String[] values = arr[offset].split(",");
+                 Map<String,Integer> payload = new Hashtable<>();
+                 for (String stringResource : values) {
+                     String[] arrResource = stringResource.split("=");
+                     payload.put(arrResource[0], Integer.parseInt(arrResource[1]));
+                 }
+
+                 return new PacketPlayerStatus(senderId,UUID.fromString(arr[offset+1]),payload);
+             }
          }
 
          return null;

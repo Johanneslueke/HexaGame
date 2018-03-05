@@ -1,6 +1,7 @@
 package com.hexagon.game.graphics.screens.myscreens.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.screens.ScreenManager;
@@ -35,9 +36,9 @@ public class GameManager {
     private InputGame       inputGame;
 
     private Map<String,Integer> PlayerResources = new Hashtable<String,Integer>() {{
-        put("Stone",0);
-        put("Wood",0);
-        put("Ore",0);
+        put("STONE",0);
+        put("WOOD",0);
+        put("ORE",0);
     }};
 
     ShapeRenderer           shapeRenderer;
@@ -80,9 +81,10 @@ public class GameManager {
         );
 
         if (isHost) {
-            HexaServer.senderId = UUID.fromString("a84223f7-f8dd-4ea4-8494-25ef9d27a1a1");
+            ;//HexaServer.senderId = UUID.fromString("a84223f7-f8dd-4ea4-8494-25ef9d27a1a1");
+            server.getSessionData().addNewPlayer(HexaServer.senderId,"HOST", Color.GREEN);
         } else {
-            HexaServer.senderId = UUID.fromString("a25183d9-1a5a-40e1-a712-e3099282c349");
+            ;//HexaServer.senderId = UUID.fromString("a25183d9-1a5a-40e1-a712-e3099282c349");
         }
 
 
@@ -195,5 +197,9 @@ public class GameManager {
 
     public Map<String, Integer> getPlayerResources() {
         return PlayerResources;
+    }
+
+    public void setPlayerResources(Map<String, Integer> playerResources) {
+        PlayerResources = playerResources;
     }
 }

@@ -2,6 +2,8 @@ package com.hexagon.game.network.listener;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.hexagon.game.Logic.Components.HexaComponentOre;
+import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
@@ -11,6 +13,7 @@ import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.JsonHexMap;
 import com.hexagon.game.map.MapManager;
 import com.hexagon.game.map.Point;
+import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketDestroy;
@@ -24,9 +27,19 @@ import com.hexagon.game.network.packets.PacketPlayerLoaded;
 import com.hexagon.game.network.packets.PacketServerList;
 import com.hexagon.game.network.packets.PacketType;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 
+import de.svdragster.logica.components.Component;
+import de.svdragster.logica.components.ComponentProducer;
+import de.svdragster.logica.components.ComponentResource;
 import de.svdragster.logica.util.Delegate;
+import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
+import de.svdragster.logica.world.Engine;
+
+import static java.util.Arrays.*;
 
 /**
  * Created by Sven on 26.02.2018.
@@ -95,15 +108,17 @@ public class ClientListener extends PacketListener {
             put(PacketType.BUILD, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    PacketBuild packetBuild = (PacketBuild) args[0];
-                    System.out.println("Client Received BUILD " + packetBuild.getArrayPosition().getX() + ", " + packetBuild.getArrayPosition().getY()
-                        + " -> " + packetBuild.getStructureType().name());
+                    PacketBuild build = (PacketBuild) args[0];
+                    System.out.println("Client Received BUILD " + build.getArrayPosition().getX() + ", " + build.getArrayPosition().getY()
+                        + " -> " + build.getStructureType().name());
 
-                    PacketBuild destroy = (PacketBuild) args[0];
-                    Point pos = destroy.getArrayPosition();
+
+                    Point pos = build.getArrayPosition();
                     HexMap map = GameManager.instance.getGame().getCurrentMap();
 
-                    map.build(pos.getX(), pos.getY(), packetBuild.getStructureType());
+
+
+                    map.build(pos.getX(), pos.getY(), build.getStructureType());
                     GameManager.instance.getInputGame().updateSelectedInfo();
                 }
             });
@@ -129,7 +144,8 @@ public class ClientListener extends PacketListener {
                     System.out.println("Client Received Player_Status");
                     PacketPlayerStatus player = (PacketPlayerStatus)args[0];
 
-
+                    if(player.PlayerID == HexaServer.senderId)
+                        GameManager.instance.setPlayerResources(player.Stats);
 
 
                 }

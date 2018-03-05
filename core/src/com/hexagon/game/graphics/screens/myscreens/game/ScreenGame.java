@@ -49,6 +49,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.svdragster.logica.world.Engine;
+
 /**
  * Created by Sven on 14.12.2017.
  */
@@ -333,6 +335,9 @@ public class ScreenGame extends HexagonScreen {
         inputGame.update(delta);
         if (gameManager.server != null) {
 
+            if(gameManager.server.isHost()){
+                Engine.getInstance().run(delta);
+            }
             callEventsTime += delta;
             if (callEventsTime >= 0.1f) {
                 gameManager.server.callEvents();

@@ -1,10 +1,12 @@
 package com.hexagon.game.network;
 
+import com.badlogic.gdx.graphics.Color;
 import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.structures.StructureType;
+import com.hexagon.game.map.structures.resources.ResourceType;
 
 import java.util.Hashtable;
 import java.util.List;
@@ -24,21 +26,21 @@ import de.svdragster.logica.world.Engine;
  */
 
 public class SessionData implements SessionActions {
-    Map<UUID,Entity>        PlayerList = new Hashtable<>();
+    public Map<UUID,Pair<Entity,Color>>        PlayerList = new Hashtable<>();
 
     public HexMap   currentMap(){
         return GameManager.instance.getGame().getCurrentMap();
     }
 
-    public void addNewPlayer(UUID playerID,String Name){
+    public void addNewPlayer(UUID playerID,String Name,Color color){
 
         if(!PlayerList.containsKey(playerID)){
             PlayerList.put(
                     playerID,
-                    Engine.getInstance().getEntityManager()
+                    new Pair<Entity, Color>(Engine.getInstance().getEntityManager()
                             .createID(
-                                    new HexaComponentOwner(Name)
-                            ));
+                                    new HexaComponentOwner(Name,HexaServer.senderId))
+                    , color));
         }else
             throw new RuntimeException("User already in Game");
     }
@@ -46,7 +48,7 @@ public class SessionData implements SessionActions {
     public void removePlayer(UUID   player){
         if(!PlayerList.containsKey(player)){
             Engine.getInstance().BroadcastMessage(
-                    new NotificationRemoveEntity(PlayerList.get(player))
+                    new NotificationRemoveEntity(PlayerList.get(player).getFirst())
             );
             PlayerList.remove(player);
         }else{
@@ -63,17 +65,20 @@ public class SessionData implements SessionActions {
                 }break;
             }
             Engine.getInstance().BroadcastMessage(
-                    new NotificationRemoveEntity(PlayerList.get(playerID))
+                    new NotificationRemoveEntity(PlayerList.get(playerID).getFirst())
             );
         }else{
             throw new RuntimeException("User does not exist and therefor can not be removed");
         }
     }
 
-    public Map<String,Integer> getPlayerResourceStatus(UUID playerID){
-        if(!PlayerList.containsKey(playerID)){
+    public Map<String,Integer> getPlayerResourceStatus(UUID playerID) throws RuntimeException{
+        if(PlayerList.containsKey(playerID)){
+
             Map<String,Integer> result = new Hashtable<>();
-            List<List<Component>> Components = Engine.getInstance().getComponentManager().groupByTypes(HexaComponents.ORE);
+            List<List<Component>> Components = Engine.getInstance().getComponentManager().groupByTypes(
+                    HexaComponents.ORE,HexaComponents.WOOD,HexaComponents.STONE
+            );
 
             for(List<Component> Resource : Components){
                for(Component c :  Resource){
@@ -81,18 +86,25 @@ public class SessionData implements SessionActions {
 
                    Pair<Boolean,HexaComponentOwner> Owner = player.hasAssociationWith(HexaComponents.OWNER);
                    if(Owner.getFirst() && (Owner.getSecond().getID() == playerID)){
-                       switch ((HexaComponents)c.getType()){
-                           case ORE:{
-                                result.put("Ore",result.get("Ore")+1);
-                           }break;
-                       }
+                       HexaComponents type = (HexaComponents)c.getType();
+                       if(result.containsKey(type.name()))
+                           result.put(type.name(),result.get(type.name())+1);
+                       else
+                           result.put(type.name(),0);
                    }
                }
+            }
+            if(result.isEmpty()){
+                return new Hashtable<String,Integer>() {{
+                    put("STONE",0);
+                    put("WOOD",0);
+                    put("ORE",0);
+                }};
             }
             return result;
         }
 
-        return null;
+        throw new RuntimeException("Player was not part of the game Session!!!!!!!!!!!!!!!!!!!!!");
     }
 
 }

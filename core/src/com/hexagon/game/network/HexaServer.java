@@ -8,6 +8,7 @@ import com.hexagon.game.network.listener.ClientListener;
 import com.hexagon.game.network.listener.ServerListener;
 import com.hexagon.game.network.packets.Packet;
 import com.hexagon.game.network.packets.PacketKeepAlive;
+import com.hexagon.game.network.packets.PacketPlayerStatus;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,6 +16,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
@@ -28,7 +30,7 @@ public class HexaServer {
     private static final int    TIMEOUT = 20_000;
     public static final String  VERSION = "0.1";
 
-    public static UUID          senderId = UUID.fromString("525183d9-1a5a-40e1-a712-e3099282c341");
+    public static UUID          senderId = UUID.randomUUID();;//UUID.fromString("525183d9-1a5a-40e1-a712-e3099282c341");
 
     /**
      * connection stuff
@@ -47,7 +49,7 @@ public class HexaServer {
 
     private ServerListener      hostListener;
     private ClientListener      clientListener;
-    private UUID                LocalClientID = UUID.randomUUID();
+    public UUID                LocalClientID = senderId;
 
     public long                 lastKeepAliveSent = System.currentTimeMillis();
 
@@ -272,6 +274,11 @@ public class HexaServer {
         if (socket.isConnected()) {
             if (System.currentTimeMillis() - lastKeepAliveSent >= 8_000) {
                 broadcastKeepAlive();
+
+                if(getSessionData() != null && isHost())
+                    for(UUID id : getSessionData().PlayerList.keySet()){
+                    broadcastPlayerStatus(id);
+                    }
             }
         }
 
@@ -317,6 +324,19 @@ public class HexaServer {
     public void broadcastKeepAlive() {
         lastKeepAliveSent = System.currentTimeMillis();
         send(new PacketKeepAlive(senderId, 1));
+    }
+
+    public void broadcastPlayerStatus(UUID playerID) {
+      try{
+          send(new PacketPlayerStatus(senderId,playerID,this.getSessionData().getPlayerResourceStatus(playerID)));
+      }catch (RuntimeException e){
+          System.out.println(e.getMessage());
+          send(new PacketPlayerStatus(senderId,playerID,new Hashtable<String, Integer>(){{
+              put("ORE",-1);
+              put("WOOD",-1);
+              put("STONE",-1);
+          }}));
+      }
     }
 
     public SessionData getSessionData() {

@@ -2,7 +2,6 @@ package com.hexagon.game.Logic.Systems;
 
 import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.Logic.HexaComponents;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.util.ArrayList;
 import java.util.List;
