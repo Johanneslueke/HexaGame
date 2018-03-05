@@ -2,7 +2,6 @@ package com.hexagon.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.Logic.Systems.HexaSystemGeneralConsumer;
 import com.hexagon.game.Logic.Systems.HexaSystemGeneralProducer;
 import com.hexagon.game.graphics.screens.ScreenManager;
@@ -17,7 +16,6 @@ import com.hexagon.game.util.MenuUtil;
 
 import java.util.Observable;
 
-import de.svdragster.logica.components.meta.ComponentType;
 import de.svdragster.logica.components.meta.StdComponents;
 import de.svdragster.logica.manager.Entity.Entity;
 import de.svdragster.logica.system.System;
@@ -64,7 +62,7 @@ public class Main extends Game {
 					@Override
 					public void process(double delta) {
 						for(Entity e: getLocalEntityCache())
-							java.lang.System.out.println("----------->Producer: " + e.toString());
+							;//java.lang.System.out.println("----------->Producer: " + e.toString());
 					}
 
 					@Override

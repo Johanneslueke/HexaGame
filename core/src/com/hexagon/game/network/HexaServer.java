@@ -3,6 +3,7 @@ package com.hexagon.game.network;
 import com.badlogic.gdx.Gdx;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.windows.WindowNotification;
 import com.hexagon.game.network.listener.ClientListener;
 import com.hexagon.game.network.listener.ServerListener;
@@ -54,6 +55,7 @@ public class HexaServer {
     public long                 lastKeepAliveSent = System.currentTimeMillis();
 
     private SessionData         sessionData;
+    private boolean             offlineGame = false;
 
 
     public HexaServer(String address, int port) {
@@ -67,6 +69,7 @@ public class HexaServer {
         if (isHost) {
             sessionData = new SessionData();
         }
+        offlineGame = false;
     }
 
     public void hostOffline() {
@@ -75,12 +78,18 @@ public class HexaServer {
         hostListener.registerAll();
         clientListener = new ClientListener(this);
         clientListener.registerAll();
+
         sessionData = new SessionData();
+        sessionData.addNewPlayer(HexaServer.senderId,"OFFLINE_HOST",
+                GameManager.instance.colorUtil.getNext());
+
         socket = new Socket(); // Just an empty socket instance to prevent nullpointers
+        offlineGame = true;
     }
 
     public void connect(int timeout) throws IOException {
         socket.connect(address, timeout);
+        offlineGame = false;
         running = true;
         startSendingThread();
         startReceivingThread();
@@ -271,8 +280,8 @@ public class HexaServer {
     }
 
     public void callEvents() {
-        if (socket.isConnected()) {
-            if (System.currentTimeMillis() - lastKeepAliveSent >= 8_000) {
+        if (socket.isConnected() && isHost()) {
+            if (System.currentTimeMillis() - lastKeepAliveSent >= 3_500) {
                 broadcastKeepAlive();
 
                 if(getSessionData() != null && isHost())
@@ -330,7 +339,7 @@ public class HexaServer {
       try{
           send(new PacketPlayerStatus(senderId,playerID,this.getSessionData().getPlayerResourceStatus(playerID)));
       }catch (RuntimeException e){
-          System.out.println(e.getMessage());
+          //System.out.println(e.getMessage());
           send(new PacketPlayerStatus(senderId,playerID,new Hashtable<String, Integer>(){{
               put("ORE",-1);
               put("WOOD",-1);
@@ -357,5 +366,9 @@ public class HexaServer {
 
     public boolean isRunning() {
         return running;
+    }
+
+    public boolean isOfflineGame() {
+        return offlineGame;
     }
 }

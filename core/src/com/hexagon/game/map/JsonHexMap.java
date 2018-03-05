@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hexagon.game.map.tiles.Tile;
 
+import java.util.Map;
+import java.util.UUID;
+
 import javax.swing.text.AbstractDocument;
 
 /**
@@ -13,9 +16,11 @@ import javax.swing.text.AbstractDocument;
 public class JsonHexMap {
 
     private Tile[][] tiles;
+    private Map<UUID, String> colors;
 
-    public JsonHexMap(Tile[][] tiles) {
+    public JsonHexMap(Tile[][] tiles, Map<UUID, String> colors) {
         this.tiles = tiles;
+        this.colors = colors;
     }
 
     public Tile[][] getTiles() {
@@ -24,6 +29,14 @@ public class JsonHexMap {
 
     public void setTiles(Tile[][] tiles) {
         this.tiles = tiles;
+    }
+
+    public Map<UUID, String> getColors() {
+        return colors;
+    }
+
+    public void setColors(Map<UUID, String> colors) {
+        this.colors = colors;
     }
 
     public String toJson() {

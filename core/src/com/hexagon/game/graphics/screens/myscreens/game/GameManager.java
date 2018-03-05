@@ -1,7 +1,6 @@
 package com.hexagon.game.graphics.screens.myscreens.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.screens.ScreenManager;
@@ -15,12 +14,12 @@ import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.graphics.ui.windows.WindowNotification;
 import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.util.ColorUtil;
 import com.hexagon.game.util.MenuUtil;
 
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by Sven on 16.02.2018.
@@ -34,6 +33,7 @@ public class GameManager {
     private WindowManager   windowManager;
     private Stage           stage;
     private InputGame       inputGame;
+    public  ColorUtil       colorUtil;
 
     private Map<String,Integer> PlayerResources = new Hashtable<String,Integer>() {{
         put("STONE",0);
@@ -42,7 +42,7 @@ public class GameManager {
     }};
 
     ShapeRenderer           shapeRenderer;
-    GroupWindow             standardWindow ;
+    GroupWindow             standardWindow;
     FadeWindow              spaceWindow;
 
     SidebarBuild            sidebarBuildWindow;
@@ -69,6 +69,8 @@ public class GameManager {
                 null
                 , 0
         );
+
+        colorUtil = new ColorUtil();
         server.hostOffline();
     }
 
@@ -80,11 +82,14 @@ public class GameManager {
                 isHost
         );
 
+        colorUtil = new ColorUtil();
+
         if (isHost) {
-            ;//HexaServer.senderId = UUID.fromString("a84223f7-f8dd-4ea4-8494-25ef9d27a1a1");
-            server.getSessionData().addNewPlayer(HexaServer.senderId,"HOST", Color.GREEN);
+            //HexaServer.senderId = UUID.fromString("a84223f7-f8dd-4ea4-8494-25ef9d27a1a1");
+            server.getSessionData().addNewPlayer(HexaServer.senderId,"HOST",
+                    colorUtil.getNext());
         } else {
-            ;//HexaServer.senderId = UUID.fromString("a25183d9-1a5a-40e1-a712-e3099282c349");
+            //HexaServer.senderId = UUID.fromString("a25183d9-1a5a-40e1-a712-e3099282c349");
         }
 
 

@@ -1,9 +1,8 @@
 package com.hexagon.game.network.listener;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.hexagon.game.Logic.Components.HexaComponentOre;
-import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
@@ -13,7 +12,6 @@ import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.JsonHexMap;
 import com.hexagon.game.map.MapManager;
 import com.hexagon.game.map.Point;
-import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketDestroy;
@@ -22,24 +20,15 @@ import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketLeave;
 import com.hexagon.game.network.packets.PacketMapUpdate;
-import com.hexagon.game.network.packets.PacketPlayerStatus;
 import com.hexagon.game.network.packets.PacketPlayerLoaded;
+import com.hexagon.game.network.packets.PacketPlayerStatus;
 import com.hexagon.game.network.packets.PacketServerList;
 import com.hexagon.game.network.packets.PacketType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.List;
+import java.util.UUID;
 
-import de.svdragster.logica.components.Component;
-import de.svdragster.logica.components.ComponentProducer;
-import de.svdragster.logica.components.ComponentResource;
 import de.svdragster.logica.util.Delegate;
-import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
-import de.svdragster.logica.world.Engine;
-
-import static java.util.Arrays.*;
 
 /**
  * Created by Sven on 26.02.2018.
@@ -116,9 +105,7 @@ public class ClientListener extends PacketListener {
                     Point pos = build.getArrayPosition();
                     HexMap map = GameManager.instance.getGame().getCurrentMap();
 
-
-
-                    map.build(pos.getX(), pos.getY(), build.getStructureType());
+                    map.build(pos.getX(), pos.getY(), build.getStructureType(), build.getOwner());
                     GameManager.instance.getInputGame().updateSelectedInfo();
                 }
             });
@@ -191,8 +178,15 @@ public class ClientListener extends PacketListener {
                                 jsonHexMap.getTiles().length,
                                 (jsonHexMap.getTiles().length == 0) ? (0) : (jsonHexMap.getTiles()[0].length)
                         );
+
                         System.out.println("HEX MAP " + hexMap.getTiles().length);
                         hexMap.setTiles(jsonHexMap.getTiles());
+                        if (!server.isHost()) {
+                            for (UUID uuid : jsonHexMap.getColors().keySet()) {
+                                server.getSessionData().addNewPlayer(uuid, "SomePlayer",
+                                        Color.valueOf(jsonHexMap.getColors().get(uuid)));
+                            }
+                        }
                     }
                     MapManager.getInstance().setCurrentHexMap(hexMap);
 

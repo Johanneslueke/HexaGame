@@ -5,11 +5,14 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.hexagon.game.graphics.ModelManager;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.map.structures.Structure;
+import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.tiles.Chunk;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
+
+import java.util.UUID;
 
 /**
  * Created by Sven on 08.12.2017.
@@ -108,10 +111,19 @@ public class HexMap {
         return chunks;
     }
 
-    public void build(int x, int y, StructureType type) {
+    public void build(int x, int y, StructureType type, UUID owner) {
         Tile tile = GameManager.instance.getGame().getCurrentMap().getTileAt(x, y);
         RenderTile renderTile = tile.getRenderTile();
         TileLocation loc = tile.getTileLocation();
+
+        if (owner != null) {
+            HexModel colorModel = new HexModel(new ModelInstance(ModelManager.getInstance().getColorModel(
+                    GameManager.instance.server.getSessionData().PlayerList.get(owner).getSecond()
+            )));
+            colorModel.move((float) loc.getX(), 0.05f, (float) loc.getY());
+            renderTile.setOwnerColor(colorModel);
+            System.out.println("Color: " + GameManager.instance.server.getSessionData().PlayerList.get(owner).getSecond().toString());
+        }
 
         if (type == StructureType.FOREST) {
             Model treeModel = ModelManager.getInstance().getStructureModels(StructureType.FOREST).get(0);
@@ -129,24 +141,31 @@ public class HexMap {
                 placedTrees = true;
 
             }
-            if (Math.random() < 0.6) {
+            if (!placedTrees || Math.random() < 0.6) {
                 HexModel model3 = new HexModel(new ModelInstance(treeModel));
                 model3.move((float) loc.getX() + 0.3f, 0, (float) loc.getY() - 0.3f);
                 renderTile.getStructures().add(model3);
-                placedTrees = true;
             }
-            if (!placedTrees) {
-                tile.setStructure(null);
-            } else {
-                if (tile.getStructure() == null) {
-                    tile.setStructure(new Structure(StructureType.FOREST));
-                }
+
+            if (tile.getStructure() == null) {
+                tile.setStructure(new Structure(StructureType.FOREST));
             }
 
         } else if (type == StructureType.ORE) {
             //StructureResource resource = (StructureResource) tile.getStructure();
             HexModel model = new HexModel(new ModelInstance(GameManager.instance.getGame().box));
             model.move((float) loc.getX() + 0.5f, 0.3f, (float) loc.getY() - 0.5f);
+            renderTile.getStructures().add(model);
+        } else if (type == StructureType.CITY) {
+            StructureCity structureCity = (StructureCity) tile.getStructure();
+            HexModel model = new HexModel(
+                    new ModelInstance(
+                            ModelManager.getInstance()
+                            .getStructureModels(type)
+                            .get(structureCity.getLevel())
+                    )
+            );
+            model.move((float) loc.getX(), 0.05f, (float) loc.getY());
             renderTile.getStructures().add(model);
         }
     }

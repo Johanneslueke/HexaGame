@@ -6,12 +6,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
-import com.hexagon.game.Logic.Components.HexaComponentOre;
-import com.hexagon.game.Logic.Components.HexaComponentOwner;
-import com.hexagon.game.Logic.Components.HexaComponentPosition;
-import com.hexagon.game.Logic.Components.HexaComponentStone;
-import com.hexagon.game.Logic.Components.HexaComponentTest;
-import com.hexagon.game.Logic.Components.HexaComponentWood;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.sidebar.Sidebar;
 import com.hexagon.game.input.HexInput;
 import com.hexagon.game.map.HexMap;
@@ -28,14 +22,7 @@ import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.util.CameraHelper;
 import com.hexagon.game.util.HexagonUtil;
 
-import java.util.ArrayList;
 import java.util.UUID;
-
-import de.svdragster.logica.components.Component;
-import de.svdragster.logica.components.ComponentProducer;
-import de.svdragster.logica.components.ComponentResource;
-import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
-import de.svdragster.logica.world.Engine;
 
 /**
  * Created by Sven on 20.12.2017.
@@ -219,6 +206,9 @@ public class InputGame extends HexInput {
         return true;
     }
 
+    // Boolean for smoother zooming when reaching the max or min zooming border
+    private boolean maxZoom = false;
+
     public void update(float delta) {
         if (cameraHelper.isLocked()) {
             cameraHelper.update();
@@ -239,11 +229,20 @@ public class InputGame extends HexInput {
 
             screenGame.getCamera().fieldOfView = fov;*/
             float y = screenGame.getCamera().position.y + zoom;
-            if (y < 4.0f) {
-                y = 4.0f;
-            } else if (y > 10.0f) {
-                y = 10.0f;
+            if (y < 2.0f) {
+                if (!maxZoom) {
+                    screenGame.getCamera().position.z += zoom;
+                    maxZoom = true;
+                }
+                y = 2.0f;
+            } else if (y > 12.0f) {
+                if (!maxZoom) {
+                    screenGame.getCamera().position.z += zoom;
+                    maxZoom = true;
+                }
+                y = 12.0f;
             } else {
+                maxZoom = false;
                 screenGame.getCamera().position.z += zoom;
             }
             screenGame.getCamera().position.y = y;

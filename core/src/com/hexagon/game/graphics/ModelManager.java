@@ -6,7 +6,10 @@ package com.hexagon.game.graphics;
 
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.utils.UBJsonReader;
 import com.hexagon.game.map.structures.StructureType;
@@ -27,6 +30,7 @@ public class ModelManager {
     private List<Model>                         allModels;
     private Map<StructureType, List<Model>>     structureModels;
     private Map<Biome, Model>                   biomeModels;
+    private Map<Color, Model>                   colorModels;
 
     // Model loader needs a binary json reader to decode
     private UBJsonReader                 jsonReader;
@@ -42,6 +46,8 @@ public class ModelManager {
 
         jsonReader      = new UBJsonReader();
         modelLoader     = new G3dModelLoader(jsonReader);
+
+        colorModels     = new HashMap<>();
     }
 
     public static ModelManager getInstance() {
@@ -80,6 +86,20 @@ public class ModelManager {
     public Model loadModel(String path) {
         Model model = modelLoader.loadModel(Gdx.files.getFileHandle(path, Files.FileType.Internal));
         allModels.add(model);
+        return model;
+    }
+
+    public Model getColorModel(Color color) {
+        if (colorModels.containsKey(color)) {
+            return colorModels.get(color);
+        }
+        Model model = modelLoader.loadModel(Gdx.files.getFileHandle("selection_all_anim.g3db", Files.FileType.Internal));
+        for (Material material : model.materials) {
+            material.clear();
+            material.set(ColorAttribute.createDiffuse(color));
+        }
+        allModels.add(model);
+        colorModels.put(color, model);
         return model;
     }
 

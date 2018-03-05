@@ -2,6 +2,7 @@ package com.hexagon.game.map.generator;
 
 import com.hexagon.game.map.tiles.Tile;
 
+import java.util.List;
 import java.util.Random;
 
 
@@ -11,6 +12,6 @@ import java.util.Random;
 
 public abstract class TileGenerator {
 
-    public abstract Tile generate(Tile tile, int x, int y, Random random);
+    public abstract Tile generate(List<Tile> generatedTiles, Tile tile, int x, int y, Random random);
 
 }
