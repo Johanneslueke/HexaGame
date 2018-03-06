@@ -139,31 +139,7 @@ public class ServerListener extends PacketListener {
                     PacketBuild build = (PacketBuild) args[0];
 
 
-                    if( build.getStructureType() == StructureType.ORE)
-                    {
-                        System.err.println("||Received Build Packet for: " + build.getOwner() + "|| I am: "+HexaServer.senderId);
-                        System.err.println("    Build structure: " + build.getStructureType() + " at " + build.getArrayPosition());
 
-
-                        Engine.getInstance().BroadcastMessage(
-                                new NotificationNewEntity(
-                                        Engine.getInstance().getEntityManager().createID(
-                                                new HexaComponentOwner(build.getOwner().toString(),build.getOwner()),
-                                                new ComponentProducer(),
-                                                new ComponentResource(
-                                                        0.00002f,
-                                                        10.0f,
-                                                        1.0f,
-                                                        asList(
-                                                                new Component[]  {
-                                                                        new HexaComponentOre()
-                                                                }
-                                                        )
-                                                )
-                                        )
-                                )
-                        );
-                    }
 
 
                     // TODO: Check if the player who wants to buildStructure has enough resources to buildStructure
@@ -295,10 +271,10 @@ public class ServerListener extends PacketListener {
                     ));
                     //GameManager.instance.setPlayerResources(player.Stats);
 
-                    if(server.isHost() && player.PlayerID == HexaServer.senderId)
-                        GameManager.instance.setPlayerResources(player.Stats);
+                    /*if(server.isHost() && player.PlayerID.equals( HexaServer.senderId))
+                        ;GameManager.instance.setPlayerResources(player.Stats);
                     else
-                        server.send(player);
+                        server.send(player);*/
 
                 }
             });

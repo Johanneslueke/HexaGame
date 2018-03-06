@@ -343,7 +343,7 @@ public class InputGame extends HexInput {
 
         GameManager.instance.server.send(new PacketBuild(
                 p,
-                StructureType.MINE,
+                StructureType.ORE,
                 HexaServer.senderId
         ));
     }

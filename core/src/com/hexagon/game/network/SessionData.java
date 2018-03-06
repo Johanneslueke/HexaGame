@@ -7,6 +7,7 @@ import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.structures.resources.ResourceType;
+import com.hexagon.game.util.ConsoleColours;
 
 import java.util.Hashtable;
 import java.util.List;
@@ -76,6 +77,7 @@ public class SessionData implements SessionActions {
     public Map<String,Integer> getPlayerResourceStatus(UUID playerID) throws RuntimeException{
         if(PlayerList.containsKey(playerID)){
 
+            ConsoleColours.Print(ConsoleColours.CYAN_BACKGROUND+ConsoleColours.BLACK, "Start collecting Information for: " + playerID + "This is done here: "+ HexaServer.WhatAmI(GameManager.instance.server));
             Map<String,Integer> result = new Hashtable<>();
             List<List<Component>> Components = Engine.getInstance().getComponentManager().groupByTypes(
                     HexaComponents.ORE,HexaComponents.WOOD,HexaComponents.STONE
@@ -86,7 +88,7 @@ public class SessionData implements SessionActions {
                    Entity player = c.getBackAssociation();
 
                    Pair<Boolean,HexaComponentOwner> Owner = player.hasAssociationWith(HexaComponents.OWNER);
-                   if(Owner.getFirst() && (Owner.getSecond().getID() == playerID)){
+                   if(Owner.getFirst() && (Owner.getSecond().getID().equals(playerID))){
                        HexaComponents type = (HexaComponents)c.getType();
                        if(result.containsKey(type.name()))
                            result.put(type.name(),result.get(type.name())+1);
@@ -96,7 +98,7 @@ public class SessionData implements SessionActions {
                }
             }
             if(result.isEmpty()){
-                System.out.println(">>>>>>>>>>>>>>>>> I HATE YOU: no data found for player: " + playerID);
+                ConsoleColours.Print(ConsoleColours.CYAN_BACKGROUND+ConsoleColours.BLACK,">>>>>>>>>>>>>>>>> I HATE YOU: no data found for player: " + playerID);
                 return new Hashtable<String,Integer>() {{
                     put("STONE",0);
                     put("WOOD",-1);
@@ -105,17 +107,20 @@ public class SessionData implements SessionActions {
             }
             if(!result.containsKey("WOOD"))
             {
-                System.out.println(">>>>>>>>>>>>>>>>> I HATE YOU: no WOOD found for player: " + playerID);
+                ConsoleColours.Print(ConsoleColours.CYAN_BACKGROUND+ConsoleColours.BLACK,">>>>>>>>>>>>>>>>> I HATE YOU: no WOOD found for player: " + playerID);
+
                 result.put("WOOD",0);
             }
             if(!result.containsKey("STONE"))
             {
-                System.out.println(">>>>>>>>>>>>>>>>> I HATE YOU: no STONE found for player: " + playerID);
+                ConsoleColours.Print(ConsoleColours.CYAN_BACKGROUND+ConsoleColours.BLACK,">>>>>>>>>>>>>>>>> I HATE YOU: no STONE found for player: "  + playerID);
+
                 result.put("STONE",0);
             }
             if(!result.containsKey("ORE"))
             {
-                System.out.println(">>>>>>>>>>>>>>>>> I HATE YOU: no ORE found for player: " + playerID);
+                ConsoleColours.Print(ConsoleColours.CYAN_BACKGROUND+ConsoleColours.BLACK,">>>>>>>>>>>>>>>>> I HATE YOU: no ORE found for player: "  + playerID);
+
                 result.put("ORE",0);
             }
             return result;

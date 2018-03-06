@@ -204,7 +204,8 @@ public class ClientListener extends PacketListener {
                         */
 
                     if(player.PlayerID.equals(HexaServer.senderId)){
-                        System.err.println("        Set given stats for:" + player.PlayerID + "|| I am: "+ (server.isHost() ? "Host" : "Client"));
+                        ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"        Set given stats for:" + player.PlayerID + "|| I am: " + HexaServer.WhatAmI(server));
+
                         GameManager.instance.setPlayerResources(player.Stats);
                     }
                       //if(!server.isHost())
