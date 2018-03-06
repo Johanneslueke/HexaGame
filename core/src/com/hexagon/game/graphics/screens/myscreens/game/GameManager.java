@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.graphics.screens.myscreens.game.GameUI.MessageUtil;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.StatusBar;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.TileInfoField;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.sidebar.SidebarBuild;
@@ -34,6 +35,7 @@ public class GameManager {
     private Stage           stage;
     private InputGame       inputGame;
     public  ColorUtil       colorUtil;
+    public  MessageUtil     messageUtil;
 
     private Map<String,Integer> PlayerResources = new Hashtable<String,Integer>() {{
         put("STONE",0);
@@ -48,13 +50,12 @@ public class GameManager {
     SidebarBuild            sidebarBuildWindow;
 
 
-    public HexaServer                  server;
+    public HexaServer       server;
 
     public GameManager() {
         instance = this;
 
         standardWindow = new GroupWindow(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),stage);
-
     }
 
     public void startGame(ScreenGame game) {
@@ -62,6 +63,10 @@ public class GameManager {
         this.windowManager = game.getWindowManager();
         this.stage = game.getStage();
         this.inputGame = game.getInputGame();
+        if (messageUtil != null) {
+            messageUtil.removeAll();
+        }
+        this.messageUtil = new MessageUtil(stage, windowManager);
     }
 
     public void playOffline() {

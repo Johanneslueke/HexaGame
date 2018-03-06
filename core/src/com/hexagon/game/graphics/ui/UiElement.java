@@ -1,7 +1,7 @@
 package com.hexagon.game.graphics.ui;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.hexagon.game.graphics.ui.UpdateEvent;
 
 /**
  * Created by Sven on 19.12.2017.
@@ -9,15 +9,14 @@ import com.hexagon.game.graphics.ui.UpdateEvent;
 
 public abstract class UiElement {
 
-    private float x;
-    private float y;
+    float x;
+    float y;
 
     private float displayX;
     private float displayY;
 
-    //TODO: Sven can these be removed? they do not have actual use in our code base. SceneUI does not utilize them
-    private float width;
-    private float height;
+    float width;
+    float height;
 
     private UpdateEvent updateEvent;
 
@@ -28,6 +27,10 @@ public abstract class UiElement {
         this.height = height;
         this.displayX = x;
         this.displayY = y;
+    }
+
+    public void render(ShapeRenderer shapeRenderer) {
+
     }
 
     public abstract void addToStage(Stage stage);

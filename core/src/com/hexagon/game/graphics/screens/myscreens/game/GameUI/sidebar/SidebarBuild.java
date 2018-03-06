@@ -108,7 +108,7 @@ public class SidebarBuild extends Sidebar {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 GameManager.instance.server.send(
-                        new PacketBuild(p, StructureType.ORE, HexaServer.senderId)
+                        new PacketBuild(p, StructureType.MINE, HexaServer.senderId)
                 );
                 select(GameManager.instance.getGame().getCurrentMap(), p, stage);
 

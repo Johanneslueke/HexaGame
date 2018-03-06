@@ -221,7 +221,7 @@ public class ScreenJoin extends HexagonScreen {
         messageBox.show(getStage());
 
         GameManager.instance.server.send(
-                new PacketJoin("MyUsername", hostUuid, HexaServer.VERSION)
+                new PacketJoin(HexaServer.username, hostUuid, HexaServer.VERSION)
         );
     }
 }

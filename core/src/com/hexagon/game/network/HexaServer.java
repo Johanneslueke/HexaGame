@@ -10,6 +10,8 @@ import com.hexagon.game.network.listener.ServerListener;
 import com.hexagon.game.network.packets.Packet;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketPlayerStatus;
+import com.hexagon.game.network.packets.PacketType;
+import com.hexagon.game.util.Usernames;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,7 +19,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Scanner;
@@ -33,6 +34,7 @@ public class HexaServer {
     public static final String  VERSION = "0.1";
 
     public static UUID          senderId = UUID.randomUUID();;//UUID.fromString("525183d9-1a5a-40e1-a712-e3099282c341");
+    public static String        username = Usernames.getRandom();
 
     /**
      * connection stuff
@@ -51,12 +53,14 @@ public class HexaServer {
 
     private ServerListener      hostListener;
     private ClientListener      clientListener;
-    public UUID                LocalClientID = senderId;
+    public UUID                 LocalClientID = senderId;
 
     public long                 lastKeepAliveSent = System.currentTimeMillis();
 
     private SessionData         sessionData;
     private boolean             offlineGame = false;
+
+    private boolean             isHost = false;
 
     public static String WhatAmI(HexaServer server) {
         return (server.isHost() ? " (Host)" : " (Client) ");
@@ -70,6 +74,7 @@ public class HexaServer {
 
     public HexaServer(String address, int port, boolean isHost) {
         this(address, port);
+        this.isHost = isHost;
         if (isHost) {
             sessionData = new SessionData();
         }
@@ -139,7 +144,8 @@ public class HexaServer {
     }
 
     public void send(Packet packet) {
-        if (isHost() && packet.getSenderId().equals(HexaServer.senderId)) {
+        if (isHost() && packet.getSenderId().equals(HexaServer.senderId)
+                && packet.getType() != PacketType.KEEPALIVE) {
             try {
                 clientListener.call(packet);
             } catch (Exception e) {
@@ -288,10 +294,11 @@ public class HexaServer {
             if (System.currentTimeMillis() - lastKeepAliveSent >= 3_500) {
                 broadcastKeepAlive();
 
-                if(getSessionData() != null && isHost())
-                    for(UUID id : getSessionData().PlayerList.keySet()){
-                    broadcastPlayerStatus(id);
+                if (getSessionData() != null && isHost()) {
+                    for (UUID id : getSessionData().PlayerList.keySet()) {
+                        broadcastPlayerStatus(id);
                     }
+                }
             }
         }
 
@@ -356,8 +363,12 @@ public class HexaServer {
         return sessionData;
     }
 
+    public void setSessionData(SessionData sessionData) {
+        this.sessionData = sessionData;
+    }
+
     public boolean isHost() {
-        return sessionData != null;
+        return isHost || offlineGame;
     }
 
     public ServerListener getHostListener() {

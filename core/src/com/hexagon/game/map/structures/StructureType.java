@@ -6,11 +6,12 @@ package com.hexagon.game.map.structures;
 
 public enum StructureType {
 
-    FOREST(new String[]{"tree2.g3db"}),
+    FOREST(new String[]{"forest.g3db"}),
     CITY(new String[]{"city_lvl1.g3db", "city_lvl2.g3db", "city_lvl3.g3db", "city_lvl4.g3db", "city_lvl5.g3db"}),
     STREET(new String[]{"street.g3db"}),
     RESOURCE(null),
     ORE(null),
+    MINE(new String[]{"mine.g3db"}),
     CROPS(null);
 
     private String[] paths;

@@ -9,6 +9,7 @@ import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
+import com.hexagon.game.graphics.screens.myscreens.game.GameUI.MessageUtil;
 import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
@@ -127,6 +128,12 @@ public class ScreenLobby extends HexagonScreen {
         super.show();
 
         setupUserInterface();
+
+        if (GameManager.instance.messageUtil != null) {
+            GameManager.instance.messageUtil.removeAll();
+        }
+        GameManager.instance.messageUtil = new MessageUtil(stage, windowManager);
+        GameManager.instance.messageUtil.add("You have joined the room!");
     }
 
     private float callEventsTime = 0;

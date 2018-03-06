@@ -48,7 +48,7 @@ public class ScreenMainMenu extends HexagonScreen {
         batch = new SpriteBatch();
         font = new BitmapFont();
 
-        UiButton button = new UiButton("Hello World", 50, Gdx.graphics.getHeight() - 50, 100, 50);
+        UILabel label = new UILabel(50, Gdx.graphics.getHeight() - 50, 100, 50, 36, "Your Username: " + HexaServer.username);
 
         final DropdownScrollableWindow window = new DropdownScrollableWindow(20, 0, 0, 0, 0, 0, 15);
         windowManager.addWindow(window);
@@ -59,8 +59,8 @@ public class ScreenMainMenu extends HexagonScreen {
         }*/
 
         window.orderAllNeatly(13, 0, 15);
-        window.setY(button.getY() - window.getHeight());
-        window.setX(button.getX());
+        window.setY(label.getY() - window.getHeight());
+        window.setX(label.getX());
         window.updateElements();
 
         /*UiButton buttonWindow = new UiButton("Inside Window Button", 0, 0, 100, 50);
@@ -72,17 +72,7 @@ public class ScreenMainMenu extends HexagonScreen {
         });
         window.add(buttonWindow, stage);*/
 
-        button.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (window.isVisible()) {
-                    window.hide(stage);
-                } else {
-                    window.show(stage);
-                }
-            }
-        });
-        button.addToStage(stage);
+        label.addToStage(stage);
 
 
         //MenuUtil.getInstance().createStandardMenu(this);

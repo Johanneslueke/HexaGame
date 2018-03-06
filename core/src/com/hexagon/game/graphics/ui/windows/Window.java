@@ -46,6 +46,9 @@ public class Window implements Comparable<Window> {
         renderer.set(ShapeRenderer.ShapeType.Filled);
         renderer.setColor(0f, 0f, 0.0f, 0.6f);
         renderer.rect(x, y, width, height);
+        for (int i=0; i<elementList.size(); i++) {
+            elementList.get(i).render(renderer);
+        }
     }
 
     public void show(Stage stage) {
@@ -71,6 +74,11 @@ public class Window implements Comparable<Window> {
             }
         }
         elementList.removeAll(toRemove);
+    }
+
+    public void remove(UiElement element, Stage stage) {
+        elementList.remove(element);
+        element.removeFromStage(stage);
     }
 
     public void removeLabels(Stage stage) {

@@ -18,6 +18,7 @@ import com.hexagon.game.map.MapManager;
 import com.hexagon.game.map.Point;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.SessionData;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketDestroy;
 import com.hexagon.game.network.packets.PacketHostGenerating;
@@ -62,7 +63,7 @@ public class ClientListener extends PacketListener {
                 @Override
                 public void invoke(Object... args) throws Exception {
                     PacketKeepAlive packet = (PacketKeepAlive) args[0];
-                    //server.send(new PacketKeepAlive());
+                    server.send(new PacketKeepAlive(packet.getSessionID()));
                 }
             });
 
@@ -91,6 +92,7 @@ public class ClientListener extends PacketListener {
                         ScreenManager.getInstance().setCurrentScreen(ScreenType.LOBBY);
                     } else {
                         System.out.println(packet.getUsername() + " has joined the game");
+                        GameManager.instance.messageUtil.add(packet.getUsername() + " has joined the room!");
                     }
 
                 }
@@ -260,6 +262,9 @@ public class ClientListener extends PacketListener {
                         System.out.println("HEX MAP " + hexMap.getTiles().length);
                         hexMap.setTiles(jsonHexMap.getTiles());
                         if (!server.isHost()) {
+                            if (server.getSessionData() == null) {
+                                server.setSessionData(new SessionData());
+                            }
                             for (UUID uuid : jsonHexMap.getColors().keySet()) {
                                 server.getSessionData().addNewPlayer(uuid, "SomePlayer",
                                         Color.valueOf(jsonHexMap.getColors().get(uuid)));
@@ -272,7 +277,7 @@ public class ClientListener extends PacketListener {
                         GameManager.instance.server.send(new PacketPlayerLoaded());
                     }
 
-                    GameManager.instance.getInputGame().updateSelectedInfo();
+                    //GameManager.instance.getInputGame().updateSelectedInfo();
                 }
             });
 

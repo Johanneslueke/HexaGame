@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.Color;
 public class ColorUtil {
 
     private Color[] colors = new Color[] {
-            Color.GOLD,
+            Color.ORANGE,
             Color.BLUE,
             Color.GREEN,
             Color.DARK_GRAY,

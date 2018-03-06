@@ -15,14 +15,9 @@ import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.network.HexaServer;
-import com.hexagon.game.network.packets.Packet;
 import com.hexagon.game.network.packets.PacketBuild;
-import com.hexagon.game.network.packets.PacketJoin;
-import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.util.CameraHelper;
 import com.hexagon.game.util.HexagonUtil;
-
-import java.util.UUID;
 
 /**
  * Created by Sven on 20.12.2017.
@@ -90,24 +85,10 @@ public class InputGame extends HexInput {
             screenGame.gameManager.connect(false);
         }
         if (keycode == Input.Keys.ENTER) {
-            if (screenGame.gameManager.server.isHost()) {
-                screenGame.gameManager.server.send(new PacketRegister(
-                        HexaServer.senderId, // This is the host id
-                        "Raum 8", false));
-                Packet packet = screenGame.gameManager.server.receive();
-
-                if(packet != null)
-                    System.out.println(packet.serialize());
-            }
+            GameManager.instance.messageUtil.add("Halllllllooo " + ((int) (Math.random() * 150_000)));
         }
         if (keycode == Input.Keys.P) {
-            if (!screenGame.gameManager.server.isHost()) {
-                screenGame.gameManager.server.send(new PacketJoin(
-                        HexaServer.senderId, // The sender (us)
-                        "Sven",
-                        UUID.fromString("e84223f7-f8dd-4ea4-8494-25ef9d27a1a9"), // The host WE want to connect to
-                        "1.0"));
-            }
+
         }
         return false;
     }
@@ -362,7 +343,7 @@ public class InputGame extends HexInput {
 
         GameManager.instance.server.send(new PacketBuild(
                 p,
-                StructureType.ORE,
+                StructureType.MINE,
                 HexaServer.senderId
         ));
     }

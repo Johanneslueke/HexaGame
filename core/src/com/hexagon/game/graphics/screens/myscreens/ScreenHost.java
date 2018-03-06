@@ -9,6 +9,7 @@ import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
+import com.hexagon.game.graphics.screens.myscreens.game.GameUI.MessageUtil;
 import com.hexagon.game.graphics.ui.UiImage;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
@@ -124,7 +125,6 @@ public class ScreenHost extends HexagonScreen {
         batch = new SpriteBatch();
         font = new BitmapFont();
 
-
     }
 
     @Override
@@ -132,6 +132,13 @@ public class ScreenHost extends HexagonScreen {
         super.show();
 
         setupUserInterface();
+
+        if (GameManager.instance.messageUtil != null) {
+            GameManager.instance.messageUtil.removeAll();
+        }
+        GameManager.instance.messageUtil = new MessageUtil(stage, windowManager);
+        GameManager.instance.messageUtil.add("You have created a room.");
+        GameManager.instance.messageUtil.add("Waiting for players...");
 
     }
 

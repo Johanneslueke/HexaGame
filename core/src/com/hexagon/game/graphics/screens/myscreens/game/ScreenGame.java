@@ -2,6 +2,7 @@ package com.hexagon.game.graphics.screens.myscreens.game;
 
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -345,6 +346,7 @@ public class ScreenGame extends HexagonScreen {
     }
 
     private float callEventsTime = 0;
+
     private void update(float delta) {
         inputGame.update(delta);
         if (gameManager.server != null) {
@@ -356,6 +358,8 @@ public class ScreenGame extends HexagonScreen {
             if (callEventsTime >= 0.1f) {
                 gameManager.server.callEvents();
                 callEventsTime = 0;
+
+                gameManager.messageUtil.update();
             }
         }
     }
@@ -395,6 +399,8 @@ public class ScreenGame extends HexagonScreen {
         hoverInstance = new ModelInstance(selectedModel);
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        GameManager.instance.messageUtil.add("Please select a city to begin...", 10_000, Color.GREEN);
     }
 
 

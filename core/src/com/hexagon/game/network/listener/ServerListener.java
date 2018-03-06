@@ -1,6 +1,5 @@
 package com.hexagon.game.network.listener;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.Logic.Components.HexaComponentOre;
@@ -11,9 +10,9 @@ import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
 import com.hexagon.game.graphics.screens.myscreens.ScreenMainMenu;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
+import com.hexagon.game.graphics.ui.windows.WindowNotification;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.tiles.Tile;
-import com.hexagon.game.graphics.ui.windows.WindowNotification;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketDestroy;
@@ -108,7 +107,7 @@ public class ServerListener extends PacketListener {
                     PacketJoin packet = (PacketJoin) args[0];
 
                     server.getSessionData().addNewPlayer(packet.getSenderId(), packet.getUsername(),
-                            new Color((float) Math.random(), (float) Math.random(), (float) Math.random(), 1));
+                            GameManager.instance.colorUtil.getNext());
                     System.out.println(packet.getUsername() + " has joined the game (I AM THE SERVER)");
 
                     // I'm the host, so I have to broadcast to my players that a new player has joined the game
