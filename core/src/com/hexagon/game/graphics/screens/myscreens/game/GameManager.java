@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.graphics.screens.myscreens.game.GameStates.State;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.MessageUtil;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.StatusBar;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.TileInfoField;
@@ -19,7 +20,9 @@ import com.hexagon.game.util.ColorUtil;
 import com.hexagon.game.util.MenuUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,6 +39,9 @@ public class GameManager {
     private InputGame       inputGame;
     public  ColorUtil       colorUtil;
     public  MessageUtil     messageUtil;
+
+    public List<State>      States = new ArrayList<>();
+    public int              currentstate = 0;
 
     private Map<String,Integer> PlayerResources = new Hashtable<String,Integer>() {{
         put("STONE",0);
@@ -56,6 +62,10 @@ public class GameManager {
         instance = this;
 
         standardWindow = new GroupWindow(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),stage);
+    }
+
+    public State getCurrentState(){
+        return States.get(currentstate);
     }
 
     public void startGame(ScreenGame game) {

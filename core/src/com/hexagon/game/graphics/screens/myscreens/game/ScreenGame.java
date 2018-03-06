@@ -349,6 +349,9 @@ public class ScreenGame extends HexagonScreen {
 
     private void update(float delta) {
         inputGame.update(delta);
+
+        gameManager.getCurrentState().logic();
+
         if (gameManager.server != null) {
 
             if(gameManager.server.isHost()){
@@ -417,7 +420,10 @@ public class ScreenGame extends HexagonScreen {
         renderShadow();
         renderModels(delta);
         renderUI();
+        gameManager.getCurrentState().render();
         renderDEBUGMETA();
+
+
 
         //Main.engine.run(delta);
 
