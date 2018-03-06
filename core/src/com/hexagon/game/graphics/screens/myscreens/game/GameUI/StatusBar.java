@@ -79,7 +79,7 @@ public class StatusBar {
         PlayerID.setUpdateEvent(new UpdateEvent() {
             @Override
             public void onUpdate() {
-                PlayerID.getLabel().setText(GameManager.instance.server.getLocalClientID().toString());
+                PlayerID.getLabel().setText(GameManager.instance.server.getLocalClientID().toString() + (GameManager.instance.server.isHost() ? "  Host" : "  Client"));
             }
         });
 

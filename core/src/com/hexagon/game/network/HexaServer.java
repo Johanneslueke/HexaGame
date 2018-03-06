@@ -16,6 +16,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Scanner;
@@ -55,6 +56,9 @@ public class HexaServer {
 
     private SessionData         sessionData;
 
+    public static String WhatAmI(HexaServer server) {
+        return (server.isHost() ? " (Host)" : " (Client) ");
+    }
 
     public HexaServer(String address, int port) {
         if (address == null) return; // If the address is null, the player wants to play offline

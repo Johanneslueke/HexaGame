@@ -58,12 +58,12 @@ public class DemoScreen extends HexagonScreen {
     public void create() {
         render = new ShapeRenderer();
 
-        Logic.getSystemManager().addSystem(
+        /*Logic.getSystemManager().addSystem(
                 new SystemMessageDelivery(),
                 new InterfaceSystem(),
                 new HexaSystemGeneralProducer(Logic),
                 new HexaSystemGeneralConsumer(Logic)
-                );
+                );*/
 
 
         /**
@@ -73,7 +73,7 @@ public class DemoScreen extends HexagonScreen {
         /**
          * Producer
          */
-            Entity id1 = createRawEntity(
+          /*  Entity id1 = createRawEntity(
                     new ComponentProducer(),
                     new ComponentResource(0.01f,3.0f,1.0f, Arrays.asList(
                             (Component) (new ComponentProduct())
@@ -83,10 +83,12 @@ public class DemoScreen extends HexagonScreen {
 
             Logic.getEntityManager().getEntityContext().add(id1);
             Logic.BroadcastMessage(new NotificationNewEntity(id1));
+            */
 /////////////////////////////////////////////////////////////////////////////////////////////////////
         /**
          * Producer
          */
+        /*
             Entity id2 = createRawEntity(
                     new ComponentProducer(),
                     new ComponentResource(0.01f,3.5f,1.0f, Arrays.asList(
@@ -97,10 +99,11 @@ public class DemoScreen extends HexagonScreen {
 
             Logic.getEntityManager().getEntityContext().add(id2);
             Logic.BroadcastMessage(new NotificationNewEntity(id2));
+            */
 /////////////////////////////////////////////////////////////////////////////////////////////////////
         /**
          * Consumer
-         */
+         *//*
             Entity id3 = createRawEntity(
                     new ComponentConsumer(),
                     new ComponentResource(2.01f,1.0f,100.0f,  Arrays.asList(
@@ -111,10 +114,10 @@ public class DemoScreen extends HexagonScreen {
 
             Logic.getEntityManager().getEntityContext().add(id3);
             Logic.BroadcastMessage(new NotificationNewEntity(id3));
-
+*/
         /**
          * Consumer
-         */
+         *//*
             Entity id4 = createRawEntity(
                     new ComponentConsumer(),
                     new ComponentResource(1.01f,1.0f,2.0f,  Arrays.asList(
@@ -125,6 +128,7 @@ public class DemoScreen extends HexagonScreen {
 
             Logic.getEntityManager().getEntityContext().add(id4);
             Logic.BroadcastMessage(new NotificationNewEntity(id4));
+            */
 
 
     }

@@ -38,7 +38,7 @@ public class GameManager {
     private Map<String,Integer> PlayerResources = new Hashtable<String,Integer>() {{
         put("STONE",0);
         put("WOOD",0);
-        put("ORE",0);
+        put("ORE",-10);
     }};
 
     ShapeRenderer           shapeRenderer;

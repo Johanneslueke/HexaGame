@@ -64,7 +64,7 @@ public class Main extends Game {
 					@Override
 					public void process(double delta) {
 						for(Entity e: getLocalEntityCache())
-							java.lang.System.out.println("----------->Producer: " + e.toString());
+							;//java.lang.System.out.println("----------->Resource: " + e.toString());
 					}
 
 					@Override
@@ -73,7 +73,7 @@ public class Main extends Game {
 						if(o instanceof NotificationNewEntity){
 							NotificationNewEntity e = (NotificationNewEntity)o;
 
-							if(((NotificationNewEntity) o).isOfType(StdComponents.PRODUCER)){
+							if(((NotificationNewEntity) o).isOfType(StdComponents.RESOURCE)){
 								this.getLocalEntityCache().add(e.getEntity());
 								//GameManager.instance.server.getSessionData().
 							}

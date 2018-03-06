@@ -38,6 +38,7 @@ public class HexaSystemGeneralProducer extends SystemProducerBase {
             Pair<Boolean,HexaComponentOwner> owner = e.hasAssociationWith(HexaComponents.OWNER);
             if(res.getFirst() && owner.getFirst()){
                 if(this.isReady(res.getSecond())) {
+                    //java.lang.System.out.println("===> New Resource: " + res.getSecond().productType + "Owner: "+ owner.getSecond().getID().toString());
                     EmitProducts(res.getSecond(),owner.getSecond());
                     resetProductionProgress(res.getSecond());
                 }

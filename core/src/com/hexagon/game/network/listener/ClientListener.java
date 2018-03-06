@@ -7,8 +7,10 @@ import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
+import com.hexagon.game.graphics.screens.myscreens.ScreenMainMenu;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
+import com.hexagon.game.graphics.ui.windows.WindowNotification;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.JsonHexMap;
 import com.hexagon.game.map.MapManager;
@@ -24,8 +26,10 @@ import com.hexagon.game.network.packets.PacketLeave;
 import com.hexagon.game.network.packets.PacketMapUpdate;
 import com.hexagon.game.network.packets.PacketPlayerStatus;
 import com.hexagon.game.network.packets.PacketPlayerLoaded;
+import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.network.packets.PacketServerList;
 import com.hexagon.game.network.packets.PacketType;
+import com.hexagon.game.util.ConsoleColours;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,10 +67,22 @@ public class ClientListener extends PacketListener {
                 }
             });
 
+            put(PacketType.REGISTER, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    PacketRegister packet = (PacketRegister) args[0];
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"==== RECEIVED REGISTER Answer ==== " + packet.isCancelled() + HexaServer.WhatAmI(server));
+                    System.out.println();
+
+                }
+            });
+
             put(PacketType.JOIN, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    System.out.println("Client Received JOIN");
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received JOIN" + HexaServer.WhatAmI(server));
+                    System.out.println();
+
                     PacketJoin packet = (PacketJoin) args[0];
 
                     // I'm not the host, so either a new player has joined the game or I have joined the game
@@ -84,6 +100,7 @@ public class ClientListener extends PacketListener {
             put(PacketType.LEAVE, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received LEAVE" + HexaServer.WhatAmI(server));
                     PacketLeave packetLeave = (PacketLeave) args[0];
 
                     String message;
@@ -94,11 +111,13 @@ public class ClientListener extends PacketListener {
                     }
 
                     if (packetLeave.getLeaverUuid().equals(HexaServer.senderId)) {
-                        System.out.println("##### YOU - " + message);
+                        ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"##### YOU - " + message + HexaServer.WhatAmI(server));
+                        System.out.println();
                         server.disconnect();
                         ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
                     } else {
-                        System.out.println("##### Someone else - " + message);
+                        ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"##### SOMEONE ELSE - " + message + HexaServer.WhatAmI(server));
+
                     }
 
 
@@ -108,10 +127,39 @@ public class ClientListener extends PacketListener {
             put(PacketType.BUILD, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    PacketBuild build = (PacketBuild) args[0];
-                    System.out.println("Client Received BUILD " + build.getArrayPosition().getX() + ", " + build.getArrayPosition().getY()
-                        + " -> " + build.getStructureType().name());
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received BUILD" + HexaServer.WhatAmI(server));
 
+                    PacketBuild build = (PacketBuild) args[0];
+                    ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND," Received BUILD " + build.getArrayPosition().getX() + ", " + build.getArrayPosition().getY()
+                            + " -> " + build.getStructureType().name() + HexaServer.WhatAmI(server));
+
+                    if(server.isHost() && build.getStructureType() == StructureType.ORE)
+                    {
+                        ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received Build Packet for: " + build.getOwner() + "|| I am: "+HexaServer.senderId + HexaServer.WhatAmI(server));
+                        ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"    Build structure: " + build.getStructureType() + " at " + build.getArrayPosition());
+
+
+
+                        Engine.getInstance().BroadcastMessage(
+                                new NotificationNewEntity(
+                                        Engine.getInstance().getEntityManager().createID(
+                                                new HexaComponentOwner(build.getOwner().toString(),build.getOwner()),
+                                                new ComponentProducer(),
+                                                new ComponentResource(
+                                                        0.00002f,
+                                                        10.0f,
+                                                        1.0f,
+                                                        asList(
+                                                                new Component[]  {
+                                                                        new HexaComponentOre()
+                                                                }
+                                                        )
+                                                )
+                                        )
+                                )
+                        );
+                    }else
+                        ;
 
                     Point pos = build.getArrayPosition();
                     HexMap map = GameManager.instance.getGame().getCurrentMap();
@@ -126,7 +174,8 @@ public class ClientListener extends PacketListener {
             put(PacketType.DESTROY, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    System.out.println("Client Received DESTROY");
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received DESTROY" + HexaServer.WhatAmI(server));
+                    System.out.println();
 
                     PacketDestroy destroy = (PacketDestroy) args[0];
                     Point pos = destroy.getArrayPosition();
@@ -141,11 +190,26 @@ public class ClientListener extends PacketListener {
             put(PacketType.PLAYER_STATUS, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    System.out.println("Client Received Player_Status");
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received PLAYER_STATUS" + HexaServer.WhatAmI(server));
+                    System.out.println();
                     PacketPlayerStatus player = (PacketPlayerStatus)args[0];
 
-                    if(player.PlayerID == HexaServer.senderId)
+                    ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"Received Packet for(PLAYERID): " + player.PlayerID + "|| I am(SERVERID): "+HexaServer.senderId  + HexaServer.WhatAmI(server));
+                    ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"   It contains this payload: " + player.Stats + HexaServer.WhatAmI(server));
+
+
+                    /*if(player.PlayerID == player.getSenderId())
+                        System.out.println("Status for HOST");
+                    else
+                        System.out.println("Status for Client");
+                        */
+
+                    if(player.PlayerID.equals(HexaServer.senderId)){
+                        System.err.println("        Set given stats for:" + player.PlayerID + "|| I am: "+ (server.isHost() ? "Host" : "Client"));
                         GameManager.instance.setPlayerResources(player.Stats);
+                    }
+                      //if(!server.isHost())
+                        //GameManager.instance.setPlayerResources(player.Stats);
 
 
                 }
@@ -154,7 +218,8 @@ public class ClientListener extends PacketListener {
             put(PacketType.TRADE, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    System.out.println("Client Received TRADE");
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received TRADE" + HexaServer.WhatAmI(server));
+                    System.out.println();
 
                 }
             });
@@ -162,7 +227,8 @@ public class ClientListener extends PacketListener {
             put(PacketType.TERMINATE, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    System.out.println("Client Received TERMINATE");
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received TERMINATE" + HexaServer.WhatAmI(server));
+                    System.out.println();
 
                 }
             });
@@ -170,7 +236,9 @@ public class ClientListener extends PacketListener {
             put(PacketType.MAPUPDATE, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
-                    System.out.println("Client Received MAPUPDATE");
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received MAPUPDATE" + HexaServer.WhatAmI(server));
+                    System.out.println();
+
                     PacketMapUpdate packetMapUpdate = (PacketMapUpdate) args[0];
                     HexMap hexMap;
 
@@ -208,7 +276,10 @@ public class ClientListener extends PacketListener {
                 @Override
                 public void invoke(Object... args) throws Exception {
                     PacketServerList packetServerList = (PacketServerList) args[0];
-                    System.out.println("Client Received SERVER_LIST " + packetServerList.entries.size());
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received SERVICE_LIST"+ packetServerList.entries.size() + HexaServer.WhatAmI(server));
+                    System.out.println();
+
+
                     if (ScreenManager.getInstance().getCurrentScreen().getScreenType() == ScreenType.JOIN) {
                         final ScreenJoin screenJoin = (ScreenJoin) ScreenManager.getInstance().getCurrentScreen();
 
@@ -221,7 +292,7 @@ public class ClientListener extends PacketListener {
                                     new ChangeListener() {
                                         @Override
                                         public void changed(ChangeEvent event, Actor actor) {
-                                            System.out.println("Clicked room " + entry.room);
+                                            ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"Clicked room " + entry.room + HexaServer.WhatAmI(server));
                                             screenJoin.joinRoom(entry.host, entry.room);
                                         }
                                     }), screenJoin.getStage());
@@ -237,7 +308,9 @@ public class ClientListener extends PacketListener {
                 @Override
                 public void invoke(Object... args) throws Exception {
                     PacketHostGenerating packet = (PacketHostGenerating) args[0];
-                    System.out.println("Received HOST_GENERATING");
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received HOST_GENERATING"+ HexaServer.WhatAmI(server));
+
+                    System.out.println();
                     ScreenManager.getInstance().setCurrentScreen(ScreenType.GENERATOR);
                 }
             });
@@ -246,7 +319,9 @@ public class ClientListener extends PacketListener {
                 @Override
                 public void invoke(Object... args) throws Exception {
                     PacketPlayerLoaded packet = (PacketPlayerLoaded) args[0];
-                    System.out.println("Received PLAYER_LOADED");
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received PLAYER_LOADED"+ HexaServer.WhatAmI(server));
+
+                    System.out.println();
 
                     if (ScreenManager.getInstance().getCurrentScreen().getScreenType() != ScreenType.GAME) {
                         ScreenManager.getInstance().setCurrentScreen(ScreenType.GAME);

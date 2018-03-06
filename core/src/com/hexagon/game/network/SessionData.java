@@ -96,11 +96,27 @@ public class SessionData implements SessionActions {
                }
             }
             if(result.isEmpty()){
+                System.out.println(">>>>>>>>>>>>>>>>> I HATE YOU: no data found for player: " + playerID);
                 return new Hashtable<String,Integer>() {{
                     put("STONE",0);
-                    put("WOOD",0);
+                    put("WOOD",-1);
                     put("ORE",0);
                 }};
+            }
+            if(!result.containsKey("WOOD"))
+            {
+                System.out.println(">>>>>>>>>>>>>>>>> I HATE YOU: no WOOD found for player: " + playerID);
+                result.put("WOOD",0);
+            }
+            if(!result.containsKey("STONE"))
+            {
+                System.out.println(">>>>>>>>>>>>>>>>> I HATE YOU: no STONE found for player: " + playerID);
+                result.put("STONE",0);
+            }
+            if(!result.containsKey("ORE"))
+            {
+                System.out.println(">>>>>>>>>>>>>>>>> I HATE YOU: no ORE found for player: " + playerID);
+                result.put("ORE",0);
             }
             return result;
         }
