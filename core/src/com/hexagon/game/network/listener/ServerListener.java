@@ -107,7 +107,8 @@ public class ServerListener extends PacketListener {
                     ConsoleColours.Print(ConsoleColours.WHITE_BOLD+ConsoleColours.PURPLE_BACKGROUND,"Received JOIN" + HexaServer.WhatAmI(server));
                     PacketJoin packet = (PacketJoin) args[0];
 
-                    server.getSessionData().addNewPlayer(packet.getSenderId(), packet.getUsername(), Color.GREEN);
+                    server.getSessionData().addNewPlayer(packet.getSenderId(), packet.getUsername(),
+                            new Color((float) Math.random(), (float) Math.random(), (float) Math.random(), 1));
                     System.out.println(packet.getUsername() + " has joined the game (I AM THE SERVER)");
 
                     // I'm the host, so I have to broadcast to my players that a new player has joined the game

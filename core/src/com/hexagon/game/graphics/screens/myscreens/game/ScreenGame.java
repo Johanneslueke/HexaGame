@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.UBJsonReader;
 import com.hexagon.game.graphics.ModelManager;
@@ -40,8 +41,10 @@ import com.hexagon.game.map.tiles.Biome;
 import com.hexagon.game.map.tiles.Chunk;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
+import com.hexagon.game.models.HexModelAnimated;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.models.Text3D;
+import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.util.HexagonUtil;
 
 import java.util.ArrayList;
@@ -170,21 +173,32 @@ public class ScreenGame extends HexagonScreen {
             for (int y=0; y<hexMap.getTiles()[x].length; y++) {
                 Tile tile = hexMap.getTiles()[x][y];
 
-                HexModel hexModel = new HexModel(new ModelInstance(biomeModelMap.get(tile.getBiome())));
-
                 TileLocation loc = HexagonUtil.getTileLocation(x, y);
-                hexModel.move((float) loc.getX(), height, (float) loc.getY());
-                /*if (height == 0) {
-                    height = 0.05f;
+
+                HexModel hexModel;
+                if (tile.getBiome() == Biome.WATER) {
+                    hexModel = new HexModelAnimated(new ModelInstance(biomeModelMap.get(tile.getBiome())), "Cylinder.001|EmptyAction");
+                    Matrix4 m = hexModel.getModelInstance().transform.translate((float) loc.getX(), 0, (float) loc.getY());
+
+                    m = m.scale(0.012f, 0.012f, 0.012f);
+                    hexModel.getModelInstance().transform.set(m);
                 } else {
-                    height = 0;
-                }*/
+                    hexModel = new HexModel(new ModelInstance(biomeModelMap.get(tile.getBiome())));
+                }
+
+                if (tile.getBiome() == Biome.WATER) {
+                    height = -0.3f;
+                } else {
+                    height = (x & 1) == 0 ? 0 : 0.001f;
+                }
+
+                hexModel.move((float) loc.getX(), height, (float) loc.getY());
 
                 RenderTile renderTile = new RenderTile(loc, hexModel);
                 tile.setRenderTile(renderTile);
                 if (tile.getStructure() != null) {
                     StructureType type = tile.getStructure().getType();
-                    hexMap.build(x, y, type);
+                    hexMap.build(x, y, type, null);
                 }
 
                 /*modelCache.add(hexModel.getModelInstance());
@@ -230,7 +244,7 @@ public class ScreenGame extends HexagonScreen {
     private int renderedChunks = 0;
     public static int renderedTiles = 0;
 
-    private void renderModels() {
+    private void renderModels(float delta) {
         modelBatch.begin(camera);
 
         renderedChunks = 0;
@@ -253,7 +267,7 @@ public class ScreenGame extends HexagonScreen {
 
                 renderedChunks++;
 
-                chunk.render(modelBatch, environment, camera);
+                chunk.render(modelBatch, environment, camera, delta);
             }
         }
 
@@ -351,6 +365,7 @@ public class ScreenGame extends HexagonScreen {
         gameManager = GameManager.instance;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void show() {
         super.show();
@@ -370,7 +385,15 @@ public class ScreenGame extends HexagonScreen {
 
         createMap(MapManager.getInstance().getCurrentHexMap());
 
+        for (Material material : selectedModel.materials) {
+            material.clear();
+            material.set(ColorAttribute.createDiffuse(
+                    gameManager.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond()
+            ));
+        }
+
         hoverInstance = new ModelInstance(selectedModel);
+
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
@@ -386,7 +409,7 @@ public class ScreenGame extends HexagonScreen {
 
 
         renderShadow();
-        renderModels();
+        renderModels(delta);
         renderUI();
         renderDEBUGMETA();
 

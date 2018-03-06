@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import com.hexagon.game.graphics.screens.myscreens.game.ScreenGame;
 import com.hexagon.game.map.Point;
 import com.hexagon.game.models.HexModel;
+import com.hexagon.game.models.HexModelAnimated;
 import com.hexagon.game.models.RenderTile;
 
 /**
@@ -74,24 +75,29 @@ public class Chunk {
         }
     }
 
-    public void render(ModelBatch modelBatch, Environment environment, Camera camera) {
+    public void render(ModelBatch modelBatch, Environment environment, Camera camera, float delta) {
         for (RenderTile tile : renderTiles) {
-            if (tile.getTileLocation().getX() < camera.position.x - 21
-                    || tile.getTileLocation().getX() > camera.position.x + 21) {
+            if (tile.getTileLocation().getX() < camera.position.x - 22
+                    || tile.getTileLocation().getX() > camera.position.x + 22) {
                 continue;
             }
-            if (tile.getTileLocation().getY() > camera.position.z + 5
-                    || tile.getTileLocation().getY() < camera.position.z - 18) {
+            if (tile.getTileLocation().getY() > camera.position.z + 6
+                    || tile.getTileLocation().getY() < camera.position.z - 19) {
                 continue;
             }
             HexModel model = tile.getModel();
-            modelBatch.render(model.getModelInstance(), environment);
+            if (model instanceof HexModelAnimated) {
+                ((HexModelAnimated) model).update(delta);
+            }
+            /*modelBatch.render(model.getModelInstance(), environment);
             ScreenGame.renderedTiles++;
             if (tile.getStructures().size() > 0) {
                 for (HexModel structure : tile.getStructures()) {
                     modelBatch.render(structure.getModelInstance(), environment);
                 }
-            }
+            }*/
+            tile.render(modelBatch, environment);
+            ScreenGame.renderedTiles++;
         }
     }
 

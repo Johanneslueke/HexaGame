@@ -9,10 +9,12 @@ import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.JsonHexMap;
+import com.hexagon.game.map.MapManager;
 import com.hexagon.game.map.generator.GeneratorCallback;
 import com.hexagon.game.map.generator.MapGenerator;
 import com.hexagon.game.map.generator.TileGenerator;
 import com.hexagon.game.map.structures.Structure;
+import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.structures.resources.ResourceType;
 import com.hexagon.game.map.structures.resources.StructureResource;
@@ -21,8 +23,11 @@ import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.network.packets.PacketMapUpdate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Created by Sven on 14.12.2017.
@@ -43,12 +48,12 @@ public class ScreenGenerator extends HexagonScreen {
     private List<TileGenerator> setupBiomeGenerator(final MapGenerator mapGenerator){
 
         // Tile Generators
-        List<TileGenerator> res = new ArrayList<>();
+        final List<TileGenerator> generators = new ArrayList<>();
 
         //biomeGenerator
-        res.add(new TileGenerator() {
+        generators.add(new TileGenerator() {
             @Override
-            public Tile generate(Tile tile, int x, int y, Random random) {
+            public Tile generate(List<Tile> generatedTiles, Tile tile, int x, int y, Random random) {
                 if (x == 0 && y == 0) {
                     return tile;
                 }
@@ -76,9 +81,9 @@ public class ScreenGenerator extends HexagonScreen {
 
         // Add the ice generator last! Highest Priority == called last
         //iceGenerator
-        res.add( new TileGenerator() {
+        generators.add( new TileGenerator() {
             @Override
-            public Tile generate(Tile tile, int x, int y, Random random) {
+            public Tile generate(List<Tile> generatedTiles, Tile tile, int x, int y, Random random) {
                 if (x < 5 || x > mapGenerator.getSizeX() - 5) {
                     if (x <= 2 || x >= mapGenerator.getSizeX() - 2) {
                         tile.setBiome(Biome.ICE);
@@ -99,9 +104,9 @@ public class ScreenGenerator extends HexagonScreen {
         });
 
         //resourceGenerator
-        res.add( new TileGenerator() {
+        generators.add( new TileGenerator() {
             @Override
-            public Tile generate(Tile tile, int x, int y, Random random) {
+            public Tile generate(List<Tile> generatedTiles, Tile tile, int x, int y, Random random) {
                 if (tile.getBiome() != Biome.PLAINS) {
                     return tile;
                 }
@@ -117,10 +122,38 @@ public class ScreenGenerator extends HexagonScreen {
             }
         });
 
-        //treeGenerator
-        res.add( new TileGenerator() {
+        // City Generator
+        generators.add(new TileGenerator() {
             @Override
-            public Tile generate(Tile tile, int x, int y, Random random) {
+            public Tile generate(List<Tile> generatedTiles, Tile tile, int x, int y, Random random) {
+                if (tile.getBiome() != Biome.PLAINS
+                        && tile.getBiome() != Biome.DESERT) {
+                    // Cities can only spawn on grassland or desert
+                    return tile;
+                }
+                if (tile.getStructure() != null) {
+                    return tile;
+                }
+                for (Tile existingTile : generatedTiles) {
+                    if (existingTile.getStructure() == null
+                            || existingTile.getStructure().getType() != StructureType.CITY) {
+                        continue;
+                    }
+                    if (Math.abs(existingTile.getArrayX() - x) <= 5 && Math.abs(existingTile.getArrayY() - y) <= 5) {
+                        return tile;
+                    }
+                }
+                if (random.nextInt(100) <= 40) {
+                    tile.setStructure(new StructureCity(random.nextInt(5)));
+                }
+                return tile;
+            }
+        });
+
+        //treeGenerator
+        generators.add(new TileGenerator() {
+            @Override
+            public Tile generate(List<Tile> generatedTiles, Tile tile, int x, int y, Random random) {
                 if (tile.getBiome() != Biome.PLAINS) {
                     // Trees can only spawn on grassland
                     return tile;
@@ -135,7 +168,7 @@ public class ScreenGenerator extends HexagonScreen {
             }
         });
 
-        return res;
+        return generators;
     }
 
     private void setupUserInterface() {
@@ -194,7 +227,13 @@ public class ScreenGenerator extends HexagonScreen {
                 final HexMap hexMap = new HexMap(mapGenerator.getSizeX(), mapGenerator.getSizeY());
                 hexMap.setTiles(mapGenerator.getGeneratedTiles());
 
-                JsonHexMap jsonHexMap = new JsonHexMap(hexMap.getTiles());
+                Map<UUID, String> userColors = new HashMap<>();
+                for (UUID uuid : GameManager.instance.server.getSessionData().PlayerList.keySet()) {
+                    userColors.put(uuid,
+                            GameManager.instance.server.getSessionData().PlayerList.get(uuid).getSecond().toString());
+                }
+
+                JsonHexMap jsonHexMap = new JsonHexMap(hexMap.getTiles(), userColors);
                 PacketMapUpdate packetMapUpdate = new PacketMapUpdate(jsonHexMap.toJson());
                 System.out.println("sending mapupdate " + packetMapUpdate.getRawMapData());
 
@@ -203,11 +242,12 @@ public class ScreenGenerator extends HexagonScreen {
                         new UILabel(50, 100, 300, 300, 32, "Waiting for players...").getLabel()
                 );
 
-                GameManager.instance.server.send(packetMapUpdate);
-
-                //MapManager.getInstance().setCurrentHexMap(hexMap);
-
-                //ScreenManager.getInstance().setCurrentScreen(ScreenType.GAME);
+                if (GameManager.instance.server.isOfflineGame()) {
+                    MapManager.getInstance().setCurrentHexMap(hexMap);
+                    ScreenManager.getInstance().setCurrentScreen(ScreenType.GAME);
+                } else {
+                    GameManager.instance.server.send(packetMapUpdate);
+                }
             }
         });
 

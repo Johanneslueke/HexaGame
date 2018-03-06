@@ -17,7 +17,6 @@ import com.hexagon.game.util.MenuUtil;
 
 import java.util.Observable;
 
-import de.svdragster.logica.components.meta.ComponentType;
 import de.svdragster.logica.components.meta.StdComponents;
 import de.svdragster.logica.manager.Entity.Entity;
 import de.svdragster.logica.system.System;
@@ -65,6 +64,7 @@ public class Main extends Game {
 					public void process(double delta) {
 						for(Entity e: getLocalEntityCache())
 							;//java.lang.System.out.println("----------->Resource: " + e.toString());
+							;//java.lang.System.out.println("----------->Producer: " + e.toString());
 					}
 
 					@Override

@@ -1,6 +1,7 @@
 package com.hexagon.game.models;
 
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.hexagon.game.map.TileLocation;
 
@@ -19,6 +20,7 @@ public class RenderTile {
     private TileLocation tileLocation;
     private HexModel model;
     private List<HexModel> structures;
+    private HexModel ownerColor;
 
     public RenderTile(TileLocation location, HexModel model) {
         this.tileLocation = location;
@@ -28,6 +30,9 @@ public class RenderTile {
 
     public void render(ModelBatch batch, Environment environment) {
         batch.render(model.getModelInstance(), environment);
+        if (ownerColor != null) {
+            batch.render(ownerColor.getModelInstance(), environment);
+        }
         for (int i=0; i<structures.size(); i++) {
             batch.render(structures.get(i).getModelInstance(), environment);
         }
@@ -55,5 +60,16 @@ public class RenderTile {
 
     public void setStructures(List<HexModel> structures) {
         this.structures = structures;
+    }
+
+    public HexModel getOwnerColor() {
+        return ownerColor;
+    }
+
+    public void setOwnerColor(HexModel ownerColor) {
+        this.ownerColor = ownerColor;
+        for (Material material : ownerColor.getModelInstance().materials) {
+            ;
+        }
     }
 }

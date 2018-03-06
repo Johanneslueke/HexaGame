@@ -12,8 +12,8 @@ public enum Biome {
     WATER("water.g3db"),*/
     PLAINS("grassland.g3db"),
     DESERT("desert.g3db"),
-    ICE("models/iceland.g3db"),
-    WATER("flat_hexagon.g3db")
+    ICE("iceland.g3db"),
+    WATER("water.g3db")
     ;
 
     private String model;

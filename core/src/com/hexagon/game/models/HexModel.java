@@ -8,7 +8,8 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 
 public class HexModel {
 
-    private ModelInstance modelInstance;
+    ModelInstance modelInstance;
+    float x, y, z;
 
 
     public HexModel(ModelInstance modelInstance) {
@@ -17,6 +18,9 @@ public class HexModel {
 
     public void move(float x, float y, float z) {
         modelInstance.transform.translate(x, y, z);
+        this.x += x;
+        this.y += y;
+        this.z += z;
     }
 
     /*public void setLocation(float x, float y, float z) {

@@ -34,6 +34,7 @@ public class MapGenerator implements Runnable {
     private boolean finished = false;
 
     private Tile[][] generatedTiles;
+    private List<Tile> generatedTileList = new ArrayList<>();
 
     private GeneratorCallback callback;
 
@@ -65,7 +66,7 @@ public class MapGenerator implements Runnable {
     private void generateTileAt(int x, int y) {
         Tile tile = new Tile(x, y);
         for (TileGenerator tileGenerator : tileGeneratorList) {
-            generatedTiles[x][y] = tileGenerator.generate(tile, x, y, random);
+            generatedTiles[x][y] = tileGenerator.generate(generatedTileList, tile, x, y, random);
         }
     }
 
@@ -75,7 +76,8 @@ public class MapGenerator implements Runnable {
         while (!finished) {
             Tile tile = new Tile(curX, curY);
             for (TileGenerator tileGenerator : tileGeneratorList) {
-                generatedTiles[curX][curY] = tileGenerator.generate(tile, curX, curY, random);
+                generatedTiles[curX][curY] = tileGenerator.generate(generatedTileList, tile, curX, curY, random);
+                generatedTileList.add(generatedTiles[curX][curY]);
             }
             curX++;
             if (curX >= sizeX) {
