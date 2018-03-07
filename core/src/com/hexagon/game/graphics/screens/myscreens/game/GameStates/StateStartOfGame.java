@@ -15,7 +15,6 @@ public class StateStartOfGame extends State{
 
     public StateStartOfGame(InputGame input){
         super(StateType.START_OF_GAME);
-
     }
 
     @Override

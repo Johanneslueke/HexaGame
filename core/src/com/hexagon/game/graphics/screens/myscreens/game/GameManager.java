@@ -76,12 +76,12 @@ public class GameManager {
      */
 
     public void createStates() {
-        states = new ArrayList<State>() {{
-            new StateStartOfGame(inputGame);
-            new StateMainGame(inputGame);
-            new StateCityView(inputGame);
-            new StateGameOver(inputGame);
-        }};
+        states = new ArrayList<>();
+        states.add(new StateStartOfGame(inputGame));
+        states.add(new StateMainGame(inputGame));
+        states.add(new StateCityView(inputGame));
+        states.add(new StateGameOver(inputGame));
+        System.out.println("_______ " + states.toString());
     }
 
     public void setCurrentState(StateType type) {
