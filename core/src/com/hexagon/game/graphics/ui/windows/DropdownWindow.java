@@ -40,10 +40,10 @@ public class DropdownWindow extends Window {
             if (columns > 1) {
                 element.setX(col * element.getWidth() + 10);
             }
-            element.setY(getHeight() - row * element.getHeight() + 10);
+            element.setY(getHeight() - (row + 1) * element.getHeight());
 
             element.setDisplayX(getX() + element.getX());
-            element.setDisplayY(getHeight() - getY() - element.getY() - element.getHeight());
+            element.setDisplayY(getHeight() - getY() - element.getY() - element.getHeight()*4);
 
             maxX = Math.max(maxX, element.getX());
         }

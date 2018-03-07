@@ -55,6 +55,7 @@ public class SidebarBuild extends Sidebar {
         }
         System.out.println("Ordering all neatly");
         statusWindow.orderAllNeatly(1);
+        statusWindow.updateElements();
     }
 
     private void destroyForestButton(final Point p, final Stage stage) {
@@ -73,7 +74,7 @@ public class SidebarBuild extends Sidebar {
     }
 
     private void addForestButton(final Point p, final Stage stage) {
-        UiButton buttonForest = new UiButton("Add Forest", 5, 0, 50, 0, 26);
+        UiButton buttonForest = new UiButton("Add Forest", 5, -50, 50, 0, 26);
         buttonForest.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {

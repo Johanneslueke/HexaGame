@@ -147,8 +147,8 @@ public class ClientListener extends PacketListener {
                                                         new HexaComponentOwner(build.getOwner().toString(),build.getOwner()),
                                                         new ComponentProducer(),
                                                         new ComponentResource(
-                                                                0.00002f,
-                                                                10000.0f,
+                                                                0.000002f,
+                                                                1.0f,
                                                                 1.0f,
                                                                 asList(
                                                                         new Component[]  {

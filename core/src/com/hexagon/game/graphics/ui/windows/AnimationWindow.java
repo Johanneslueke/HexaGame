@@ -89,8 +89,8 @@ public class AnimationWindow extends DropdownWindow {
 
         x = x1 * (1 - pos) + x2 * pos;
         y = y1 * (1 - pos) + y2 * pos;
-        super.updateElements();
         super.orderAllNeatly();
+        super.updateElements();
     }
 
     @Override

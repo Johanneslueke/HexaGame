@@ -56,6 +56,7 @@ public class HexaServer {
     public UUID                 LocalClientID = senderId;
 
     public long                 lastKeepAliveSent = System.currentTimeMillis();
+    public long                 lastPlayerupdate = System.currentTimeMillis();
 
     private SessionData         sessionData;
     private boolean             offlineGame = false;
@@ -291,14 +292,15 @@ public class HexaServer {
 
     public void callEvents() {
         if (socket.isConnected() && isHost()) {
-            if (System.currentTimeMillis() - lastKeepAliveSent >= 3_500) {
-                broadcastKeepAlive();
-
+            if(System.currentTimeMillis() - lastPlayerupdate >= 1_00){
                 if (getSessionData() != null && isHost()) {
                     for (UUID id : getSessionData().PlayerList.keySet()) {
                         broadcastPlayerStatus(id);
                     }
                 }
+            }
+            if (System.currentTimeMillis() - lastKeepAliveSent >= 3_500) {
+                broadcastKeepAlive();
             }
         }
 
