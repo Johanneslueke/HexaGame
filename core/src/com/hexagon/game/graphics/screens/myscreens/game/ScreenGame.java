@@ -46,6 +46,7 @@ import com.hexagon.game.models.HexModelAnimated;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.models.Text3D;
 import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.util.ConsoleColours;
 import com.hexagon.game.util.HexagonUtil;
 
 import java.util.ArrayList;
@@ -97,6 +98,8 @@ public class ScreenGame extends HexagonScreen {
 
     Model                           truckModel;
     Model                           streetModel;
+    boolean                         isRunning = true;
+    Thread Logic;
 
     private ModelCache      modelCache;
 
@@ -107,6 +110,16 @@ public class ScreenGame extends HexagonScreen {
 
     public ScreenGame() {
         super(ScreenType.GAME);
+        Logic = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(isRunning){
+                    Engine.getInstance().run(0.032f);
+                    //ConsoleColours.Print(ConsoleColours.BLUE_BACKGROUND_BRIGHT,"LOGIC HAS RUN");
+                }
+            }
+        });
+
     }
 
     private void setupCamera(Point pos, Point lookTo,float fieldOfView, float near,float far){
@@ -350,12 +363,12 @@ public class ScreenGame extends HexagonScreen {
     private void update(float delta) {
         inputGame.update(delta);
 
-        gameManager.getCurrentState().logic();
+        //gameManager.getCurrentState().logic();
 
         if (gameManager.server != null) {
 
             if(gameManager.server.isHost()){
-                Engine.getInstance().run(delta);
+                //Engine.getInstance().run(delta);
             }
             callEventsTime += delta;
             if (callEventsTime >= 0.1f) {
@@ -370,6 +383,7 @@ public class ScreenGame extends HexagonScreen {
     @Override
     public void create() {
         gameManager = GameManager.instance;
+
     }
 
     @SuppressWarnings("deprecation")
@@ -404,6 +418,9 @@ public class ScreenGame extends HexagonScreen {
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         GameManager.instance.messageUtil.add("Please select a city to begin...", 10_000, Color.GREEN);
+
+        if(gameManager.server.isHost())
+            Logic.start();
     }
 
 
@@ -420,7 +437,7 @@ public class ScreenGame extends HexagonScreen {
         renderShadow();
         renderModels(delta);
         renderUI();
-        gameManager.getCurrentState().render();
+        //gameManager.getCurrentState().render();
         renderDEBUGMETA();
 
 
@@ -434,12 +451,14 @@ public class ScreenGame extends HexagonScreen {
 
     @Override
     public void pause() {
-
+        if(gameManager.server.isHost())
+            ;//Logic.suspend();
     }
 
     @Override
     public void resume() {
-
+        if(gameManager.server.isHost())
+            ;//Logic.resume();
     }
 
     @Override
@@ -451,6 +470,7 @@ public class ScreenGame extends HexagonScreen {
 
     @Override
     public void dispose() {
+        isRunning = false;
         modelBatch.dispose();
         for (Model model : biomeModelMap.values()) {
             model.dispose();

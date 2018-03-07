@@ -23,6 +23,7 @@ import de.svdragster.logica.system.System;
 import de.svdragster.logica.system.SystemMessageDelivery;
 import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
 import de.svdragster.logica.world.Engine;
+import sun.rmi.runtime.Log;
 
 
 public class Main extends Game {
@@ -30,6 +31,8 @@ public class Main extends Game {
     private static Main instance; //You Shall not PASS
 
     public static  Engine engine = Engine.getInstance();
+
+
 
 	@Override
 	public void create () {
@@ -83,7 +86,6 @@ public class Main extends Game {
 				new HexaSystemGeneralProducer(engine),
 				new HexaSystemGeneralConsumer(engine)
 		);
-
 
 
 

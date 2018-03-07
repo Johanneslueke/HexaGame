@@ -57,6 +57,7 @@ public class ClientListener extends PacketListener {
     @Override
     public void registerAll() {
         dispatchTable = new Hashtable<PacketType, Delegate>() {{
+            final Object lock = new Object();
             put(PacketType.KEEPALIVE, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
@@ -139,24 +140,26 @@ public class ClientListener extends PacketListener {
 
 
 
-                        Engine.getInstance().BroadcastMessage(
-                                new NotificationNewEntity(
-                                        Engine.getInstance().getEntityManager().createID(
-                                                new HexaComponentOwner(build.getOwner().toString(),build.getOwner()),
-                                                new ComponentProducer(),
-                                                new ComponentResource(
-                                                        0.00002f,
-                                                        10.0f,
-                                                        1.0f,
-                                                        asList(
-                                                                new Component[]  {
-                                                                        new HexaComponentOre()
-                                                                }
+                        synchronized (lock){
+                                Engine.getInstance().BroadcastMessage(
+                                        new NotificationNewEntity(
+                                                Engine.getInstance().getEntityManager().createID(
+                                                        new HexaComponentOwner(build.getOwner().toString(),build.getOwner()),
+                                                        new ComponentProducer(),
+                                                        new ComponentResource(
+                                                                0.00002f,
+                                                                10000.0f,
+                                                                1.0f,
+                                                                asList(
+                                                                        new Component[]  {
+                                                                                new HexaComponentOre()
+                                                                        }
+                                                                )
                                                         )
                                                 )
                                         )
-                                )
-                        );
+                            );
+                        }
                     }else
                         ;
 

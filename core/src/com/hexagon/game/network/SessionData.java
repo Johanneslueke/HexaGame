@@ -33,7 +33,7 @@ public class SessionData implements SessionActions {
         return GameManager.instance.getGame().getCurrentMap();
     }
 
-    public void addNewPlayer(UUID playerID,String Name,Color color){
+    public synchronized void  addNewPlayer(UUID playerID,String Name,Color color){
 
         if(!PlayerList.containsKey(playerID)){
             PlayerList.put(
@@ -46,7 +46,7 @@ public class SessionData implements SessionActions {
             throw new RuntimeException("User already in Game");
     }
 
-    public void removePlayer(UUID   player){
+    public synchronized void removePlayer(UUID   player){
         if(!PlayerList.containsKey(player)){
             Engine.getInstance().BroadcastMessage(
                     new NotificationRemoveEntity(PlayerList.get(player).getFirst())
@@ -57,7 +57,7 @@ public class SessionData implements SessionActions {
         }
     }
 
-    public void buildStructure(UUID playerID, StructureType type){
+    public synchronized void buildStructure(UUID playerID, StructureType type){
 
         if(!PlayerList.containsKey(playerID)){
 
@@ -74,7 +74,7 @@ public class SessionData implements SessionActions {
         }
     }
 
-    public Map<String,Integer> getPlayerResourceStatus(UUID playerID) throws RuntimeException{
+    public synchronized Map<String,Integer> getPlayerResourceStatus(UUID playerID) throws RuntimeException{
         if(PlayerList.containsKey(playerID)){
 
             ConsoleColours.Print(ConsoleColours.CYAN_BACKGROUND+ConsoleColours.BLACK, "Start collecting Information for: " + playerID + "This is done here: "+ HexaServer.WhatAmI(GameManager.instance.server));

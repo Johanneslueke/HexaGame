@@ -51,9 +51,11 @@ public class HexaSystemGeneralConsumer extends SystemConsumerBase {
     @Override
     public void process(double delta) {
         //Iterate through the local logic systems
-        for(Entity e : getLocalEntityCache()){
+        for(int i = 0; i  < getLocalEntityCache().size(); i++){
+            //for(Entity e : getLocalEntityCache()){
             //asking if the component is there, is a bit abitrary here because
             //we use the systems cache list of entities.
+            Entity e = getLocalEntityCache().get(i);
             Pair<Boolean,ComponentResource> res = e.hasAssociationWith(StdComponents.RESOURCE);
             Pair<Boolean,HexaComponentOwner> owner = e.hasAssociationWith(HexaComponents.OWNER);
 

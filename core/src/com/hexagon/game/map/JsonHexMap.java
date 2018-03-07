@@ -41,13 +41,14 @@ public class JsonHexMap {
 
     public String toJson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        Gson gson = gsonBuilder.registerTypeAdapter(AbstractDocument.AbstractElement.class, new HexMapAdapter()).create();
+        //Gson gson = gsonBuilder.registerTypeAdapter(AbstractDocument.AbstractElement.class, new HexMapAdapter()).create();
+        Gson gson = gsonBuilder.create();
         return gson.toJson(this);
     }
 
     public static JsonHexMap fromJson(String json) {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(AbstractDocument.AbstractElement.class, new HexMapAdapter());
+        //gsonBuilder.registerTypeAdapter(AbstractDocument.AbstractElement.class, new HexMapAdapter());
 
         Gson gson = gsonBuilder.create();
         JsonHexMap jsonHexMap = gson.fromJson(json, JsonHexMap.class);
