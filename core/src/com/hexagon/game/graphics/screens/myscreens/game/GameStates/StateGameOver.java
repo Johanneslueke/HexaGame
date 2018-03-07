@@ -7,13 +7,14 @@ import com.hexagon.game.graphics.screens.myscreens.game.InputGame;
  * Created by Johannes on 06.03.2018.
  */
 
-public class StartOfGame implements State{
+public class StateGameOver extends State{
 
     private InputGame           input;
     private GameManager         gameManager;
 
 
-    StartOfGame(InputGame input){
+    public StateGameOver(InputGame input){
+        super(StateType.GAME_OVER);
 
     }
 
@@ -21,6 +22,7 @@ public class StartOfGame implements State{
     public void render(){
 
     }
+
     @Override
     public void logic(){
 

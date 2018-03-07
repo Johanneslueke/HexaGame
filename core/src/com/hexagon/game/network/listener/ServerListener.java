@@ -2,8 +2,6 @@ package com.hexagon.game.network.listener;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.hexagon.game.Logic.Components.HexaComponentOre;
-import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
@@ -11,7 +9,6 @@ import com.hexagon.game.graphics.screens.myscreens.ScreenMainMenu;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.WindowNotification;
-import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketBuild;
@@ -28,14 +25,7 @@ import com.hexagon.game.util.ConsoleColours;
 
 import java.util.Hashtable;
 
-import de.svdragster.logica.components.Component;
-import de.svdragster.logica.components.ComponentProducer;
-import de.svdragster.logica.components.ComponentResource;
 import de.svdragster.logica.util.Delegate;
-import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
-import de.svdragster.logica.world.Engine;
-
-import static java.util.Arrays.asList;
 
 /**
  * Created by Sven on 26.02.2018.
@@ -139,9 +129,6 @@ public class ServerListener extends PacketListener {
                     PacketBuild build = (PacketBuild) args[0];
 
 
-
-
-
                     // TODO: Check if the player who wants to buildStructure has enough resources to buildStructure
                     // TODO: Check if the player can buildStructure at that location
 
@@ -150,16 +137,16 @@ public class ServerListener extends PacketListener {
                     // Let the ClientListener handle the clientsided logic for building
                     //server.getClientListener().call(packetBuild);
                     Tile tile = server.getSessionData().currentMap().getTileAt(build.getArrayPosition());
+                    if (tile.getRenderTile().getOwnerColor() == null) {
+                        // Respond
+                        server.send(new PacketBuild(
+                                        build.getArrayPosition(),
+                                        build.getStructureType(),
+                                        build.getOwner()
+                                )
+                        );
+                    }
 
-                    //tile.
-                    //server.getSessionData().buildStructure(packetBuild.getOwner(),);
-                    // Respond
-                    server.send(new PacketBuild(
-                            build.getArrayPosition(),
-                            build.getStructureType(),
-                            build.getOwner()
-                            )
-                    );
 
                 }
             });

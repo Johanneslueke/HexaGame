@@ -8,10 +8,8 @@ import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
-import com.hexagon.game.graphics.screens.myscreens.ScreenMainMenu;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
-import com.hexagon.game.graphics.ui.windows.WindowNotification;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.JsonHexMap;
 import com.hexagon.game.map.MapManager;
@@ -27,8 +25,8 @@ import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketLeave;
 import com.hexagon.game.network.packets.PacketMapUpdate;
 import com.hexagon.game.network.packets.PacketPlayerLoaded;
-import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.network.packets.PacketPlayerStatus;
+import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.network.packets.PacketServerList;
 import com.hexagon.game.network.packets.PacketType;
 import com.hexagon.game.util.ConsoleColours;
@@ -113,11 +111,11 @@ public class ClientListener extends PacketListener {
 
                     if (packetLeave.getLeaverUuid().equals(HexaServer.senderId)) {
                         ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"##### YOU - " + message + HexaServer.WhatAmI(server));
-                        System.out.println();
                         server.disconnect();
                         ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
                     } else {
                         ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"##### SOMEONE ELSE - " + message + HexaServer.WhatAmI(server));
+                        GameManager.instance.messageUtil.add(message);
 
                     }
 

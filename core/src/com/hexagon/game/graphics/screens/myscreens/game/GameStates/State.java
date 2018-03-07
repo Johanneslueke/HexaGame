@@ -4,11 +4,21 @@ package com.hexagon.game.graphics.screens.myscreens.game.GameStates;
  * Created by Johannes on 06.03.2018.
  */
 
-public interface State {
+public abstract class State {
 
-    void render();
-    void logic();
+    private StateType stateType;
 
-    void show();
-    void hide();
+    public State(StateType stateType) {
+        this.stateType = stateType;
+    }
+
+    public abstract void render();
+    public abstract void logic();
+
+    public abstract void show();
+    public abstract void hide();
+
+    public StateType getStateType() {
+        return stateType;
+    }
 }

@@ -6,6 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.game.GameStates.State;
+import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateCityView;
+import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateGameOver;
+import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateMainGame;
+import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateStartOfGame;
+import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateType;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.MessageUtil;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.StatusBar;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.TileInfoField;
@@ -40,8 +45,8 @@ public class GameManager {
     public  ColorUtil       colorUtil;
     public  MessageUtil     messageUtil;
 
-    public List<State>      States = new ArrayList<>();
-    public int              currentstate = 0;
+    public List<State>      states = new ArrayList<>();
+    public State            currentState;
 
     private Map<String,Integer> PlayerResources = new Hashtable<String,Integer>() {{
         put("STONE",0);
@@ -62,11 +67,45 @@ public class GameManager {
         instance = this;
 
         standardWindow = new GroupWindow(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),stage);
+
+        createStates();
+    }
+
+    /*
+     * Game States
+     */
+
+    public void createStates() {
+        states = new ArrayList<State>() {{
+            new StateStartOfGame(inputGame);
+            new StateMainGame(inputGame);
+            new StateCityView(inputGame);
+            new StateGameOver(inputGame);
+        }};
+    }
+
+    public void setCurrentState(StateType type) {
+        if (currentState != null) currentState.hide();
+
+        for (State state : states) {
+            if (state.getStateType() == type) {
+                currentState = state;
+                currentState.show();
+                return;
+            }
+        }
+        throw new IllegalArgumentException("No State found for StateType " + type.name());
     }
 
     public State getCurrentState(){
-        return States.get(currentstate);
+        return currentState;
     }
+
+    /*
+     *
+     */
+
+
 
     public void startGame(ScreenGame game) {
         this.game = game;
@@ -77,6 +116,7 @@ public class GameManager {
             messageUtil.removeAll();
         }
         this.messageUtil = new MessageUtil(stage, windowManager);
+        setCurrentState(StateType.START_OF_GAME);
     }
 
     public void playOffline() {
