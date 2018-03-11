@@ -12,8 +12,8 @@ gwt {
     project.webAppDirName = 'webapp'
 
     compiler {
-        strict = true;
-        disableCastChecking = true;
+        strict = true
+        disableCastChecking = true
     }
 }
 
@@ -33,18 +33,18 @@ task superDev(type: de.richsource.gradle.plugins.gwt.GwtSuperDev) {
 
 task dist(dependsOn: [clean, compileGwt]) {
     doLast {
-        file("build/dist").mkdirs()
+        file("buildStructure/dist").mkdirs()
         copy {
-            from "build/gwt/out"
-            into "build/dist"
+            from "buildStructure/gwt/out"
+            into "buildStructure/dist"
         }
         copy {
             from "webapp"
-            into "build/dist"
+            into "buildStructure/dist"
             }
         copy {
             from "war"
-            into "build/dist"
+            into "buildStructure/dist"
         }
     }
 }
